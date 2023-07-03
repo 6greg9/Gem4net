@@ -41,14 +41,10 @@ internal class CommStateManager
         var token = CommStateCheckTaskCts.Token;
         CommStateCheckTask = Task.Run(async () =>
         {
-            
-            var S1F13 = new SecsMessage(1,13)
-            {
-                SecsItem = Item.L( Item.A(MDLD),Item.A(SOFTREV))
-            };
-            var S1F14Waiter = _secsGem.SendAsync(S1F13);
+
+            Task<SecsMessage> S1F14Waiter;
             //要看IsHostInit, 而進入不同狀態
-            CurrentState = CommunicationState.WAIT_CRA;
+            GotoWaitCRA();
             while( !token.IsCancellationRequested && ! (CurrentState==CommunicationState.COMMUNICATING) )
             {
                 switch (CurrentState)
@@ -85,7 +81,6 @@ internal class CommStateManager
                             GotoWaitDelay();
                         }
 
-                        
                         break;
                     case CommunicationState.WAIT_DELAY:
                         if( CommDelayTimerTask.IsCompleted == true)

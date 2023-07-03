@@ -11,18 +11,18 @@ public partial class Form1 : Form
     {
         InitializeComponent();
         var logger = new SecsLogger(this);
-        service = new GemDeviceService( default,default
-            ,default,default,default, logger);
+        service = new GemDeviceService(default, default
+            , default, default, default, logger);
         service.OnConnectStatusChange += (msg) =>
         {
-            this.Invoke(new Action(() => { listView1.Items.Add(msg); }));
+            this.Invoke(new Action(() => { richTextBox2.AppendText($"{msg}\n"); ; }));
         };
 
     }
     GemDeviceService service;
     private void button1_Click(object sender, EventArgs e)
     {
-        using( var db = new GemVarContext())
+        using (var db = new GemVarContext())
         {
             var test = db.Variables.Where(v=> v.VID== 7).FirstOrDefault();
             MessageBox.Show(test.Name);
@@ -51,7 +51,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Black;
-                _form.richTextBox1.AppendText($"<-- [0x{id:X8}] {msg.ToSml()}\n");
+                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}<-- [0x{id:X8}] {msg.ToSml()}\n");
             });
         }
 
@@ -60,7 +60,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Black;
-                _form.richTextBox1.AppendText($"--> [0x{id:X8}] {msg.ToSml()}\n");
+                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}--> [0x{id:X8}] {msg.ToSml()}\n");
             });
         }
 
@@ -69,7 +69,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Blue;
-                _form.richTextBox1.AppendText($"{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
             });
         }
 
@@ -78,7 +78,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Green;
-                _form.richTextBox1.AppendText($"{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
             });
         }
 
@@ -87,7 +87,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Red;
-                _form.richTextBox1.AppendText($"{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
                 _form.richTextBox1.AppendText($"{message?.ToSml()}\n");
                 _form.richTextBox1.SelectionColor = Color.Gray;
                 _form.richTextBox1.AppendText($"{ex}\n");
@@ -99,7 +99,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Yellow;
-                _form.richTextBox1.AppendText($"{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
             });
         }
 

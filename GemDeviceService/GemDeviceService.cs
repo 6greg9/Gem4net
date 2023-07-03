@@ -73,6 +73,7 @@ public class GemDeviceService
                                 }
                                 break;
                             case SecsMessage msg when (msg.S == 1 && msg.F == 14):
+                                break;
                             default:
                                 break;
                         }
