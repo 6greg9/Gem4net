@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemVarRepository", "GemVarR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemDeviceService", "GemDeviceService\GemDeviceService.csproj", "{5A76CC16-31CC-43E1-9D37-BA7AFF7AB989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestForm", "TestForm\TestForm.csproj", "{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestForm", "TestForm\TestForm.csproj", "{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
