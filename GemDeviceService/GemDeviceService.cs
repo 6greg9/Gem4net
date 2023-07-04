@@ -103,7 +103,7 @@ public class GemDeviceService
             IsActive = true,
             IpAddress = "127.0.0.1",
             Port = 5000,
-            SocketReceiveBufferSize = 65535,
+            SocketReceiveBufferSize = 1024,
             DeviceId= 0,
             T6= 5000
         });

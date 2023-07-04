@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Secs4Net" Version="2.1.1" />
     <PackageReference Include="Secs4Net.Sml" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\secs4net\src\Secs4Net\Secs4Net.csproj" />
   </ItemGroup>
 
 </Project>
