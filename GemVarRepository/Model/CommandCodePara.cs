@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GemVarRepository.Model;
-public class GemVariable
+internal class CommandCodePara 
 {
-    public int VID { get; set; }
     public string DataType { get; set; }
     public int Length { get; set; }
     public string Unit { get; set; }
@@ -15,12 +14,5 @@ public class GemVariable
     public string Name { get; set; }
     public string? Definition { get; set; }
     public string? Remark { get; set; }
-    /// <summary> EC, EV, SV/// </summary>
-    public string VarType { get; set; }
-    public bool System { get; set; }
-    public string MinValue { get; set; }
-    public string MaxValue { get; set; }
-    public string DefaultValue { get; set; }
 
-    public IList<ReportVariableLink> ReportVariables { get; set; }
 }
