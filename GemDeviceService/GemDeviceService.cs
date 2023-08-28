@@ -111,6 +111,8 @@ public class GemDeviceService
 
         _connector = new HsmsConnection(options, _logger);
         _secsGem = new SecsGem(options, _connector, _logger);
+
+        //狀態管理
         _commStateManager = new CommStateManager(_secsGem,false);
         _ctrlStateManager = new CtrlStateManager(_secsGem );
         _commStateManager.NotifyCommStateChanged+=(transition) =>
@@ -177,6 +179,7 @@ public class GemDeviceService
         //richTextBox1.Clear();
     }
     #region For App Interface
+
     public void ReadVariable(int VID) { }
     public void UpdateVariable(int VID) { }
     public void TriggerEvent(int ECID) { }
