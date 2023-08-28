@@ -88,6 +88,7 @@ public class GemDeviceService
             });
 
         //_communicatinoState = CommunicationState.DISABLED;
+
     }
     public async void Enable()
     {
@@ -111,11 +112,22 @@ public class GemDeviceService
         _connector = new HsmsConnection(options, _logger);
         _secsGem = new SecsGem(options, _connector, _logger);
         _commStateManager = new CommStateManager(_secsGem,false);
+        _ctrlStateManager = new CtrlStateManager(_secsGem );
+        _commStateManager.NotifyCommStateChanged+=(transition) =>
+        {
+            if (transition.currentState == CommunicationState.COMMUNICATING)
+            {
+
+            }
+                //_ctrlStateManager.enterControl
+
+        };
+
         _connector.ConnectionChanged += async (sender,connectState)=>
         {
             if (connectState == ConnectionState.Selected)
             {
-                _commStateManager.EnterCommunication();
+                _commStateManager.EnterCommunicationState();
 
             }
             else
@@ -170,5 +182,7 @@ public class GemDeviceService
     public void TriggerEvent(int ECID) { }
     public Action? OnRemoteCmd;
     public Action<string>? OnConnectStatusChange;
+    public ISecsGem? GetSecsWrapper => _secsGem;
+
     #endregion
 }

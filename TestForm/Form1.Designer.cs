@@ -32,25 +32,26 @@ partial class Form1
         button2 = new Button();
         richTextBox1 = new RichTextBox();
         richTextBox2 = new RichTextBox();
+        button3 = new Button();
         SuspendLayout();
         // 
         // button1
         // 
-        button1.Location = new Point(936, 63);
+        button1.Location = new Point(936, 35);
         button1.Name = "button1";
         button1.Size = new Size(127, 58);
         button1.TabIndex = 0;
-        button1.Text = "button1";
+        button1.Text = "VarRepo";
         button1.UseVisualStyleBackColor = true;
         button1.Click += button1_Click;
         // 
         // button2
         // 
-        button2.Location = new Point(936, 163);
+        button2.Location = new Point(936, 99);
         button2.Name = "button2";
         button2.Size = new Size(120, 39);
         button2.TabIndex = 1;
-        button2.Text = "button2";
+        button2.Text = "EnableGem";
         button2.UseVisualStyleBackColor = true;
         button2.Click += button2_Click;
         // 
@@ -70,11 +71,22 @@ partial class Form1
         richTextBox2.TabIndex = 4;
         richTextBox2.Text = "";
         // 
+        // button3
+        // 
+        button3.Location = new Point(941, 156);
+        button3.Name = "button3";
+        button3.Size = new Size(112, 34);
+        button3.TabIndex = 5;
+        button3.Text = "S1F1";
+        button3.UseVisualStyleBackColor = true;
+        button3.Click += button3_Click;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(11F, 23F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(1205, 584);
+        Controls.Add(button3);
         Controls.Add(richTextBox2);
         Controls.Add(richTextBox1);
         Controls.Add(button2);
@@ -90,4 +102,5 @@ partial class Form1
     private Button button2;
     private RichTextBox richTextBox1;
     private RichTextBox richTextBox2;
+    private Button button3;
 }

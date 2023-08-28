@@ -8,13 +8,20 @@ using System.Threading.Tasks;
 namespace GemDeviceService;
 internal class CommStateManager
 {
+    #region State, TransitionEvent
     CommunicationState _currentState;
     public CommunicationState CurrentState { 
         get { return _currentState; }
-        private set { 
+        private set {
+            PreviousState = _currentState;
             _currentState = value;
-            NotifyCommStateChanged?.Invoke(_currentState);
+            NotifyCommStateChanged?.Invoke((_currentState,PreviousState));//別手動Ivoke狀態變化
         }}
+    
+    public CommunicationState PreviousState { get; private set; }
+    public event Action<(CommunicationState currentState,CommunicationState previousState )>? NotifyCommStateChanged;
+    #endregion
+
     bool IsHostInitial = false;
     string MDLD = "MDLD";
     string SOFTREV = "SOFTREV";
@@ -30,7 +37,7 @@ internal class CommStateManager
         CurrentState = CommunicationState.DISABLED;
         
     }
-    public void EnterCommunication() {
+    public void EnterCommunicationState() {
         //要看IsHostInit給不同Action
         if (IsHostInitial == true)
         {
@@ -73,6 +80,7 @@ internal class CommStateManager
                             else if ( COMMACK == Item.B(0) )//成功
                             {
                                 CurrentState = CommunicationState.COMMUNICATING;
+                                
                             }
 
                         }
@@ -99,6 +107,7 @@ internal class CommStateManager
                 {
                     SecsItem = Item.L( Item.A(MDLD),Item.A(SOFTREV))
                 };
+                //可能可以改用Func, 就不用注入_secsGem
                 S1F14Waiter = _secsGem.SendAsync(S1F13); //在while外部
                 CurrentState = CommunicationState.WAIT_CRA;
             }
@@ -129,5 +138,4 @@ internal class CommStateManager
         });
         
     }
-    public event Action<CommunicationState>? NotifyCommStateChanged;
 }

@@ -115,4 +115,12 @@ public partial class Form1 : Form
         }
 #endif
     }
+
+    private async void button3_Click(object sender, EventArgs e)
+    {
+        var secs = service.GetSecsWrapper;
+        var S1F1 = new SecsMessage(1, 1);
+        var S1F2 = await secs.SendAsync(S1F1);
+        MessageBox.Show(S1F2.ToSml());
+    }
 }
