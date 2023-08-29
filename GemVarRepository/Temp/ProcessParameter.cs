@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GemVarRepository.Model;
+namespace GemVarRepository;//.Model;
 public class ProcessParameter 
 {
     public string DataType { get; set; }

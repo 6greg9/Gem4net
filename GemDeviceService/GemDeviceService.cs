@@ -37,6 +37,15 @@ public class GemDeviceService
                     await foreach (var SecsMsg in recvBuffer.Reader.ReadAllAsync())
                     {
 
+                        //Check Comm State
+                        //Disable時什麼都不回應
+                        //NotCommunicatig時,由Manager處理S1F13流程
+                        //如果任何通訊發生失敗，應回到Not Communicating
+
+                        //Check Ctrl State
+
+                        //Format Validation
+                        //S9F3, S9F5, S9F7
                         switch (SecsMsg.PrimaryMessage)
                         {
                             //S1F1 AreYouThere
@@ -90,6 +99,9 @@ public class GemDeviceService
         //_communicatinoState = CommunicationState.DISABLED;
 
     }
+    /// <summary>
+    /// 啟動HSMS, 初始化GEM
+    /// </summary>
     public async void Enable()
     {
         _secsGem?.Dispose();
@@ -185,7 +197,11 @@ public class GemDeviceService
     public void TriggerEvent(int ECID) { }
     public Action? OnRemoteCmd;
     public Action<string>? OnConnectStatusChange;
-    public ISecsGem? GetSecsWrapper => _secsGem;
+    public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState == ControlState.LOCAL ||
+                                        _ctrlStateManager.CurrentState == ControlState.REMOTE)?
+                                        _secsGem : null;
+    //需要補上CommState, CtrlState的限制,
+    //大部分語句在進入On-Line後才可使用, 理論上只須限制在ON-line
 
     #endregion
 }

@@ -138,4 +138,18 @@ internal class CommStateManager
         });
         
     }
+    public void EnableComm()
+    {
+        if( _currentState == CommunicationState.DISABLED)
+            EnterCommunicationState();
+    }
+    public void DisableComm()
+    {
+        if (_currentState != CommunicationState.DISABLED)
+        {
+            CommStateCheckTaskCts.Cancel();
+            CurrentState = CommunicationState.DISABLED;
+        }
+            
+    }
 }

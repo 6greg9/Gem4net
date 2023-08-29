@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GemVarRepository.Model;
+namespace GemVarRepository;//.Model;
 /// <summary>
 /// for process program
 /// </summary>

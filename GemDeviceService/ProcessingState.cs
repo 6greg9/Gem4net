@@ -7,4 +7,11 @@ using System.Threading.Tasks;
 namespace GemDeviceService;
 public enum ProcessingState
 {
+    INIT,
+    IDLE,
+    SETUP,
+    READY,
+    EXECUTING,
+    PAUSE
+
 }

@@ -14,7 +14,7 @@ public class GemVarContext : DbContext
     public DbSet<GemEvent> Events { get; set; }
     public DbSet<GemReport> Reports { get; set; }
     public DbSet<EventReportLink> EventReportLinks { get; set; }
-    public DbSet<ProcessProgram> ProcessPrograms { get; set; }
+    //public DbSet<ProcessProgram> ProcessPrograms { get; set; }
 
     public string DbPath { get; }
     public GemVarContext()
@@ -27,7 +27,7 @@ public class GemVarContext : DbContext
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+        => options.UseSqlite($"Data Source={DbPath}");//EF8才支持sqlite
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,13 +60,13 @@ public class GemVarContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
+        //modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
 
-        modelBuilder.Entity<ProcessProgram>().OwnsMany(pp => pp.PPBody, builder =>
-        {
-            builder.ToJson();
-            builder.OwnsMany(cc => cc.ProcessParameters);
-        });
-        modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
+        //modelBuilder.Entity<ProcessProgram>().OwnsMany(pp => pp.PPBody, builder =>
+        //{
+        //    builder.ToJson();
+        //    builder.OwnsMany(cc => cc.ProcessParameters);
+        //});
 
         //    .OwnsOne(PPs => PPs.PPBody, builder =>
         //{
