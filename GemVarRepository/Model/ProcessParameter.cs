@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GemVarRepository.Model;
-internal class CommandCodePara 
+public class ProcessParameter 
 {
     public string DataType { get; set; }
     public int Length { get; set; }

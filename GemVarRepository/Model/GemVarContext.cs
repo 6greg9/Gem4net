@@ -13,7 +13,9 @@ public class GemVarContext : DbContext
     public DbSet<GemVariable> Variables { get; set; }
     public DbSet<GemEvent> Events { get; set; }
     public DbSet<GemReport> Reports { get; set; }
-    public DbSet<EventReportLink> EventReportRelation { get; set; }
+    public DbSet<EventReportLink> EventReportLinks { get; set; }
+    public DbSet<ProcessProgram> ProcessPrograms { get; set; }
+
     public string DbPath { get; }
     public GemVarContext()
     {
@@ -57,5 +59,26 @@ public class GemVarContext : DbContext
             .HasOne<GemVariable>(sc => sc.Variable)
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
+
+
+        modelBuilder.Entity<ProcessProgram>().OwnsMany(pp => pp.PPBody, builder =>
+        {
+            builder.ToJson();
+            builder.OwnsMany(cc => cc.ProcessParameters);
+        });
+        modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
+
+        //    .OwnsOne(PPs => PPs.PPBody, builder =>
+        //{
+        //    builder.ToJson();
+        //    builder.OwnsMany(body => body.);
+
+        //    //builder.OwnsMany( body => body,
+        //    //    builder2 =>
+        //    //    {
+        //    //        builder2.OwnsMany(para => para);
+        //    //    }
+        //    //);
+        //});
     }
 }

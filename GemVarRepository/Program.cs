@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 namespace GemVarRepository;
-public class Class1
+public class Program
 {
-    public Class1()
+    public Program()
     {
         using var db = new GemVarContext();
         var aaa =    db.Variables.Where(v=> v.Name == "SV");
         //var Reports = db.Events.Where( e => e.ECID == 1)
         //    .Include( e => e.ReportEvents );
-        var ReportIDs = db.EventReportRelation.Where(e => e.ECID== 1)
+        var ReportIDs = db.EventReportLinks.Where(e => e.ECID== 1)
             .Include(e=>e.Report).Select( rpt => rpt.RPTID);
 
         //var ReportData = db.Reports.Where( rpt => ReportIDs.Contains( rpt.RPTID))

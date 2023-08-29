@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GemVarRepository.Model;
-internal class ProcessProgram
+public class ProcessProgram
 {
-    public string Name { get; set; }
-    IList<CommandCode> CommandCodeList { get; set; }
+    public string PPID { get; set; }
+    public List<ProcessCommand>? PPBody { get; set; } =new();//JSON column
 }

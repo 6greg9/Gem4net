@@ -8,9 +8,8 @@ namespace GemVarRepository.Model;
 /// <summary>
 /// for process program
 /// </summary>
-internal class CommandCode
+public class ProcessCommand
 {
-    public string Code { get; set; }
-    public string Name { get; set; }
-    IList<CommandCodePara> ParaList { get; set;}
+    public string CommandCode { get; set; }
+    public List<ProcessParameter>? ProcessParameters { get; set; } = new();//JSON column
 }
