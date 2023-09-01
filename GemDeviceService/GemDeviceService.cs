@@ -145,7 +145,7 @@ public class GemDeviceService
             }
             else
             {
-                _commStateManager.LeaveCommunication();
+                _commStateManager.LeaveCommunicationState();
             }
 
             OnConnectStatusChange?.Invoke(connectState.ToString());

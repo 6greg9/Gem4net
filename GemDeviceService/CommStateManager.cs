@@ -125,10 +125,15 @@ internal class CommStateManager
             }
             void GotoWaitDelay()
             {
-                CommDelayTimerTask = Task.Delay(1000);
+                CommStateCheckTaskCts = new CancellationTokenSource();
+                CommDelayTimerTask = Task.Delay(1000, CommStateCheckTaskCts.Token );// Tooxx?
                 CurrentState = CommunicationState.WAIT_DELAY;
             }
         });
+    }
+    public void LeaveCommunicationState()
+    {
+        DisableComm();
     }
     #endregion
 
@@ -165,6 +170,7 @@ internal class CommStateManager
         if (_currentState != CommunicationState.DISABLED)
         {
             CommStateCheckTaskCts?.Cancel();
+            CommDelayTimerTaskCts?.Cancel();
             CurrentState = CommunicationState.DISABLED;
         }
             
