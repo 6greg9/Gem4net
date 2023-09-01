@@ -14,7 +14,7 @@ public class GemDeviceService
     private readonly Channel<PrimaryMessageWrapper> recvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
         new UnboundedChannelOptions()
         {
-            SingleWriter = false, 
+            SingleWriter = false,
             SingleReader = false
         }
         );
@@ -44,8 +44,14 @@ public class GemDeviceService
 
                         //Check Ctrl State
 
-                        //Format Validation
-                        //S9F3, S9F5, S9F7
+                        //Format Validation, S9F7
+                        if (SecsItemSchemaValidator.IsValid(SecsMsg.PrimaryMessage) == false)
+                        {
+                            _ = SecsMsg.TryReplyAsync();//不帶Item, 會給S9F7
+                            await Task.Delay(10);
+                            continue;
+                        }
+                        //Handle PrimaryMessage
                         switch (SecsMsg.PrimaryMessage)
                         {
                             //S1F1 AreYouThere
@@ -59,41 +65,34 @@ public class GemDeviceService
 
                                 await SecsMsg.TryReplyAsync(rtnMsg);
                                 break;
+                            //S1F13 EstablishCommunicationsRequest, 要看是Host/Eqp Init
                             case SecsMessage msg when (msg.S == 1 && msg.F == 13):
                                 //var rtn = await _commStateManager.HandleHostInitCommReq(msg.SecsItem);
-                                if (true)
+
+                                rtnMsg = new SecsMessage(1, 14)
                                 {
-                                    rtnMsg = new SecsMessage(1, 14)
-                                    {
-                                        SecsItem = Item.L(
-                                            Item.B(0),
-                                            Item.L(
-                                                Item.A("MDLN"),
-                                                Item.A("SOFTREV")
-                                                ))
-                                    };
-                                    
-                                    var rtn = await SecsMsg.TryReplyAsync(rtnMsg);
-                                    
-                                }
-                                else
-                                {
-                                    SecsMsg.TryReplyAsync();
-                                }
-                                break;
-                            case SecsMessage msg when (msg.S == 1 && msg.F == 14):
+                                    SecsItem = Item.L(
+                                        Item.B(0),
+                                        Item.L(
+                                            Item.A("MDLN"),
+                                            Item.A("SOFTREV")
+                                            ))
+                                };
+
+                                var rtn = await SecsMsg.TryReplyAsync(rtnMsg);
                                 break;
                             default:
                                 break;
                         }
-                        await Task.Delay(50);
+
+                        await Task.Delay(30);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 
                 }
-                
+
             });
 
         //_communicatinoState = CommunicationState.DISABLED;
@@ -125,19 +124,19 @@ public class GemDeviceService
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
-        _commStateManager = new CommStateManager(_secsGem,false);
-        _ctrlStateManager = new CtrlStateManager(_secsGem );
-        _commStateManager.NotifyCommStateChanged+=(transition) =>
+        _commStateManager = new CommStateManager(_secsGem, false);
+        _ctrlStateManager = new CtrlStateManager(_secsGem);
+        _commStateManager.NotifyCommStateChanged += (transition) =>
         {
             if (transition.currentState == CommunicationState.COMMUNICATING)
             {
 
             }
-                //_ctrlStateManager.enterControl
+            //_ctrlStateManager.enterControl
 
         };
 
-        _connector.ConnectionChanged += async (sender,connectState)=>
+        _connector.ConnectionChanged += async (sender, connectState) =>
         {
             if (connectState == ConnectionState.Selected)
             {
@@ -149,7 +148,7 @@ public class GemDeviceService
                 _commStateManager.LeaveCommunication();
             }
 
-            OnConnectStatusChange?.Invoke( connectState.ToString());
+            OnConnectStatusChange?.Invoke(connectState.ToString());
         };
         //btnEnable.Enabled = false;
         _connector.LinkTestEnabled = true;
@@ -198,7 +197,7 @@ public class GemDeviceService
     public Action? OnRemoteCmd;
     public Action<string>? OnConnectStatusChange;
     public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState == ControlState.LOCAL ||
-                                        _ctrlStateManager.CurrentState == ControlState.REMOTE)?
+                                        _ctrlStateManager.CurrentState == ControlState.REMOTE) ?
                                         _secsGem : null;
     //需要補上CommState, CtrlState的限制,
     //大部分語句在進入On-Line後才可使用, 理論上只須限制在ON-line

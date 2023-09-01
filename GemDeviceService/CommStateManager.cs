@@ -8,35 +8,43 @@ using System.Threading.Tasks;
 namespace GemDeviceService;
 internal class CommStateManager
 {
-    #region State, TransitionEvent
-    CommunicationState _currentState;
-    public CommunicationState CurrentState { 
-        get { return _currentState; }
-        private set {
-            PreviousState = _currentState;
-            _currentState = value;
-            NotifyCommStateChanged?.Invoke((_currentState,PreviousState));//別手動Ivoke狀態變化
-        }}
-    
-    public CommunicationState PreviousState { get; private set; }
-    public event Action<(CommunicationState currentState,CommunicationState previousState )>? NotifyCommStateChanged;
-    #endregion
-
     bool IsHostInitial = false;
     string MDLD = "MDLD";
     string SOFTREV = "SOFTREV";
-    Task CommStateCheckTask;
-    CancellationTokenSource CommStateCheckTaskCts;
-    Task CommDelayTimerTask;
-    CancellationTokenSource CommDelayTimerTaskCts;
-    SecsGem _secsGem; //可能要給個介面
-    public CommStateManager(SecsGem secsGem, bool isHostInit = false)
+    ISecsGem _secsGem; //可能要給個介面
+
+    public CommStateManager(ISecsGem secsGem, bool isHostInit = false)
     {
         IsHostInitial= isHostInit;
         _secsGem = secsGem;
         CurrentState = CommunicationState.DISABLED;
         
     }
+
+    #region State, TransitionEvent
+    CommunicationState _currentState;
+    public CommunicationState CurrentState
+    {
+        get { return _currentState; }
+        private set
+        {
+            PreviousState = _currentState;
+            _currentState = value;
+            NotifyCommStateChanged?.Invoke((_currentState, PreviousState));//別手動Ivoke狀態變化
+        }
+    }
+
+    public CommunicationState PreviousState { get; private set; }
+    public event Action<(CommunicationState currentState,CommunicationState previousState )>? NotifyCommStateChanged;
+    #endregion
+
+    #region State Machine
+
+    Task CommStateCheckTask;
+    CancellationTokenSource CommStateCheckTaskCts;
+    Task CommDelayTimerTask;
+    CancellationTokenSource CommDelayTimerTaskCts;
+
     public void EnterCommunicationState() {
         //要看IsHostInit給不同Action
         if (IsHostInitial == true)
@@ -44,6 +52,9 @@ internal class CommStateManager
             CurrentState = CommunicationState.WAIT_CR_FROM_HOST;
             return;
         }
+        if (CommStateCheckTask.Status == TaskStatus.Running)
+            return;
+
         CommStateCheckTaskCts= new CancellationTokenSource();
         var token = CommStateCheckTaskCts.Token;
         CommStateCheckTask = Task.Run(async () =>
@@ -99,6 +110,7 @@ internal class CommStateManager
                     
                     default: break;
                 }
+
                 await Task.Delay(50);
             }
             void GotoWaitCRA()
@@ -118,10 +130,10 @@ internal class CommStateManager
             }
         });
     }
-    public void LeaveCommunication() {
-        CommStateCheckTaskCts?.Cancel();
-        CurrentState = CommunicationState.DISABLED;
-    }
+    #endregion
+
+    #region Command From Host
+
     public Task<int> HandleHostInitCommReq(Item secsItem)
     {
         return Task.Run(() =>
@@ -133,11 +145,16 @@ internal class CommStateManager
             }
             else
             {
-                return 1;//不應該
+                return 1;//模式不應該
             }
         });
         
     }
+
+    #endregion
+
+    #region Command From OP
+
     public void EnableComm()
     {
         if( _currentState == CommunicationState.DISABLED)
@@ -147,9 +164,11 @@ internal class CommStateManager
     {
         if (_currentState != CommunicationState.DISABLED)
         {
-            CommStateCheckTaskCts.Cancel();
+            CommStateCheckTaskCts?.Cancel();
             CurrentState = CommunicationState.DISABLED;
         }
             
     }
+
+    #endregion
 }

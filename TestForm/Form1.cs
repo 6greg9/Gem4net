@@ -4,6 +4,8 @@ using GemVarRepository.Model;
 using GemDeviceService;
 using Secs4Net;
 using Secs4Net.Sml;
+using Secs4Net.Extensions;
+
 
 public partial class Form1 : Form
 {
