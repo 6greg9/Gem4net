@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GemVarRepository;//.Model;
-public class ProcessProgram
+public class FormattedProcessProgram
 {
     public string PPID { get; set; }
     public List<ProcessCommand>? PPBody { get; set; } =new();//JSON column
