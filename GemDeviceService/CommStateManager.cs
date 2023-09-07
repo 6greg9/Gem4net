@@ -160,19 +160,25 @@ internal class CommStateManager
 
     #region Command From OP
 
-    public void EnableComm()
+    public int EnableComm()
     {
         if( _currentState == CommunicationState.DISABLED)
+        {
             EnterCommunicationState();
+            return 0;
+        }
+        return 1; 
     }
-    public void DisableComm()
+    public int DisableComm()
     {
         if (_currentState != CommunicationState.DISABLED)
         {
             CommStateCheckTaskCts?.Cancel();
             CommDelayTimerTaskCts?.Cancel();
             CurrentState = CommunicationState.DISABLED;
+            return 0;
         }
+        return 1;
             
     }
 
