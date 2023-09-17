@@ -30,7 +30,8 @@ internal class CommStateManager
         {
             PreviousState = _currentState;
             _currentState = value;
-            NotifyCommStateChanged?.Invoke((_currentState, PreviousState));//別手動Ivoke狀態變化
+            if(CurrentState != PreviousState)
+                NotifyCommStateChanged?.Invoke((_currentState, PreviousState));//別手動Ivoke狀態變化
         }
     }
 
@@ -137,7 +138,7 @@ internal class CommStateManager
     }
     #endregion
 
-    #region Command From Host
+    #region Action
 
     public Task<int> HandleHostInitCommReq(Item secsItem)
     {
@@ -158,7 +159,7 @@ internal class CommStateManager
 
     #endregion
 
-    #region Command From OP
+    #region Command 
 
     public int EnableComm()
     {
