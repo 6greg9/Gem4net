@@ -81,6 +81,22 @@ public class GemDeviceService
 
                                 var rtn = await SecsMsg.TryReplyAsync(rtnMsg);
                                 break;
+                            case SecsMessage msg when (msg.S == 1 && msg.F == 15):
+                                var result = _ctrlStateManager.HandleS1F15();
+                                rtnMsg = new SecsMessage(1, 16)
+                                {
+                                    SecsItem = Item.B((byte)result)
+                                };
+                                SecsMsg.TryReplyAsync(rtnMsg);
+                                break;
+                            case SecsMessage msg when (msg.S == 1 && msg.F == 17):
+                                result = _ctrlStateManager.HandleS1F17();
+                                rtnMsg = new SecsMessage(1, 18)
+                                {
+                                    SecsItem = Item.B((byte)result)
+                                };
+                                SecsMsg.TryReplyAsync(rtnMsg);
+                                break;
                             default:
                                 break;
                         }
@@ -130,9 +146,9 @@ public class GemDeviceService
         {
             if (transition.currentState == CommunicationState.COMMUNICATING)
             {
-
+                _ctrlStateManager.EnterControlState();
             }
-            //_ctrlStateManager.enterControl
+            
 
         };
 
@@ -196,9 +212,8 @@ public class GemDeviceService
     public void TriggerEvent(int ECID) { }
     public Action? OnRemoteCmd;
     public Action<string>? OnConnectStatusChange;
-    public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState == ControlState.LOCAL ||
-                                        _ctrlStateManager.CurrentState == ControlState.REMOTE) ?
-                                        _secsGem : null;
+    public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE) 
+                                        ?_secsGem : null;
     //需要補上CommState, CtrlState的限制,
     //大部分語句在進入On-Line後才可使用, 理論上只須限制在ON-line
 

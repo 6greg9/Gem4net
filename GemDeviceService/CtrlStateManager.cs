@@ -26,6 +26,7 @@ public class CtrlStateManager
     }
     public ControlState PreviousState { get; private set; }
     public event Action<(ControlState currentState,ControlState previousState )>? NotifyCommStateChanged;
+    public bool IsOnLine => CurrentState is ControlState.LOCAL or ControlState.REMOTE;
     #endregion
 
     public ControlState DefaultOnOffLine = ControlState.EQUIPMENT_OFF_LINE;
@@ -102,6 +103,7 @@ public class CtrlStateManager
     #region Command
 
     Task<SecsMessage> S1F2Waiter;
+
     public int OnLineRequest()
     {
         if(CurrentState != ControlState.EQUIPMENT_OFF_LINE)
@@ -141,5 +143,26 @@ public class CtrlStateManager
         }
         return 1;
     }
+
+    public int HandleS1F15()
+    {
+        if(IsOnLine == true)
+        {
+            CurrentState = ControlState.HOST_OFF_LINE;
+            return 0;
+        }
+        return 1;
+    }
+
+    public int HandleS1F17()
+    {
+        if(CurrentState == ControlState.HOST_OFF_LINE)
+        {
+            CurrentState = DefaultLocalRemote;
+            return 0;
+        }
+        return 1;
+    }
+
     #endregion
 }
