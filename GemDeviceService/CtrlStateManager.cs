@@ -32,7 +32,7 @@ public class CtrlStateManager
     public ControlState DefaultOnOffLine = ControlState.EQUIPMENT_OFF_LINE;
     public ControlState DefaultLocalRemote = ControlState.LOCAL;
     public ControlState DefaultAfterFailOnline = ControlState.HOST_OFF_LINE;
-    Task CtrlStateCheckTask;
+    Task CtrlStateCheckTask = Task.CompletedTask;
     CancellationTokenSource CtrlStateCheckTaskCts;
     SecsGem _secsGem;
     public CtrlStateManager(SecsGem secsGem) {

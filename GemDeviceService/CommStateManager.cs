@@ -41,7 +41,7 @@ internal class CommStateManager
 
     #region State Machine
 
-    Task CommStateCheckTask;
+    Task CommStateCheckTask = Task.CompletedTask;
     CancellationTokenSource CommStateCheckTaskCts;
     Task CommDelayTimerTask;
     CancellationTokenSource CommDelayTimerTaskCts;

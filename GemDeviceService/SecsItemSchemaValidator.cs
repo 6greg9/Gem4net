@@ -22,6 +22,10 @@ public static class SecsItemSchemaValidator
                 return IsS1F12(Msg.SecsItem);
             case (1,13):
                 return IsS1F13(Msg.SecsItem);
+            case (1,15):
+                return IsS1F15(Msg.SecsItem);
+            case (1, 17):
+                return IsS1F17(Msg.SecsItem);
             default:
                 return true;
         }
@@ -112,6 +116,28 @@ public static class SecsItemSchemaValidator
 
         return true;
     };
+
+    static Func<Item?, bool> IsS1F15 = (item) =>
+    {
+        if (item == null)
+            return false;
+       
+        return true;
+    };
+
+    static Func<Item?, bool> IsS1F17 = (item) =>
+    {
+        if (item == null)
+            return false;
+
+        return true;
+    };
+
+    #endregion
+
+    #region Stream 2
+
+
 
     #endregion
 }
