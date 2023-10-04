@@ -4,7 +4,7 @@ using Secs4Net.Extensions;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Threading.Channels;
-
+using static Secs4Net.Item;
 namespace GemDeviceService;
 public class GemDeviceService
 {
@@ -60,7 +60,7 @@ public class GemDeviceService
                                 //Invoke, Handle
                                 var rtnMsg = new SecsMessage(1, 2)
                                 {
-                                    SecsItem = Item.L( Item.A("aaa"),Item.A("bbb"))
+                                    SecsItem = L( A("aaa"),A("bbb"))
                                 };
 
                                 await SecsMsg.TryReplyAsync(rtnMsg);
@@ -71,11 +71,11 @@ public class GemDeviceService
 
                                 rtnMsg = new SecsMessage(1, 14)
                                 {
-                                    SecsItem = Item.L(
-                                        Item.B(0),
-                                        Item.L(
-                                            Item.A("MDLN"),
-                                            Item.A("SOFTREV")
+                                    SecsItem = L(
+                                        B(0),
+                                        L(
+                                            A("MDLN"),
+                                            A("SOFTREV")
                                             ))
                                 };
 
@@ -85,7 +85,7 @@ public class GemDeviceService
                                 var result = _ctrlStateManager.HandleS1F15();
                                 rtnMsg = new SecsMessage(1, 16)
                                 {
-                                    SecsItem = Item.B((byte)result)
+                                    SecsItem = B((byte)result)
                                 };
                                 SecsMsg.TryReplyAsync(rtnMsg);
                                 break;
@@ -93,7 +93,7 @@ public class GemDeviceService
                                 result = _ctrlStateManager.HandleS1F17();
                                 rtnMsg = new SecsMessage(1, 18)
                                 {
-                                    SecsItem = Item.B((byte)result)
+                                    SecsItem = B((byte)result)
                                 };
                                 SecsMsg.TryReplyAsync(rtnMsg);
                                 break;
