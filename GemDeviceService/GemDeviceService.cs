@@ -24,8 +24,8 @@ public class GemDeviceService
     private Task RecieveMessageHandlerTask;
     private CancellationTokenSource _cancellationTokenSource = new();
 
-    public GemDeviceService(bool IsActive = true, string IP = "127.0.0.1", int Port = 5000,
-        int SocketBufferSize = 65535, int DiviceId = 0, ISecsGemLogger logger = null)
+    public GemDeviceService(ISecsGemLogger logger, bool IsActive = true, string IP = "127.0.0.1", int Port = 5000,
+        int SocketBufferSize = 65535, int DiviceId = 0  )
     {
         _logger = logger;
         Enable();

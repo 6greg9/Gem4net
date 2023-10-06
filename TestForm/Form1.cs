@@ -5,30 +5,59 @@ using GemDeviceService;
 using Secs4Net;
 using Secs4Net.Sml;
 using Secs4Net.Extensions;
-
+using Secs4Net.Json;
 
 public partial class Form1 : Form
 {
+    GemRepository _gemRepo;
+
     public Form1()
     {
         InitializeComponent();
         var logger = new SecsLogger(this);
-        service = new GemDeviceService(default, default
-            , default, default, default, logger);
+        service = new GemDeviceService(logger, default, default
+            , default, default, default);
         service.OnConnectStatusChange += (msg) =>
         {
-            this.Invoke(new Action(() => { richTextBox2.AppendText($"{msg}\n"); ; }));
+            this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{msg}\n"); ; }));
         };
+
+        _gemRepo = new GemRepository(new GemVarContext());
 
     }
     GemDeviceService service;
     private void button1_Click(object sender, EventArgs e)
     {
-        using (var db = new GemVarContext())
-        {
-            var test = db.Variables.Where(v=> v.VID== 7).FirstOrDefault();
-            MessageBox.Show(test.Name);
-        }
+        var test = _gemRepo.GetSvByVID(9);
+        MessageBox.Show(test.ToJson());
+        //using (var db = new GemVarContext())
+        //{
+        //    //var test = db.Variables.Where(v=> v.VID== 7).FirstOrDefault();
+        //    //MessageBox.Show(test.Name);
+
+
+
+        //    var testListSV = db.Variables.Where(v=>v.VID==9).FirstOrDefault();
+        //    if (testListSV != null && testListSV.DataType == "LIST")
+        //    {
+
+        //        var children = db.Variables.Where(v=>v.ListSVID==testListSV.VID).ToList();
+        //        // var temp = Item.L(1);
+        //        Item temp;
+
+        //        if (children.Where(v => v.DataType == "LIST").Count() > 0)
+        //        {
+        //            temp = Item.L(children.Select(v => Item.I2(69)).ToArray());
+        //        }
+        //        else
+        //        {
+        //            temp = Item.L(children.Select(v => Item.I2(69)).ToArray());
+        //        }
+
+        //        MessageBox.Show(temp.ToJson());
+        //    }
+
+        //}
     }
 
     private void button2_Click(object sender, EventArgs e)
