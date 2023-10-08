@@ -35,7 +35,7 @@ partial class Form1
         rtbx_HSMS = new RichTextBox();
         lbl_HSMS = new Label();
         lbl_Communication = new Label();
-        richTextBox2 = new RichTextBox();
+        rtbx_Comm = new RichTextBox();
         richTextBox3 = new RichTextBox();
         lbl_Control = new Label();
         SuspendLayout();
@@ -104,26 +104,26 @@ partial class Form1
         lbl_Communication.TabIndex = 8;
         lbl_Communication.Text = "Comm";
         // 
-        // richTextBox2
+        // rtbx_Comm
         // 
-        richTextBox2.Location = new Point(217, 54);
-        richTextBox2.Name = "richTextBox2";
-        richTextBox2.Size = new Size(144, 148);
-        richTextBox2.TabIndex = 9;
-        richTextBox2.Text = "";
+        rtbx_Comm.Location = new Point(217, 54);
+        rtbx_Comm.Name = "rtbx_Comm";
+        rtbx_Comm.Size = new Size(371, 148);
+        rtbx_Comm.TabIndex = 9;
+        rtbx_Comm.Text = "";
         // 
         // richTextBox3
         // 
-        richTextBox3.Location = new Point(367, 54);
+        richTextBox3.Location = new Point(637, 54);
         richTextBox3.Name = "richTextBox3";
-        richTextBox3.Size = new Size(144, 148);
+        richTextBox3.Size = new Size(263, 148);
         richTextBox3.TabIndex = 10;
         richTextBox3.Text = "";
         // 
         // lbl_Control
         // 
         lbl_Control.AutoSize = true;
-        lbl_Control.Location = new Point(367, 19);
+        lbl_Control.Location = new Point(637, 19);
         lbl_Control.Name = "lbl_Control";
         lbl_Control.Size = new Size(74, 23);
         lbl_Control.TabIndex = 11;
@@ -136,7 +136,7 @@ partial class Form1
         ClientSize = new Size(1205, 584);
         Controls.Add(lbl_Control);
         Controls.Add(richTextBox3);
-        Controls.Add(richTextBox2);
+        Controls.Add(rtbx_Comm);
         Controls.Add(lbl_Communication);
         Controls.Add(lbl_HSMS);
         Controls.Add(button3);
@@ -159,7 +159,7 @@ partial class Form1
     private RichTextBox rtbx_HSMS;
     private Label lbl_HSMS;
     private Label lbl_Communication;
-    private RichTextBox richTextBox2;
+    private RichTextBox rtbx_Comm;
     private RichTextBox richTextBox3;
     private Label lbl_Control;
 }

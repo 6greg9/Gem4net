@@ -16,6 +16,10 @@ public static class SecsItemSchemaValidator
                 return IsS1F1(Msg.SecsItem);
             case (1,2):
                 return IsS1F2(Msg.SecsItem);
+            case (1,3):
+                return IsS1F3(Msg.SecsItem);
+            case (1,4):
+                return IsS1F4(Msg.SecsItem);
             case (1,11):
                 return IsS1F11(Msg.SecsItem);
             case (1,12):
@@ -53,6 +57,29 @@ public static class SecsItemSchemaValidator
 
         if(item.Items[0].Format != SecsFormat.ASCII
         || item.Items[1].Format != SecsFormat.ASCII)
+            return false;
+
+        return true;
+    };
+
+    static Func<Item?, bool> IsS1F3=(item)=>
+    {
+        if ( item == null )
+            return false;
+        if(item.Format != SecsFormat.List)
+            return false;
+
+        if(item.Items.Where(item=>item.Format != SecsFormat.U4).Count()>0)
+            return false;
+
+        return true;
+    };
+
+    static Func<Item?, bool> IsS1F4=(item)=>
+    {
+        if ( item == null )
+            return false;
+        if(item.Format != SecsFormat.List)
             return false;
 
         return true;

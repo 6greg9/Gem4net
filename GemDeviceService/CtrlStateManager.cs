@@ -38,7 +38,6 @@ public class CtrlStateManager
     public CtrlStateManager(SecsGem secsGem) {
         _secsGem= secsGem;
 
-        
     }
 
     #region StateMachine

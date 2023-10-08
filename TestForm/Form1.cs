@@ -6,6 +6,8 @@ using Secs4Net;
 using Secs4Net.Sml;
 using Secs4Net.Extensions;
 using Secs4Net.Json;
+using Microsoft.Extensions.Options;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 public partial class Form1 : Form
 {
@@ -14,15 +16,39 @@ public partial class Form1 : Form
     public Form1()
     {
         InitializeComponent();
+        _gemRepo = new GemRepository(new GemVarContext());
+
         var logger = new SecsLogger(this);
-        service = new GemDeviceService(logger, default, default
-            , default, default, default);
-        service.OnConnectStatusChange += (msg) =>
+        //var options = Options.Create(new SecsGemOptions
+        //{
+        //    IsActive = true,
+        //    IpAddress = "127.0.0.1",
+        //    Port = 5000,
+        //    SocketReceiveBufferSize = 8096,
+        //    DeviceId= 0,
+        //    T6= 5000
+        //});
+        service = new GemDeviceService(logger, _gemRepo, new SecsGemOptions
         {
-            this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{msg}\n"); ; }));
+            IsActive = true,
+            IpAddress = "127.0.0.1",
+            Port = 5000,
+            //SocketReceiveBufferSize = 8096,
+            SocketReceiveBufferSize = 16384,
+            //SocketReceiveBufferSize = 32768,
+            DeviceId = 0,
+            T6 = 5000
+        });
+        service.OnConnectStatusChange += (status) =>
+        {
+            this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
+        };
+        service.OnCommStateChange += (current, previous) =>
+        {
+            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{current},{previous}\n"); ; }));
         };
 
-        _gemRepo = new GemRepository(new GemVarContext());
+
 
     }
     GemDeviceService service;
@@ -30,6 +56,9 @@ public partial class Form1 : Form
     {
         var test = _gemRepo.GetSvByVID(9);
         MessageBox.Show(test.ToJson());
+
+        var nameList = _gemRepo.GetSvNameListAll();
+        MessageBox.Show(nameList.ToJson());
         //using (var db = new GemVarContext())
         //{
         //    //var test = db.Variables.Where(v=> v.VID== 7).FirstOrDefault();
