@@ -38,3 +38,7 @@
   - Spooling 7.12
   - Control (Operator-Initiated) 7.13(except 7.13.5.1)
   - Control (Host-Initiated) 7.13.5.1
+## 已完成SECS語句
+- [x] S1F3  Selected Equipment Status Request
+- [x] S1F11 Status Variable Namelist Request
+- [ ] S1F21 Data Variable Namelist Request
