@@ -5,6 +5,7 @@
   - HSMS
 ### SQLite
 ### EF Core
+sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強, 而且微軟將來會優化?
 ## 預計開發功能
 - Fundamental
   - State Models 4, 4.3, 4.5
