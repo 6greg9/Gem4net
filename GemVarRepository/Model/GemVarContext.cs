@@ -60,25 +60,17 @@ public class GemVarContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
-        //modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
+        modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc => sc.Id);
+        modelBuilder.Entity<ProcessParameter>()
+            .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });
+        modelBuilder.Entity<ProcessParameter>()
+            .HasOne<FormattedProcessProgram>(sc => sc.ProcessProgramVersion)
+            .WithMany(sc => sc.ProcessParameters)
+            .HasForeignKey(sc => sc.ProcessProgramId);
 
-        //modelBuilder.Entity<ProcessProgram>().OwnsMany(pp => pp.PPBody, builder =>
-        //{
-        //    builder.ToJson();
-        //    builder.OwnsMany(cc => cc.ProcessParameters);
-        //});
+        modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
 
-        //    .OwnsOne(PPs => PPs.PPBody, builder =>
-        //{
-        //    builder.ToJson();
-        //    builder.OwnsMany(body => body.);
-
-        //    //builder.OwnsMany( body => body,
-        //    //    builder2 =>
-        //    //    {
-        //    //        builder2.OwnsMany(para => para);
-        //    //    }
-        //    //);
-        //});
+        //modelBuilder.Entity<FormattedProcessProgram>()
+        //    .HasKey(sc => new { sc.PPID });//內部加上ComplexType標籤
     }
 }
