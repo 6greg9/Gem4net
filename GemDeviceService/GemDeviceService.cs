@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Threading.Channels;
 using static Secs4Net.Item;
+using System.Reflection.Metadata;
+
 namespace GemDeviceService;
 public class GemDeviceService
 {
@@ -35,7 +37,7 @@ public class GemDeviceService
         RecieveMessageHandlerTask = Task.Factory.StartNew(
             async () =>
             {
-                while( true )
+                while (true)
                 {
                     await foreach (var SecsMsg in recvBuffer.Reader.ReadAllAsync())
                     {
@@ -118,6 +120,7 @@ public class GemDeviceService
 
                                     var rtn = await SecsMsg.TryReplyAsync(rtnMsg);
                                     break;
+                                //S1F15 Request OFF-LINE
                                 case SecsMessage msg when (msg.S == 1 && msg.F == 15):
                                     var result = _ctrlStateManager.HandleS1F15();
                                     rtnMsg = new SecsMessage(1, 16)
@@ -126,6 +129,7 @@ public class GemDeviceService
                                     };
                                     SecsMsg.TryReplyAsync(rtnMsg);
                                     break;
+                                //S1F17 Request ON-LINE
                                 case SecsMessage msg when (msg.S == 1 && msg.F == 17):
                                     result = _ctrlStateManager.HandleS1F17();
                                     rtnMsg = new SecsMessage(1, 18)
@@ -145,9 +149,6 @@ public class GemDeviceService
                         await Task.Delay(30);
                     }
                 }
-                
-
-
             });
 
         //_communicatinoState = CommunicationState.DISABLED;
@@ -185,10 +186,15 @@ public class GemDeviceService
         {
             if (transition.currentState == CommunicationState.COMMUNICATING)
             {
-                _ctrlStateManager.EnterControlState();
+                _ctrlStateManager.EnterControlState(); //成功進入Communicating後, CtrlState開始
             }
 
-            OnCommStateChange.Invoke(transition.currentState.ToString(),
+            OnCommStateChanged?.Invoke(transition.currentState.ToString(),
+                transition.previousState.ToString());
+        };
+        _ctrlStateManager.NotifyCommStateChanged += (transition) =>
+        {
+            OnControlStateChanged?.Invoke(transition.currentState.ToString(),
                 transition.previousState.ToString());
         };
 
@@ -202,6 +208,7 @@ public class GemDeviceService
             else
             {
                 _commStateManager.LeaveCommunicationState();
+
             }
 
             OnConnectStatusChange?.Invoke(connectState.ToString());
@@ -247,20 +254,81 @@ public class GemDeviceService
     }
     #region For App Interface
 
-    public void ReadVariable(int VID) { }
-    public void UpdateVariable(int VID) { }
-    public void TriggerEvent(int ECID) { }
-
     public Func<string,string>? RelayRemoteCmd;
 
     public event Action<string>? OnConnectStatusChange;
-    public event Action<string, string>? OnCommStateChange;
-    public event Action<string, string>? OnControlStateChange;
+    public event Action<string, string>? OnCommStateChanged;
+    public event Action<string, string>? OnControlStateChanged;
+
+    public event Action<SecsMessage>? OnSecsMessageSend;
+    public event Action OnProcessProgramChanged;
+    public event Action<string> OnTerminalMessageReceived;
+
+    /// <summary>
+    /// for S2F41
+    /// Input : ( RCMD, L( CPNAME, CPVAL ) ) , Output : ( HACK, L( CPNAME, CPVAL ) ) 
+    /// HACK : 0 - ok, completed , 1 - invalid command , 2 - cannot do now , 3 - parameter error , 4 - initiated for asynchronous completion , 5 - rejected, already in desired condition , 6 - invalid object
+    /// </summary>
+    public Func<(string,List<(string,string)>),
+                (int   ,List<(string,string)>)>? OnRemoteCommand;
 
     public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
                                         ? _secsGem : null;
+    //數值類
+    public void GetVariableById(int VID) { }
+    public void GetVariableByName(string name) { }
+    public void UpdateSV(int VID) { }
+    public void UpdateEC(int VID) { }
+
+    //Report類
+    public void SendTerminalMessage(string terminalMessage) { }
+    public void SendEventReport(string eventId) { }
+    public void SendAlarmReport(string alarmId) { }
+
     //需要補上CommState, CtrlState的限制,
     //大部分語句在進入On-Line後才可使用, 理論上只須限制在ON-line
+
+    public int EnableComm()
+    {
+        return 0;
+    }
+    public int DisableComm()
+    {
+        return 0;
+    }
+    /// <summary>
+    /// EQUIPMENT_OFF_LINE,HOST_OFF_LINE,ATTEMPT_ON_LINE,LOCAL,REMOTE
+    /// </summary>
+    /// <returns></returns>
+    public ControlState GetCurrentCommState()
+    {
+        return _ctrlStateManager.CurrentState;
+    }
+    public int RequestOnline()
+    {
+        return _ctrlStateManager.OnLineRequest();
+    }
+    public int GoOffline()
+    {
+        return _ctrlStateManager.OffLine();
+    }
+    public int GoOnlineLocal()
+    {
+        return _ctrlStateManager.OnLineLocal();
+    }
+    public int GoOnlineRemote()
+    {
+        return _ctrlStateManager.OnLineRemote();
+    }
+
+    /// <summary>
+    /// Equip的主動Command ?
+    /// </summary>
+    /// <returns></returns>
+    public int Command()
+    {
+        return 0;
+    }
 
     #endregion
 }

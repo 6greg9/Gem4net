@@ -147,23 +147,29 @@ public static class SecsItemSchemaValidator
     static Func<Item?, bool> IsS1F15 = (item) =>
     {
         if (item == null)
-            return false;
+            return true;
        
-        return true;
+        return false;
     };
 
     static Func<Item?, bool> IsS1F17 = (item) =>
     {
         if (item == null)
-            return false;
+            return true;
 
-        return true;
+        return false;
     };
 
     #endregion
 
     #region Stream 2
+    static Func<Item?, bool> IsS2F41 = (item) =>
+    {
+        if (item == null)
+            return false;
 
+        return false;
+    };
 
 
     #endregion

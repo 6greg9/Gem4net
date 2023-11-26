@@ -43,11 +43,14 @@ public partial class Form1 : Form
         {
             this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
         };
-        service.OnCommStateChange += (current, previous) =>
+        service.OnCommStateChanged += (current, previous) =>
         {
-            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{current},{previous}\n"); ; }));
+            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{previous} --> {current}\n"); ; }));
         };
-
+        service.OnControlStateChanged += (current, previous) =>
+        {
+            this.Invoke(new Action(() => { rtbx_Ctrl.AppendText($"{previous} --> {current}\n"); ; }));
+        };
 
 
     }
@@ -182,5 +185,25 @@ public partial class Form1 : Form
         var S1F1 = new SecsMessage(1, 1);
         var S1F2 = await secs.SendAsync(S1F1);
         MessageBox.Show(S1F2.ToSml());
+    }
+
+    private void Btn_GoOffLine_Click(object sender, EventArgs e)
+    {
+        service.GoOffline();
+    }
+
+    private void Btn_GoOnLine_Click(object sender, EventArgs e)
+    {
+        service.RequestOnline();
+    }
+
+    private void Btn_GoLocal_Click(object sender, EventArgs e)
+    {
+        service.GoOnlineLocal();
+    }
+
+    private void Btn_GoRemote_Click(object sender, EventArgs e)
+    {
+        service.GoOnlineRemote();
     }
 }

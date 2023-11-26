@@ -44,7 +44,7 @@ public class CtrlStateManager
 
     public void EnterControlState()
     {
-        _currentState = DefaultLocalRemote;
+        CurrentState = DefaultLocalRemote;
 
         CtrlStateCheckTaskCts = new();
         var token = CtrlStateCheckTaskCts.Token;
@@ -157,7 +157,7 @@ public class CtrlStateManager
     {
         if(CurrentState == ControlState.HOST_OFF_LINE)
         {
-            CurrentState = DefaultLocalRemote;
+            CurrentState = DefaultOnOffLine;
             return 0;
         }
         return 1;
