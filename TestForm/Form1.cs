@@ -16,7 +16,7 @@ public partial class Form1 : Form
     public Form1()
     {
         InitializeComponent();
-        _gemRepo = new GemRepository(new GemVarContext());
+        _gemRepo = new GemRepository();
 
         var logger = new SecsLogger(this);
         //var options = Options.Create(new SecsGemOptions
@@ -57,6 +57,7 @@ public partial class Form1 : Form
     GemDeviceService service;
     private void button1_Click(object sender, EventArgs e)
     {
+
         var test = _gemRepo.GetSvByVID(9);
         MessageBox.Show(test.ToJson());
 
@@ -205,5 +206,15 @@ public partial class Form1 : Form
     private void Btn_GoRemote_Click(object sender, EventArgs e)
     {
         service.GoOnlineRemote();
+    }
+
+    private void button4_Click(object sender, EventArgs e)
+    {
+        var test = _gemRepo.SetVarValueById(1,44);
+        MessageBox.Show(test.ToString());
+        var testEC = _gemRepo.SetVarValueById(7,2);
+        MessageBox.Show(testEC.ToString());
+        var testNull = _gemRepo.SetVarValueById(87,2);
+        MessageBox.Show(testNull.ToString());
     }
 }

@@ -17,9 +17,9 @@ public class GemRepository
     /// </summary>
     private GemVarContext _context;
 
-    public GemRepository(GemVarContext context)
+    public GemRepository()
     {
-        _context = context;
+        
     }
     
     /// <summary>
@@ -35,15 +35,16 @@ public class GemRepository
     }
     public Item? GetSvByVID(int vid)
     {
-        _context = new GemVarContext();
-
-        var Variable = _context.Variables
+        using (_context = new GemVarContext())
+        {
+            var Variable = _context.Variables
             .Where(v=>v.VarType=="SV")
             .Where(v=>v.VID==vid).FirstOrDefault();
-        if (Variable == null)//找不到
-            return A(); // ?
-        
-        return ConvertDataToSecsItem(Variable);
+            if (Variable == null)//找不到
+                return A(); // ?
+
+            return ConvertDataToSecsItem(Variable);
+        }
 
     }
     Item ConvertDataToSecsItem(GemVariable variable)
@@ -136,4 +137,90 @@ public class GemRepository
             .Select(v=> Item.L( U4((uint)v.VID), A(v.Name),A(v.Unit)));
         return Item.L(itemList.ToArray());
     }
+
+    /// <summary>
+    /// return: 1: not found, 2 : also EC
+    /// </summary>
+    /// <param name="vid"></param>
+    /// <param name="updateValue"></param>
+    /// <returns></returns>
+    public int SetVarValueById(int vid, object updateValue)
+    {
+        using (_context = new GemVarContext())
+        {
+            var variable = _context.Variables.FirstOrDefault(v => v.VID == vid);
+            if (variable is null)
+                return 1;//NotFound
+            try
+            {
+                if (variable.DataType != "LIST")
+                {
+                    switch (variable.DataType)
+                    {
+                        //case "BINARY":
+                        //    return Item.B
+                        case "BOOL":
+                            var BOOL = Convert.ToBoolean(updateValue);
+                            variable.Value = BOOL.ToString();
+                            break;
+                        case "ASCII":
+                            var ASCII = Convert.ToString(updateValue);
+                            variable.Value = ASCII.ToString();
+                            break;
+                        case "UINT_1":
+                            var UINT_1 = Convert.ToByte(updateValue);
+                            variable.Value = UINT_1.ToString();
+                            break;
+                        case "UINT_2":
+                            var UINT_2 = Convert.ToUInt16(updateValue);
+                            variable.Value = UINT_2.ToString();
+                            break;
+                        case "UINT_4":
+                            var UINT_4 = Convert.ToUInt32(updateValue);
+                            variable.Value = UINT_4.ToString();
+                            break;
+                        case "UINT_8":
+                            var UINT_8 = Convert.ToUInt64(updateValue);
+                            variable.Value = UINT_8.ToString();
+                            break;
+                        case "INT_1":
+                            var INT_1 = Convert.ToSByte(variable.Value);
+                            variable.Value = INT_1.ToString();
+                            break;
+                        case "INT_2":
+                            var INT_2 = Convert.ToInt16(variable.Value);
+                            variable.Value = INT_2.ToString();
+                            break;
+                        case "INT_4":
+                            var INT_4 = Convert.ToInt32(variable.Value);
+                            variable.Value = INT_4.ToString();
+                            break;
+                        case "INT_8":
+                            var INT_8 = Convert.ToInt64(variable.Value);
+                            variable.Value = INT_8.ToString();
+                            break;
+                        case "FLOAT_4":
+                            var FLOAT_4 = Convert.ToSingle(variable.Value);
+                            variable.Value = FLOAT_4.ToString();
+                            break;
+                        case "FLOAT_8":
+                            var FLOAT_8 = Convert.ToDouble(variable.Value);
+                            variable.Value = FLOAT_8.ToString();
+                            break;
+                        default:
+                            return 2; 
+                    }
+                    _context.SaveChanges();
+                    if (variable.VarType == "EC")
+                        return 2;
+                    return 0; //SV,DV
+                }
+
+            }
+            catch (Exception ) { throw ; }
+
+            return 3;//ListSV ?!
+        }
+    }
+    
 }
