@@ -17,10 +17,11 @@ public class GemRepository
     /// </summary>
     private GemVarContext _context;
 
-    public GemRepository(){
-        
+    public GemRepository()
+    {
+
     }
-    
+
     /// <summary>
     /// for s1f3,s1f4
     /// </summary>
@@ -28,9 +29,10 @@ public class GemRepository
     /// <returns></returns>
     public Item? GetSvListByVidList(IEnumerable<int> vidList)
     {
-        _context = new GemVarContext();
-
-        return Item.L(vidList.Select(vid=> GetSvByVID(vid)).ToArray());
+        using (_context = new GemVarContext())
+        {
+            return Item.L(vidList.Select(vid => GetSvByVID(vid)).ToArray());
+        }
     }
     public Item? GetSvByVID(int vid)
     {
@@ -48,7 +50,7 @@ public class GemRepository
     }
     Item ConvertDataToSecsItem(GemVariable variable)
     {
-        if(variable.DataType != "LIST")
+        if (variable.DataType != "LIST")
         {
             switch (variable.DataType)
             {
@@ -98,7 +100,8 @@ public class GemRepository
         else
         {
             var subItem = _context.Variables.Where(v=>v.VarType=="SV").Where(v => v.ListSVID == variable.VID).ToList();
-            return Item.L(subItem.Select(v => {
+            return Item.L(subItem.Select(v =>
+            {
                 if (v.DataType == "LIST")
                     return GetSvByVID(v.VID);
                 return ConvertDataToSecsItem(v);
@@ -106,7 +109,7 @@ public class GemRepository
             }).ToArray());
         }
 
-        
+
     }
 
     /// <summary>
@@ -117,10 +120,10 @@ public class GemRepository
     public Item? GetSvNameList(IEnumerable<int> vidList)
     {
         var svNameList = vidList.Select(vid=>
-       {
-          return  _context.Variables.Where(v=>v.VarType=="SV")
+        {
+            return  _context.Variables.Where(v=>v.VarType=="SV")
            .Where(v=>v.VID== vid).FirstOrDefault();
-       }).Select(v=>
+        }).Select(v=>
        {
            if(v is null)
            {
@@ -207,19 +210,17 @@ public class GemRepository
                             variable.Value = FLOAT_8.ToString();
                             break;
                         default:
-                            return 2; 
+                            return 2;
                     }
                     _context.SaveChanges();
                     if (variable.VarType == "EC")
                         return 2;
                     return 0; //SV,DV
                 }
-
             }
-            catch (Exception ) { throw ; }
-
+            catch (Exception) { throw; }
             return 3;//ListSV ?!
         }
     }
-    
+
 }
