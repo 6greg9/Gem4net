@@ -17,8 +17,7 @@ public class GemRepository
     /// </summary>
     private GemVarContext _context;
 
-    public GemRepository()
-    {
+    public GemRepository(){
         
     }
     
