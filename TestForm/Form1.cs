@@ -8,6 +8,8 @@ using Secs4Net.Extensions;
 using Secs4Net.Json;
 using Microsoft.Extensions.Options;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 public partial class Form1 : Form
 {
@@ -210,11 +212,22 @@ public partial class Form1 : Form
 
     private void button4_Click(object sender, EventArgs e)
     {
+        ///首次會1000~3000ms
+        ///之後約20ms
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
         var test = _gemRepo.SetVarValueById(1,44);
+        sw.Stop();
+        MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
         MessageBox.Show(test.ToString());
+        sw.Restart();
         var testEC = _gemRepo.SetVarValueById(7,2);
+        sw.Stop();
+        MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
         MessageBox.Show(testEC.ToString());
-        var testNull = _gemRepo.SetVarValueById(87,2);
+        var testNull = _gemRepo.SetECByIdLst( new List<(int,object)>{(7,3)} );
+        sw.Stop();
+        MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
         MessageBox.Show(testNull.ToString());
     }
 }

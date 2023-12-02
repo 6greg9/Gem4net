@@ -249,11 +249,11 @@ partial class Form1
         // 
         // button4
         // 
-        button4.Location = new Point(448, 108);
+        button4.Location = new Point(447, 74);
         button4.Name = "button4";
-        button4.Size = new Size(112, 34);
+        button4.Size = new Size(178, 74);
         button4.TabIndex = 0;
-        button4.Text = "button4";
+        button4.Text = "TestUpdateTime";
         button4.UseVisualStyleBackColor = true;
         button4.Click += button4_Click;
         // 

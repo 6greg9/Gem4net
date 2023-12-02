@@ -30,6 +30,8 @@ public static class SecsItemSchemaValidator
                 return IsS1F15(Msg.SecsItem);
             case (1, 17):
                 return IsS1F17(Msg.SecsItem);
+            case (2,15):
+                return IsS2F15(Msg.SecsItem);
             default:
                 return true;
         }
@@ -101,7 +103,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F12=(item)=>
+    static Func<Item?, bool> IsS1F12 = (item)=>
     {
         if ( item == null
         ||   item.Format != SecsFormat.List)
@@ -163,6 +165,27 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 2
+    static Func<Item?, bool> IsS2F15 = (itemRoot) =>
+    {
+        if (itemRoot == null)
+            return false;
+        if(itemRoot.Format != SecsFormat.List)
+            return false;
+        //第一層
+        if(itemRoot.Items.Where(item=>item.Format != SecsFormat.List).Count()>0)
+            return false;
+        var item1s = itemRoot.Items;
+        foreach(var item in item1s)
+        {
+            if( item.Items.Count() != 2)
+                return false;
+            if(item.Items[0].Format != SecsFormat.U4)
+                return false;
+        }
+        return true;
+
+    };
+
     static Func<Item?, bool> IsS2F41 = (item) =>
     {
         if (item == null)
@@ -171,6 +194,6 @@ public static class SecsItemSchemaValidator
         return false;
     };
 
-
+    
     #endregion
 }

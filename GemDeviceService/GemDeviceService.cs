@@ -138,6 +138,15 @@ public class GemDeviceService
                                     };
                                     SecsMsg.TryReplyAsync(rtnMsg);
                                     break;
+                                //S2F15 New Equipment Constant Send
+                                case SecsMessage msg when (msg.S == 2 && msg.F == 15):
+                                    //result = _GemRepo.SetVarValueById(msg)
+                                    //rtnMsg = new SecsMessage(1, 18)
+                                    //{
+                                    //    SecsItem = B((byte)result)
+                                    //};
+                                    //SecsMsg.TryReplyAsync(rtnMsg);
+                                    break;
                                 default:
                                     break;
                             }
