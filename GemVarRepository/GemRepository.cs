@@ -367,4 +367,35 @@ public class GemRepository
         return false;
     }
     #endregion
+
+    public Item? GetReportByEventId(int ceid)
+    {
+        using (_context = new GemVarContext())
+        {
+            List<(int,Item)> rtnRptItems = new(); 
+            var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
+                .Select(link => link.Report);
+            var reportVars = reports
+                .Join(_context.ReportVariableLinks,
+                rpt => rpt.RPTID,
+                link => link.RPTID,
+                (rpt,link)=>
+                new
+                {
+                    RptId = rpt.RPTID,
+                    Variable = _context.Variables.Where(v=>v.VID==link.VID).First()
+                }).ToList(); //.GroupBy( v=>v.RptId ).Select(v=> v.)
+            //.Select(pair=> {RptId = pair.Key, Datas =  pair} );
+            var rtnReports = reportVars.GroupBy( d=> d.RptId).Select(pair=>(pair.Key,pair.ToList())).ToList();
+            foreach(var groupData in rtnReports)
+            {
+                var vids = groupData.Item2.Select(v=> v.Variable.VID);
+                var datas = GetSvListByVidList(vids);
+                rtnRptItems.Add((groupData.Item1, datas));
+            }
+            return  L(rtnRptItems.Select( p=>L(U4((uint) p.Item1),L(p.Item2 ) ) ));
+        }
+
+        
+    }
 }

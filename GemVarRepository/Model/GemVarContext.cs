@@ -14,6 +14,7 @@ public class GemVarContext : DbContext
     public DbSet<GemEvent> Events { get; set; }
     public DbSet<GemReport> Reports { get; set; }
     public DbSet<EventReportLink> EventReportLinks { get; set; }
+    public DbSet<ReportVariableLink> ReportVariableLinks { get; set; }
     //public DbSet<ProcessProgram> ProcessPrograms { get; set; }
 
     public string DbPath { get; }
