@@ -30,22 +30,31 @@ public class GemRepository
     {
         using (_context = new GemVarContext())
         {
-            return Item.L(vidList.Select(vid => GetSvByVID(vid)).ToArray());
+            return SubGetSvListByVidList(vidList);
         }
     }
+    Item? SubGetSvListByVidList(IEnumerable<int> vidList)
+    {
+        return Item.L(vidList.Select(vid => GetSvByVID(vid)).ToArray());
+    }
+
     public Item? GetSvByVID(int vid)
     {
         using (_context = new GemVarContext())
         {
-            var Variable = _context.Variables
-            .Where(v=>v.VarType=="SV")
-            .Where(v=>v.VID==vid).FirstOrDefault();
-            if (Variable == null)//找不到
-                return A(); // ?
-
-            return ConvertDataToSecsItem(Variable);
+            return SubGetSvByVID(vid);
         }
 
+    }
+    Item? SubGetSvByVID(int vid)
+    {
+        var Variable = _context.Variables
+            .Where(v=>v.VarType=="SV")
+            .Where(v=>v.VID==vid).FirstOrDefault();
+        if (Variable == null)//找不到
+            return A(); // ?
+
+        return ConvertDataToSecsItem(Variable);
     }
     Item ConvertDataToSecsItem(GemVariable variable)
     {
@@ -118,7 +127,9 @@ public class GemRepository
     /// <returns></returns>
     public Item? GetSvNameList(IEnumerable<int> vidList)
     {
-        var svNameList = vidList.Select(vid=>
+        using (_context = new GemVarContext())
+        {
+            var svNameList = vidList.Select(vid=>
         {
             return  _context.Variables.Where(v=>v.VarType=="SV")
            .Where(v=>v.VID== vid).FirstOrDefault();
@@ -130,13 +141,17 @@ public class GemRepository
            }
            return Item.L( U4((uint)v.VID), A(v.Name),A(v.Unit));
        });
-        return Item.L(svNameList.ToArray());
+            return Item.L(svNameList.ToArray());
+        }
     }
     public Item? GetSvNameListAll()
     {
-        var itemList = _context.Variables.Where(v=> v.VarType=="SV")
+        using (_context = new GemVarContext())
+        {
+            var itemList = _context.Variables.Where(v=> v.VarType=="SV")
             .Select(v=> Item.L( U4((uint)v.VID), A(v.Name),A(v.Unit)));
-        return Item.L(itemList.ToArray());
+            return Item.L(itemList.ToArray());
+        }
     }
 
     /// <summary>
@@ -390,7 +405,7 @@ public class GemRepository
             foreach(var groupData in rtnReports)
             {
                 var vids = groupData.Item2.Select(v=> v.Variable.VID);
-                var datas = GetSvListByVidList(vids);
+                var datas = SubGetSvListByVidList(vids);
                 rtnRptItems.Add((groupData.Item1, datas));
             }
             return  L(rtnRptItems.Select( p=>L(U4((uint) p.Item1),L(p.Item2 ) ) ));
