@@ -66,15 +66,15 @@ public class GemDeviceService
                                     //Invoke, Handle
                                     var rtnMsg = new SecsMessage(1, 2)
                                     {
-                                        SecsItem = L( A("aaa"),A("bbb"))
+                                        SecsItem = L(A("aaa"), A("bbb"))
                                     };
 
                                     await SecsMsg.TryReplyAsync(rtnMsg);
                                     break;
                                 //S1F3 Selected Equipment Status Request
                                 case SecsMessage msg when (msg.S == 1 && msg.F == 3):
-                                    var vids = msg.SecsItem.Items.Select( item=> item.FirstValue<int>());
-                                    var svList = _GemRepo.GetSvListByVidList( vids );
+                                    var vids = msg.SecsItem.Items.Select(item => item.FirstValue<int>());
+                                    var svList = _GemRepo.GetSvListByVidList(vids);
                                     rtnMsg = new SecsMessage(1, 4)
                                     {
                                         SecsItem = svList
@@ -86,7 +86,7 @@ public class GemDeviceService
                                     vids = msg.SecsItem.Items.Select(item => item.FirstValue<int>());
                                     if (vids.Any())
                                     {
-                                        var svNameList = _GemRepo.GetSvNameList( vids );
+                                        var svNameList = _GemRepo.GetSvNameList(vids);
                                         rtnMsg = new SecsMessage(1, 12)
                                         {
                                             SecsItem = svNameList
@@ -140,12 +140,16 @@ public class GemDeviceService
                                     break;
                                 //S2F15 New Equipment Constant Send
                                 case SecsMessage msg when (msg.S == 2 && msg.F == 15):
-                                    //result = _GemRepo.SetVarValueById(msg)
-                                    //rtnMsg = new SecsMessage(1, 18)
-                                    //{
-                                    //    SecsItem = B((byte)result)
-                                    //};
-                                    //SecsMsg.TryReplyAsync(rtnMsg);
+                                    var ecidecv = msg.SecsItem.Items
+                                    .Select(item => ( item.Items[0].FirstValue<int>() ,
+                                                      item.Items[1] ) ).ToList() ;
+                                     var rtnS2F15  = _GemRepo.SetECByIdLst(ecidecv);
+                                    rtnMsg = new SecsMessage(2, 16)
+                                    {
+                                        SecsItem = B((byte)rtnS2F15)
+                                    };
+                                    await SecsMsg.TryReplyAsync(rtnMsg);
+                                    // 還要發個事件
                                     break;
                                 default:
                                     break;

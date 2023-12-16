@@ -8,6 +8,8 @@ namespace GemVarRepository.Model;
 public class GemReport
 {
     public int RPTID { get; set; }
+    public string? Definition { get; set; }
+    public string? Remark { get; set; }
 
     public IList<EventReportLink> EventReports { get; set; }
     public IList<ReportVariableLink> ReportVariables { get; set; }

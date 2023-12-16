@@ -210,24 +210,58 @@ public partial class Form1 : Form
         service.GoOnlineRemote();
     }
 
-    private void button4_Click(object sender, EventArgs e)
+
+    void Temp()
     {
         ///首次會1000~3000ms
         ///之後約20ms
+        //Stopwatch sw = new Stopwatch();
+        //sw.Start();
+        //var test = _gemRepo.SetVarValueById(1, 44);
+        //sw.Stop();
+        //MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
+        //MessageBox.Show(test.ToString());
+        //sw.Restart();
+        //var testEC = _gemRepo.SetVarValueById(7, 2);
+        //sw.Stop();
+        //MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
+        //MessageBox.Show(testEC.ToString());
+        //var testNull = _gemRepo.SetECByIdLst(new List<(int, object)> { (7, 3) });
+        //sw.Stop();
+        //MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
+        //MessageBox.Show(testNull.ToString());
+    }
+
+    private void Btn_TestGetEvents_Click(object sender, EventArgs e)
+    {
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        var test = _gemRepo.SetVarValueById(1,44);
+        var test = _gemRepo.GetReportByEventId(1);
+        sw.Stop();
+        MessageBox.Show(test.ToJson());
+        MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
+    }
+
+    private void Btn_GetSvById_Click(object sender, EventArgs e)
+    {
+        var inputId = Convert.ToInt32(Tbx_InputVid.Text.Trim());
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        var test = _gemRepo.GetSvByVID(inputId);
         sw.Stop();
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
-        MessageBox.Show(test.ToString());
-        sw.Restart();
-        var testEC = _gemRepo.SetVarValueById(7,2);
-        sw.Stop();
-        MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
-        MessageBox.Show(testEC.ToString());
-        var testNull = _gemRepo.SetECByIdLst( new List<(int,object)>{(7,3)} );
-        sw.Stop();
-        MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
-        MessageBox.Show(testNull.ToString());
+        MessageBox.Show(test.ToJson());
+    }
+
+    private void Btn_UpdateSV_Click(object sender, EventArgs e)
+    {
+        //var inputId = Convert.ToInt32(Tbx_InputECID.Text);
+        //var inputValue = Tbx_InputVid.Text; //先這樣...
+        //Stopwatch sw = new Stopwatch();
+        //sw.Start();
+        //var test = _gemRepo.SetVarValueById(1, 44);
+        //sw.Stop();
+        //MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
+        //MessageBox.Show(test.ToString());
     }
 }

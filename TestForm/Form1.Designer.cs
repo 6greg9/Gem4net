@@ -43,16 +43,25 @@ partial class Form1
         Btn_GoLocal = new Button();
         Btn_GoRemote = new Button();
         panel1 = new Panel();
-        tabControl1 = new TabControl();
+        Tab_Events = new TabControl();
         tabPage1 = new TabPage();
         tabPage2 = new TabPage();
         Tab_Variables = new TabPage();
-        button4 = new Button();
+        Btn_GetSvById = new Button();
+        Tbx_InputVarValue = new TextBox();
+        label1 = new Label();
+        Tbx_InputVid = new TextBox();
+        Lbl_VID = new Label();
+        Btn_UpdateEC = new Button();
+        Page_Events = new TabPage();
+        Btn_TestGetEvents = new Button();
+        Tbx_InputECID = new TextBox();
         panel1.SuspendLayout();
-        tabControl1.SuspendLayout();
+        Tab_Events.SuspendLayout();
         tabPage1.SuspendLayout();
         tabPage2.SuspendLayout();
         Tab_Variables.SuspendLayout();
+        Page_Events.SuspendLayout();
         SuspendLayout();
         // 
         // button1
@@ -204,16 +213,17 @@ partial class Form1
         panel1.Size = new Size(1160, 320);
         panel1.TabIndex = 16;
         // 
-        // tabControl1
+        // Tab_Events
         // 
-        tabControl1.Controls.Add(tabPage1);
-        tabControl1.Controls.Add(tabPage2);
-        tabControl1.Controls.Add(Tab_Variables);
-        tabControl1.Location = new Point(12, 228);
-        tabControl1.Name = "tabControl1";
-        tabControl1.SelectedIndex = 0;
-        tabControl1.Size = new Size(1353, 434);
-        tabControl1.TabIndex = 17;
+        Tab_Events.Controls.Add(tabPage1);
+        Tab_Events.Controls.Add(tabPage2);
+        Tab_Events.Controls.Add(Tab_Variables);
+        Tab_Events.Controls.Add(Page_Events);
+        Tab_Events.Location = new Point(12, 228);
+        Tab_Events.Name = "Tab_Events";
+        Tab_Events.SelectedIndex = 0;
+        Tab_Events.Size = new Size(1353, 434);
+        Tab_Events.TabIndex = 17;
         // 
         // tabPage1
         // 
@@ -239,7 +249,12 @@ partial class Form1
         // 
         // Tab_Variables
         // 
-        Tab_Variables.Controls.Add(button4);
+        Tab_Variables.Controls.Add(Btn_GetSvById);
+        Tab_Variables.Controls.Add(Tbx_InputVarValue);
+        Tab_Variables.Controls.Add(label1);
+        Tab_Variables.Controls.Add(Tbx_InputVid);
+        Tab_Variables.Controls.Add(Lbl_VID);
+        Tab_Variables.Controls.Add(Btn_UpdateEC);
         Tab_Variables.Location = new Point(4, 32);
         Tab_Variables.Name = "Tab_Variables";
         Tab_Variables.Size = new Size(1345, 398);
@@ -247,30 +262,101 @@ partial class Form1
         Tab_Variables.Text = "Variables";
         Tab_Variables.UseVisualStyleBackColor = true;
         // 
-        // button4
+        // Btn_GetSvById
         // 
-        button4.Location = new Point(447, 74);
-        button4.Name = "button4";
-        button4.Size = new Size(178, 74);
-        button4.TabIndex = 0;
-        button4.Text = "TestUpdateTime";
-        button4.UseVisualStyleBackColor = true;
-        button4.Click += button4_Click;
+        Btn_GetSvById.Location = new Point(258, 76);
+        Btn_GetSvById.Name = "Btn_GetSvById";
+        Btn_GetSvById.Size = new Size(178, 46);
+        Btn_GetSvById.TabIndex = 5;
+        Btn_GetSvById.Text = "TestGetSV";
+        Btn_GetSvById.UseVisualStyleBackColor = true;
+        Btn_GetSvById.Click += Btn_GetSvById_Click;
+        // 
+        // Tbx_InputVarValue
+        // 
+        Tbx_InputVarValue.Location = new Point(75, 163);
+        Tbx_InputVarValue.Name = "Tbx_InputVarValue";
+        Tbx_InputVarValue.Size = new Size(145, 30);
+        Tbx_InputVarValue.TabIndex = 4;
+        // 
+        // label1
+        // 
+        label1.Location = new Point(75, 135);
+        label1.Name = "label1";
+        label1.Size = new Size(145, 25);
+        label1.TabIndex = 3;
+        label1.Text = "UpdateValue";
+        // 
+        // Tbx_InputVid
+        // 
+        Tbx_InputVid.Location = new Point(75, 85);
+        Tbx_InputVid.Name = "Tbx_InputVid";
+        Tbx_InputVid.Size = new Size(145, 30);
+        Tbx_InputVid.TabIndex = 2;
+        // 
+        // Lbl_VID
+        // 
+        Lbl_VID.Location = new Point(75, 57);
+        Lbl_VID.Name = "Lbl_VID";
+        Lbl_VID.Size = new Size(145, 25);
+        Lbl_VID.TabIndex = 1;
+        Lbl_VID.Text = "VID";
+        // 
+        // Btn_UpdateEC
+        // 
+        Btn_UpdateEC.Location = new Point(258, 154);
+        Btn_UpdateEC.Name = "Btn_UpdateEC";
+        Btn_UpdateEC.Size = new Size(178, 46);
+        Btn_UpdateEC.TabIndex = 0;
+        Btn_UpdateEC.Text = "TestUpdateSV";
+        Btn_UpdateEC.UseVisualStyleBackColor = true;
+        Btn_UpdateEC.Click += Btn_UpdateSV_Click;
+        // 
+        // Page_Events
+        // 
+        Page_Events.Controls.Add(Btn_TestGetEvents);
+        Page_Events.Controls.Add(Tbx_InputECID);
+        Page_Events.Location = new Point(4, 32);
+        Page_Events.Name = "Page_Events";
+        Page_Events.Size = new Size(1345, 398);
+        Page_Events.TabIndex = 3;
+        Page_Events.Text = "Events";
+        Page_Events.UseVisualStyleBackColor = true;
+        // 
+        // Btn_TestGetEvents
+        // 
+        Btn_TestGetEvents.Location = new Point(292, 69);
+        Btn_TestGetEvents.Name = "Btn_TestGetEvents";
+        Btn_TestGetEvents.Size = new Size(167, 49);
+        Btn_TestGetEvents.TabIndex = 1;
+        Btn_TestGetEvents.Text = "TestGetEvents";
+        Btn_TestGetEvents.UseVisualStyleBackColor = true;
+        Btn_TestGetEvents.Click += Btn_TestGetEvents_Click;
+        // 
+        // Tbx_InputECID
+        // 
+        Tbx_InputECID.Location = new Point(122, 79);
+        Tbx_InputECID.Name = "Tbx_InputECID";
+        Tbx_InputECID.Size = new Size(150, 30);
+        Tbx_InputECID.TabIndex = 0;
         // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(11F, 23F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(1285, 648);
-        Controls.Add(tabControl1);
+        Controls.Add(Tab_Events);
         Name = "Form1";
         Text = "Form1";
         panel1.ResumeLayout(false);
         panel1.PerformLayout();
-        tabControl1.ResumeLayout(false);
+        Tab_Events.ResumeLayout(false);
         tabPage1.ResumeLayout(false);
         tabPage2.ResumeLayout(false);
         Tab_Variables.ResumeLayout(false);
+        Tab_Variables.PerformLayout();
+        Page_Events.ResumeLayout(false);
+        Page_Events.PerformLayout();
         ResumeLayout(false);
     }
 
@@ -291,9 +377,17 @@ partial class Form1
     private Button Btn_GoLocal;
     private Button Btn_GoRemote;
     private Panel panel1;
-    private TabControl tabControl1;
+    private TabControl Tab_Events;
     private TabPage tabPage1;
     private TabPage tabPage2;
     private TabPage Tab_Variables;
-    private Button button4;
+    private Button Btn_UpdateEC;
+    private TabPage Page_Events;
+    private Button Btn_TestGetEvents;
+    private TextBox Tbx_InputECID;
+    private TextBox Tbx_InputVid;
+    private Label Lbl_VID;
+    private Button Btn_GetSvById;
+    private TextBox Tbx_InputVarValue;
+    private Label label1;
 }
