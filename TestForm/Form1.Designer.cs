@@ -132,22 +132,22 @@ partial class Form1
         // 
         rtbx_Comm.Location = new Point(169, 49);
         rtbx_Comm.Name = "rtbx_Comm";
-        rtbx_Comm.Size = new Size(371, 148);
+        rtbx_Comm.Size = new Size(331, 148);
         rtbx_Comm.TabIndex = 9;
         rtbx_Comm.Text = "";
         // 
         // rtbx_Ctrl
         // 
-        rtbx_Ctrl.Location = new Point(566, 49);
+        rtbx_Ctrl.Location = new Point(506, 49);
         rtbx_Ctrl.Name = "rtbx_Ctrl";
-        rtbx_Ctrl.Size = new Size(426, 148);
+        rtbx_Ctrl.Size = new Size(507, 148);
         rtbx_Ctrl.TabIndex = 10;
         rtbx_Ctrl.Text = "";
         // 
         // lbl_Control
         // 
         lbl_Control.AutoSize = true;
-        lbl_Control.Location = new Point(561, 14);
+        lbl_Control.Location = new Point(506, 14);
         lbl_Control.Name = "lbl_Control";
         lbl_Control.Size = new Size(74, 23);
         lbl_Control.TabIndex = 11;
@@ -155,7 +155,7 @@ partial class Form1
         // 
         // Btn_GoOffLine
         // 
-        Btn_GoOffLine.Location = new Point(566, 248);
+        Btn_GoOffLine.Location = new Point(506, 248);
         Btn_GoOffLine.Name = "Btn_GoOffLine";
         Btn_GoOffLine.Size = new Size(120, 39);
         Btn_GoOffLine.TabIndex = 12;
@@ -165,7 +165,7 @@ partial class Form1
         // 
         // Btn_GoOnLine
         // 
-        Btn_GoOnLine.Location = new Point(566, 203);
+        Btn_GoOnLine.Location = new Point(506, 203);
         Btn_GoOnLine.Name = "Btn_GoOnLine";
         Btn_GoOnLine.Size = new Size(120, 39);
         Btn_GoOnLine.TabIndex = 13;
@@ -175,7 +175,7 @@ partial class Form1
         // 
         // Btn_GoLocal
         // 
-        Btn_GoLocal.Location = new Point(692, 248);
+        Btn_GoLocal.Location = new Point(632, 248);
         Btn_GoLocal.Name = "Btn_GoLocal";
         Btn_GoLocal.Size = new Size(120, 39);
         Btn_GoLocal.TabIndex = 14;
@@ -185,7 +185,7 @@ partial class Form1
         // 
         // Btn_GoRemote
         // 
-        Btn_GoRemote.Location = new Point(692, 203);
+        Btn_GoRemote.Location = new Point(632, 203);
         Btn_GoRemote.Name = "Btn_GoRemote";
         Btn_GoRemote.Size = new Size(120, 39);
         Btn_GoRemote.TabIndex = 15;

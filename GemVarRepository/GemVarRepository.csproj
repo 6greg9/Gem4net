@@ -13,7 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Secs4Net" Version="2.2.1" />
-    <PackageReference Include="Secs4Net.Sml" Version="2.1.1" />
+    <PackageReference Include="Secs4Net.Sml" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>

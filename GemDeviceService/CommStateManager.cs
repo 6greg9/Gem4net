@@ -116,12 +116,12 @@ internal class CommStateManager
             }
             void GotoWaitCRA()
             {
-                var S1F13 = new SecsMessage(1,13)
-                {
-                    SecsItem = Item.L( Item.A(MDLD),Item.A(SOFTREV))
-                };
                 //可能可以改用Func, 就不用注入_secsGem
-                S1F14Waiter = _secsGem.SendAsync(S1F13); //在while外部
+                using (var S1F13 = new SecsMessage(1, 13)
+                {
+                    SecsItem = Item.L(Item.A(MDLD), Item.A(SOFTREV))
+                })
+                    S1F14Waiter = _secsGem.SendAsync(S1F13); //在while外部
                 CurrentState = CommunicationState.WAIT_CRA;
             }
             void GotoWaitDelay()

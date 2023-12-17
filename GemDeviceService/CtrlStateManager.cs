@@ -109,9 +109,9 @@ public class CtrlStateManager
         {
             return 1;
         }
-        var S1F1 = new SecsMessage(1, 1);
         //可能可以改用Func, 就不用注入_secsGem
-        S1F2Waiter = _secsGem.SendAsync(S1F1); //在while外部       
+        using (var S1F1 = new SecsMessage(1, 1))
+            S1F2Waiter = _secsGem.SendAsync(S1F1); //在while外部       
         CurrentState = ControlState.ATTEMPT_ON_LINE;
         EnterControlState();
         return 0;
@@ -137,7 +137,7 @@ public class CtrlStateManager
     {
         if (CurrentState is ControlState.LOCAL or ControlState.REMOTE)
         {
-            CurrentState = ControlState.REMOTE;
+            CurrentState = ControlState.LOCAL;
             return 0;
         }
         return 1;
