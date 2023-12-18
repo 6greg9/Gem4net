@@ -301,7 +301,20 @@ public class GemDeviceService
 
     //Report類
     public void SendTerminalMessage(string terminalMessage) { }
-    public void SendEventReport(string eventId) { }
+    public void SendEventReport(int eventId) {
+        var reports = _GemRepo.GetReportByEventId(eventId);
+        Random random = new Random();
+        var dataId = random.Next();
+        var s6f11 = new SecsMessage(6, 11)
+        {
+            SecsItem = L(
+            U4((uint)dataId), //DATAID
+            U4((uint)eventId), //CEID
+            reports
+            ),
+        };
+        _ = _secsGem.SendAsync(s6f11);//射後不理
+    }
     public void SendAlarmReport(string alarmId) { }
 
     //需要補上CommState, CtrlState的限制,

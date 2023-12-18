@@ -56,6 +56,8 @@ partial class Form1
         Page_Events = new TabPage();
         Btn_TestGetEvents = new Button();
         Tbx_InputECID = new TextBox();
+        label2 = new Label();
+        Btn_TestSendS6F11 = new Button();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         tabPage1.SuspendLayout();
@@ -314,6 +316,8 @@ partial class Form1
         // 
         // Page_Events
         // 
+        Page_Events.Controls.Add(Btn_TestSendS6F11);
+        Page_Events.Controls.Add(label2);
         Page_Events.Controls.Add(Btn_TestGetEvents);
         Page_Events.Controls.Add(Tbx_InputECID);
         Page_Events.Location = new Point(4, 32);
@@ -339,6 +343,24 @@ partial class Form1
         Tbx_InputECID.Name = "Tbx_InputECID";
         Tbx_InputECID.Size = new Size(150, 30);
         Tbx_InputECID.TabIndex = 0;
+        // 
+        // label2
+        // 
+        label2.Location = new Point(122, 51);
+        label2.Name = "label2";
+        label2.Size = new Size(145, 25);
+        label2.TabIndex = 2;
+        label2.Text = "CEID";
+        // 
+        // Btn_TestSendS6F11
+        // 
+        Btn_TestSendS6F11.Location = new Point(292, 124);
+        Btn_TestSendS6F11.Name = "Btn_TestSendS6F11";
+        Btn_TestSendS6F11.Size = new Size(167, 49);
+        Btn_TestSendS6F11.TabIndex = 3;
+        Btn_TestSendS6F11.Text = "SendS6F11";
+        Btn_TestSendS6F11.UseVisualStyleBackColor = true;
+        Btn_TestSendS6F11.Click += Btn_TestSendS6F11_Click;
         // 
         // Form1
         // 
@@ -390,4 +412,6 @@ partial class Form1
     private Button Btn_GetSvById;
     private TextBox Tbx_InputVarValue;
     private Label label1;
+    private Label label2;
+    private Button Btn_TestSendS6F11;
 }

@@ -264,4 +264,10 @@ public partial class Form1 : Form
         //MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
         //MessageBox.Show(test.ToString());
     }
+
+    private void Btn_TestSendS6F11_Click(object sender, EventArgs e)
+    {
+        var inputId = Convert.ToInt32(Tbx_InputECID.Text.Trim());
+        service.SendEventReport(inputId);
+    }
 }
