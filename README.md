@@ -40,6 +40,31 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
   - Control (Operator-Initiated) 7.13(except 7.13.5.1)
   - Control (Host-Initiated) 7.13.5.1
 ## 已完成SECS語句
+- [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
 - [x] S1F11 Status Variable Namelist Request
+- [X] S1F13 Establish Communications Request
+- [X] S1F15 Request OFF-LINE
+- [X] S1F17 Request ON-LINE
 - [ ] S1F21 Data Variable Namelist Request
+- [ ] S2F13 Equipment Constant Request
+- [X] S2F15 New Equipment Constant Send
+- [ ] S2F17 Date and Time Request
+- [ ] S2F23 Trace Initialize Send
+- [ ] S2F29 Equipment Constant Namelist Request
+- [ ] S2F31 Date and Time Set Request
+- [ ] S2F33 Define Report
+- [ ] S2F35 Link Event Report
+- [ ] S2F37 Enable/Disable Event Report
+- [ ] S2F41 Host Command Send
+- [ ] S6F1  Trace Data Send
+- [X] S6F11 Event Report Send
+- [ ] S6F13 Annotated Event Report Send
+- [ ] S6F15 Event Report Request
+- [ ] S6F17 Annotated Event Report Request
+- [ ] S6F19 Individual Report Request
+- [ ] S5
+- [ ] S7
+## Variable Item Dictionary in SEMI E5 (8.4)
+## GEM-Defined Collection Events (9.3)
+
