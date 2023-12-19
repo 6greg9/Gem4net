@@ -51,6 +51,7 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
 - [X] S2F15 New Equipment Constant Send
 - [ ] S2F17 Date and Time Request
 - [ ] S2F23 Trace Initialize Send
+- [ ] S2F25 Loopback Diagnostic Request
 - [ ] S2F29 Equipment Constant Namelist Request
 - [ ] S2F31 Date and Time Set Request
 - [ ] S2F33 Define Report
@@ -65,6 +66,9 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
 - [ ] S6F19 Individual Report Request
 - [ ] S5
 - [ ] S7
+- [ ] S10F3
 ## Variable Item Dictionary in SEMI E5 (8.4)
 ## GEM-Defined Collection Events (9.3)
+## App Configs
+- CommHostEqpTrigger
 
