@@ -30,7 +30,7 @@ public partial class Form1 : Form
         //    DeviceId= 0,
         //    T6= 5000
         //});
-        service = new GemDeviceService(logger, _gemRepo, new SecsGemOptions
+        service = new GemEqpService(logger, _gemRepo, new SecsGemOptions
         {
             IsActive = true,
             IpAddress = "127.0.0.1",
@@ -65,7 +65,7 @@ public partial class Form1 : Form
 
 
     }
-    GemDeviceService service;
+    GemEqpService service;
     private void button1_Click(object sender, EventArgs e)
     {
 

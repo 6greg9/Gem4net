@@ -11,7 +11,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace GemDeviceService;
-public class GemDeviceService
+public class GemEqpService
 {
     private SecsGem? _secsGem;
     private HsmsConnection? _connector;
@@ -32,7 +32,7 @@ public class GemDeviceService
 
     private GemRepository _GemRepo;
 
-    public GemDeviceService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions)
+    public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions)
     {
         _logger = logger;
         Enable();
