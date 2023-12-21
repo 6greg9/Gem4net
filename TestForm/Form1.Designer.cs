@@ -44,7 +44,7 @@ partial class Form1
         Btn_GoRemote = new Button();
         panel1 = new Panel();
         Tab_Events = new TabControl();
-        tabPage1 = new TabPage();
+        Tab_GemState = new TabPage();
         tabPage2 = new TabPage();
         Tab_Variables = new TabPage();
         Btn_GetSvById = new Button();
@@ -54,16 +54,21 @@ partial class Form1
         Lbl_VID = new Label();
         Btn_UpdateEC = new Button();
         Page_Events = new TabPage();
+        Btn_TestSendS6F11 = new Button();
+        label2 = new Label();
         Btn_TestGetEvents = new Button();
         Tbx_InputECID = new TextBox();
-        label2 = new Label();
-        Btn_TestSendS6F11 = new Button();
+        Page_Terminal = new TabPage();
+        Tbx_Terminal = new RichTextBox();
+        richTextBox2 = new RichTextBox();
+        Btn_S10F1TerminalRequest = new Button();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
-        tabPage1.SuspendLayout();
+        Tab_GemState.SuspendLayout();
         tabPage2.SuspendLayout();
         Tab_Variables.SuspendLayout();
         Page_Events.SuspendLayout();
+        Page_Terminal.SuspendLayout();
         SuspendLayout();
         // 
         // button1
@@ -217,26 +222,27 @@ partial class Form1
         // 
         // Tab_Events
         // 
-        Tab_Events.Controls.Add(tabPage1);
+        Tab_Events.Controls.Add(Tab_GemState);
         Tab_Events.Controls.Add(tabPage2);
         Tab_Events.Controls.Add(Tab_Variables);
         Tab_Events.Controls.Add(Page_Events);
+        Tab_Events.Controls.Add(Page_Terminal);
         Tab_Events.Location = new Point(12, 228);
         Tab_Events.Name = "Tab_Events";
         Tab_Events.SelectedIndex = 0;
         Tab_Events.Size = new Size(1353, 434);
         Tab_Events.TabIndex = 17;
         // 
-        // tabPage1
+        // Tab_GemState
         // 
-        tabPage1.BackColor = Color.Gainsboro;
-        tabPage1.Controls.Add(panel1);
-        tabPage1.Location = new Point(4, 32);
-        tabPage1.Name = "tabPage1";
-        tabPage1.Padding = new Padding(3);
-        tabPage1.Size = new Size(1345, 398);
-        tabPage1.TabIndex = 0;
-        tabPage1.Text = "tabPage1";
+        Tab_GemState.BackColor = Color.Gainsboro;
+        Tab_GemState.Controls.Add(panel1);
+        Tab_GemState.Location = new Point(4, 32);
+        Tab_GemState.Name = "Tab_GemState";
+        Tab_GemState.Padding = new Padding(3);
+        Tab_GemState.Size = new Size(1345, 398);
+        Tab_GemState.TabIndex = 0;
+        Tab_GemState.Text = "State";
         // 
         // tabPage2
         // 
@@ -247,7 +253,7 @@ partial class Form1
         tabPage2.Padding = new Padding(3);
         tabPage2.Size = new Size(1345, 398);
         tabPage2.TabIndex = 1;
-        tabPage2.Text = "tabPage2";
+        tabPage2.Text = "Log";
         // 
         // Tab_Variables
         // 
@@ -327,6 +333,24 @@ partial class Form1
         Page_Events.Text = "Events";
         Page_Events.UseVisualStyleBackColor = true;
         // 
+        // Btn_TestSendS6F11
+        // 
+        Btn_TestSendS6F11.Location = new Point(292, 124);
+        Btn_TestSendS6F11.Name = "Btn_TestSendS6F11";
+        Btn_TestSendS6F11.Size = new Size(167, 49);
+        Btn_TestSendS6F11.TabIndex = 3;
+        Btn_TestSendS6F11.Text = "SendS6F11";
+        Btn_TestSendS6F11.UseVisualStyleBackColor = true;
+        Btn_TestSendS6F11.Click += Btn_TestSendS6F11_Click;
+        // 
+        // label2
+        // 
+        label2.Location = new Point(122, 51);
+        label2.Name = "label2";
+        label2.Size = new Size(145, 25);
+        label2.TabIndex = 2;
+        label2.Text = "CEID";
+        // 
         // Btn_TestGetEvents
         // 
         Btn_TestGetEvents.Location = new Point(292, 69);
@@ -344,23 +368,42 @@ partial class Form1
         Tbx_InputECID.Size = new Size(150, 30);
         Tbx_InputECID.TabIndex = 0;
         // 
-        // label2
+        // Page_Terminal
         // 
-        label2.Location = new Point(122, 51);
-        label2.Name = "label2";
-        label2.Size = new Size(145, 25);
-        label2.TabIndex = 2;
-        label2.Text = "CEID";
+        Page_Terminal.Controls.Add(Btn_S10F1TerminalRequest);
+        Page_Terminal.Controls.Add(richTextBox2);
+        Page_Terminal.Controls.Add(Tbx_Terminal);
+        Page_Terminal.Location = new Point(4, 32);
+        Page_Terminal.Name = "Page_Terminal";
+        Page_Terminal.Size = new Size(1345, 398);
+        Page_Terminal.TabIndex = 4;
+        Page_Terminal.Text = "Terminal";
+        Page_Terminal.UseVisualStyleBackColor = true;
         // 
-        // Btn_TestSendS6F11
+        // Tbx_Terminal
         // 
-        Btn_TestSendS6F11.Location = new Point(292, 124);
-        Btn_TestSendS6F11.Name = "Btn_TestSendS6F11";
-        Btn_TestSendS6F11.Size = new Size(167, 49);
-        Btn_TestSendS6F11.TabIndex = 3;
-        Btn_TestSendS6F11.Text = "SendS6F11";
-        Btn_TestSendS6F11.UseVisualStyleBackColor = true;
-        Btn_TestSendS6F11.Click += Btn_TestSendS6F11_Click;
+        Tbx_Terminal.Location = new Point(100, 83);
+        Tbx_Terminal.Name = "Tbx_Terminal";
+        Tbx_Terminal.Size = new Size(507, 148);
+        Tbx_Terminal.TabIndex = 11;
+        Tbx_Terminal.Text = "";
+        // 
+        // richTextBox2
+        // 
+        richTextBox2.Location = new Point(100, 228);
+        richTextBox2.Name = "richTextBox2";
+        richTextBox2.Size = new Size(507, 69);
+        richTextBox2.TabIndex = 12;
+        richTextBox2.Text = "";
+        // 
+        // Btn_S10F1TerminalRequest
+        // 
+        Btn_S10F1TerminalRequest.Location = new Point(626, 234);
+        Btn_S10F1TerminalRequest.Name = "Btn_S10F1TerminalRequest";
+        Btn_S10F1TerminalRequest.Size = new Size(190, 63);
+        Btn_S10F1TerminalRequest.TabIndex = 13;
+        Btn_S10F1TerminalRequest.Text = "S10F1TermialReq";
+        Btn_S10F1TerminalRequest.UseVisualStyleBackColor = true;
         // 
         // Form1
         // 
@@ -373,12 +416,13 @@ partial class Form1
         panel1.ResumeLayout(false);
         panel1.PerformLayout();
         Tab_Events.ResumeLayout(false);
-        tabPage1.ResumeLayout(false);
+        Tab_GemState.ResumeLayout(false);
         tabPage2.ResumeLayout(false);
         Tab_Variables.ResumeLayout(false);
         Tab_Variables.PerformLayout();
         Page_Events.ResumeLayout(false);
         Page_Events.PerformLayout();
+        Page_Terminal.ResumeLayout(false);
         ResumeLayout(false);
     }
 
@@ -400,7 +444,7 @@ partial class Form1
     private Button Btn_GoRemote;
     private Panel panel1;
     private TabControl Tab_Events;
-    private TabPage tabPage1;
+    private TabPage Tab_GemState;
     private TabPage tabPage2;
     private TabPage Tab_Variables;
     private Button Btn_UpdateEC;
@@ -414,4 +458,8 @@ partial class Form1
     private Label label1;
     private Label label2;
     private Button Btn_TestSendS6F11;
+    private TabPage Page_Terminal;
+    private Button Btn_S10F1TerminalRequest;
+    private RichTextBox richTextBox2;
+    private RichTextBox Tbx_Terminal;
 }

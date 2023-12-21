@@ -53,6 +53,15 @@ public partial class Form1 : Form
         {
             this.Invoke(new Action(() => { rtbx_Ctrl.AppendText($"{previous} --> {current}\n"); ; }));
         };
+        service.OnTerminalMessageReceived += (msg) =>
+        {
+            
+            this.Invoke(new Action(() =>
+            {
+                Tbx_Terminal.AppendText(msg + "\n");
+            }));
+            return 0;
+        };
 
 
     }
@@ -182,6 +191,11 @@ public partial class Form1 : Form
 #endif
     }
 
+    /// <summary>
+    /// �ʼɥΪk
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void button3_Click(object sender, EventArgs e)
     {
         var secs = service.GetSecsWrapper;

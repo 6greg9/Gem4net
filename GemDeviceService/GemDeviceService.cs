@@ -8,6 +8,7 @@ using System.Threading.Channels;
 using static Secs4Net.Item;
 using System.Reflection.Metadata;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace GemDeviceService;
 public class GemDeviceService
@@ -162,6 +163,22 @@ public class GemDeviceService
                                     })
                                         await ReceiveSecsMsg.TryReplyAsync(rtnS2F26);
                                     break;
+                                //S10F3 Terminal Display, Single
+                                
+                                case SecsMessage msg when (msg.S == 10 && msg.F == 3):
+                                    
+                                    var terminalText = msg.SecsItem.Items[1].GetString();
+                                    var ackc10 = await Task.Run(() =>
+                                    {
+                                       return OnTerminalMessageReceived?.Invoke(terminalText);
+                                    });
+                                     
+                                    using (var rtnS10F4 = new SecsMessage(2, 26)
+                                    {
+                                        SecsItem = B(Convert.ToByte(ackc10))
+                                    })
+                                        await ReceiveSecsMsg.TryReplyAsync(rtnS10F4);
+                                    break;
                                 default:
                                     break;
                             }
@@ -289,7 +306,10 @@ public class GemDeviceService
 
     public event Action<SecsMessage>? OnSecsMessageSend;
     public event Action OnProcessProgramChanged;
-    public event Action<string> OnTerminalMessageReceived;
+    /// <summary>
+    /// 0 - accepted for display , 1 - message will not be displayed , 2 - terminal not available
+    /// </summary>
+    public event Func<string,int> OnTerminalMessageReceived;
 
     /// <summary>
     /// for S2F41
@@ -308,20 +328,30 @@ public class GemDeviceService
     public void UpdateEC(int VID) { }
 
     //Report類
-    public void SendTerminalMessage(string terminalMessage) { }
+    public void SendTerminalMessage(string terminalMessage) {
+        byte[] terminalId = new byte[1];
+        terminalId[0] = 87;
+        using (var s10f1 = new SecsMessage(10, 1)
+        {
+            SecsItem= L(
+                B(terminalId),
+                A(terminalMessage))
+        })
+            _ = _secsGem.SendAsync(s10f1);//射後不理
+    }
     public void SendEventReport(int eventId) {
         var reports = _GemRepo.GetReportByEventId(eventId);
         Random random = new Random();
         var dataId = random.Next();
-        var s6f11 = new SecsMessage(6, 11)
+        using (var s6f11 = new SecsMessage(6, 11)
         {
             SecsItem = L(
             U4((uint)dataId), //DATAID
             U4((uint)eventId), //CEID
             reports
             ),
-        };
-        _ = _secsGem.SendAsync(s6f11);//射後不理
+        })
+            _ = _secsGem.SendAsync(s6f11);//射後不理
     }
     public void SendAlarmReport(string alarmId) { }
 

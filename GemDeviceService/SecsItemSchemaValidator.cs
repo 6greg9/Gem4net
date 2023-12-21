@@ -34,6 +34,8 @@ public static class SecsItemSchemaValidator
                 return IsS2F15(Msg.SecsItem);
             case (2,25):
                 return IsS2F25(Msg.SecsItem);
+            case (10,3):
+                return IsS10F3(Msg.SecsItem);
             default:
                 return true;
         }
@@ -204,6 +206,26 @@ public static class SecsItemSchemaValidator
         return false;
     };
 
-    
+
+    #endregion
+
+    #region　Stream 10
+    static Func<Item?, bool> IsS10F3 = (item) =>
+    {
+        if (item == null)
+            return false;
+        if (item.Format != SecsFormat.List)
+            return false;
+        //第一層
+        var level1 = item.Items;
+        if (level1 == null
+        || level1.Length != 2
+        || level1[0].Format != SecsFormat.Binary
+        || level1[1].Format != SecsFormat.ASCII)
+            return false;
+
+        return true;
+    };
+
     #endregion
 }
