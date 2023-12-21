@@ -152,7 +152,15 @@ public class GemDeviceService
                                         SecsItem = B((byte)rtnS2F15)
                                     })
                                         await ReceiveSecsMsg.TryReplyAsync(rtnS2F16);
-                                    // 還要發個事件
+                                    // 還要發個事件 ?
+                                    break;
+                                //S2F25 Loopback Diagnostic Request
+                                case SecsMessage msg when (msg.S == 2 && msg.F == 25):
+                                    using (var rtnS2F26 = new SecsMessage(2, 26)
+                                    {
+                                        SecsItem = msg.SecsItem
+                                    })
+                                        await ReceiveSecsMsg.TryReplyAsync(rtnS2F26);
                                     break;
                                 default:
                                     break;
