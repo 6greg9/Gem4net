@@ -13,9 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GemVarRepository\GemVarRepository.csproj" />
-    <ProjectReference Include="C:\Users\User\source\repos\6greg9\secs4net\src\Secs4Net.Json\Secs4Net.Json.csproj" />
-    <ProjectReference Include="C:\Users\User\source\repos\6greg9\secs4net\src\Secs4Net.Sml\Secs4Net.Sml.csproj" />
-    <ProjectReference Include="C:\Users\User\source\repos\6greg9\secs4net\src\Secs4Net\Secs4Net.csproj" />
+    
   </ItemGroup>
 
 </Project>
