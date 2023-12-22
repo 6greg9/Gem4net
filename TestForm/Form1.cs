@@ -36,9 +36,9 @@ public partial class Form1 : Form
             IpAddress = "127.0.0.1",
             Port = 5000,
             //SocketReceiveBufferSize = 8096,
-            SocketReceiveBufferSize = 16384,
-            //SocketReceiveBufferSize = 32768,
+            SocketReceiveBufferSize = 1024,
             DeviceId = 0,
+            LinkTestInterval = 1000 * 60,
             T6 = 5000
         });
         service.OnConnectStatusChange += (status) =>

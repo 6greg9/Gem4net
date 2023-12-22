@@ -15,6 +15,8 @@ public class GemEqpService
 {
     private SecsGem? _secsGem;
     private HsmsConnection? _connector;
+    public SecsGemOptions GemOptions { get; private set; }
+
     private readonly ISecsGemLogger _logger;
     private readonly Channel<PrimaryMessageWrapper> recvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
         new UnboundedChannelOptions()
@@ -35,6 +37,8 @@ public class GemEqpService
     public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions)
     {
         _logger = logger;
+        GemOptions = secsGemOptions;
+
         Enable();
         RecieveMessageHandlerTask = Task.Factory.StartNew(
             async () =>
@@ -46,13 +50,33 @@ public class GemEqpService
                         //var ReceiveSecsMsg = await recvBuffer.Reader.ReadAsync();
                         try
                         {
-                            
+
                             //Check Comm State
                             //Disable時什麼都不回應
                             //NotCommunicatig時,由Manager處理S1F13流程
                             //如果任何通訊發生失敗，應回到Not Communicating
+                            
+                            if (_commStateManager.CurrentState is  CommunicationState.DISABLED)
+                                return;
+                            if (_commStateManager.CurrentState is not CommunicationState.COMMUNICATING)
+                            { // Comm 有Host Trigger 和 Eqp Trigger
+                                var msg = ReceiveSecsMsg.PrimaryMessage;
+                                if (msg.S != 1 || msg.F != 13) //白名單方式
+                                    return;
 
+                            }
                             //Check Ctrl State
+                            if( _ctrlStateManager.IsOnLine==false )
+                            {
+                                var msg = ReceiveSecsMsg.PrimaryMessage;
+                                if ((msg.S != 1 || msg.F != 13) || (msg.S != 1 || msg.F != 17))
+                                {
+                                    //sNf0
+                                    using var rtnSNF0 = new SecsMessage(msg.S, 0);
+                                    await ReceiveSecsMsg.TryReplyAsync(rtnSNF0);
+                                }
+                                   
+                            }
 
                             //Format Validation, S9F7
                             if (SecsItemSchemaValidator.IsValid(ReceiveSecsMsg.PrimaryMessage) == false)
@@ -207,17 +231,7 @@ public class GemEqpService
             await _connector.DisposeAsync();
         }
 
-        var options = Options.Create(new SecsGemOptions
-        {
-            IsActive = true,
-            IpAddress = "127.0.0.1",
-            Port = 5000,
-            //SocketReceiveBufferSize = 8096,
-            SocketReceiveBufferSize = 1024,
-            DeviceId = 0,
-            LinkTestInterval = 1000*60,
-            T6 = 5000
-        });
+        var options = Options.Create(GemOptions);
         //var options = secsGemOptions;
         _connector = new HsmsConnection(options, _logger);
         _connector.LinkTestEnabled = false; //想解決莫名斷線
@@ -322,19 +336,26 @@ public class GemEqpService
     public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
                                         ? _secsGem : null;
     //數值類
-    public void GetVariableById(int VID) { }
-    public void GetVariableByName(string name) { }
-    public void UpdateSV(int VID) { }
-    public void UpdateEC(int VID) { }
+    public Item? GetVariableById(int VID) {
+        return _GemRepo.GetSvByVID(VID); //這樣還有要?
+    }
+    public void GetVariableByName(string name) {
+        // 
+    }
+    public int UpdateSV(int VID,object varValue) {
+       return _GemRepo.SetVarValueById(VID, varValue);
+    }
+    public int UpdateEC(List<(int,Item)> idValList) {
+        return _GemRepo.SetECByIdLst(idValList);
+    }
 
     //Report類
-    public void SendTerminalMessage(string terminalMessage) {
-        byte[] terminalId = new byte[1];
-        terminalId[0] = 87;
+    public void SendTerminalMessage(string terminalMessage,int terminalId) {
+        
         using (var s10f1 = new SecsMessage(10, 1)
         {
             SecsItem= L(
-                B(terminalId),
+                B((byte)terminalId),
                 A(terminalMessage))
         })
             _ = _secsGem.SendAsync(s10f1);//射後不理
