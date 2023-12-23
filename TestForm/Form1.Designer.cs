@@ -59,9 +59,9 @@ partial class Form1
         Btn_TestGetEvents = new Button();
         Tbx_InputECID = new TextBox();
         Page_Terminal = new TabPage();
-        Tbx_Terminal = new RichTextBox();
-        richTextBox2 = new RichTextBox();
         Btn_S10F1TerminalRequest = new Button();
+        Tbx_TerminalInput = new RichTextBox();
+        Tbx_Terminal = new RichTextBox();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         Tab_GemState.SuspendLayout();
@@ -371,7 +371,7 @@ partial class Form1
         // Page_Terminal
         // 
         Page_Terminal.Controls.Add(Btn_S10F1TerminalRequest);
-        Page_Terminal.Controls.Add(richTextBox2);
+        Page_Terminal.Controls.Add(Tbx_TerminalInput);
         Page_Terminal.Controls.Add(Tbx_Terminal);
         Page_Terminal.Location = new Point(4, 32);
         Page_Terminal.Name = "Page_Terminal";
@@ -379,22 +379,6 @@ partial class Form1
         Page_Terminal.TabIndex = 4;
         Page_Terminal.Text = "Terminal";
         Page_Terminal.UseVisualStyleBackColor = true;
-        // 
-        // Tbx_Terminal
-        // 
-        Tbx_Terminal.Location = new Point(100, 83);
-        Tbx_Terminal.Name = "Tbx_Terminal";
-        Tbx_Terminal.Size = new Size(507, 148);
-        Tbx_Terminal.TabIndex = 11;
-        Tbx_Terminal.Text = "";
-        // 
-        // richTextBox2
-        // 
-        richTextBox2.Location = new Point(100, 228);
-        richTextBox2.Name = "richTextBox2";
-        richTextBox2.Size = new Size(507, 69);
-        richTextBox2.TabIndex = 12;
-        richTextBox2.Text = "";
         // 
         // Btn_S10F1TerminalRequest
         // 
@@ -404,6 +388,23 @@ partial class Form1
         Btn_S10F1TerminalRequest.TabIndex = 13;
         Btn_S10F1TerminalRequest.Text = "S10F1TermialReq";
         Btn_S10F1TerminalRequest.UseVisualStyleBackColor = true;
+        Btn_S10F1TerminalRequest.Click += Btn_S10F1TerminalRequest_Click;
+        // 
+        // Tbx_TerminalInput
+        // 
+        Tbx_TerminalInput.Location = new Point(100, 228);
+        Tbx_TerminalInput.Name = "Tbx_TerminalInput";
+        Tbx_TerminalInput.Size = new Size(507, 69);
+        Tbx_TerminalInput.TabIndex = 12;
+        Tbx_TerminalInput.Text = "";
+        // 
+        // Tbx_Terminal
+        // 
+        Tbx_Terminal.Location = new Point(100, 83);
+        Tbx_Terminal.Name = "Tbx_Terminal";
+        Tbx_Terminal.Size = new Size(507, 148);
+        Tbx_Terminal.TabIndex = 11;
+        Tbx_Terminal.Text = "";
         // 
         // Form1
         // 
@@ -460,6 +461,6 @@ partial class Form1
     private Button Btn_TestSendS6F11;
     private TabPage Page_Terminal;
     private Button Btn_S10F1TerminalRequest;
-    private RichTextBox richTextBox2;
+    private RichTextBox Tbx_TerminalInput;
     private RichTextBox Tbx_Terminal;
 }

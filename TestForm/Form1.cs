@@ -41,7 +41,7 @@ public partial class Form1 : Form
             LinkTestInterval = 1000 * 60,
             T6 = 5000
         });
-        service.OnConnectStatusChange += (status) =>
+        service.OnConnectStatusChanged += (status) =>
         {
             this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
         };
@@ -55,7 +55,7 @@ public partial class Form1 : Form
         };
         service.OnTerminalMessageReceived += (msg) =>
         {
-            
+
             this.Invoke(new Action(() =>
             {
                 Tbx_Terminal.AppendText(msg + "\n");
@@ -283,5 +283,10 @@ public partial class Form1 : Form
     {
         var inputId = Convert.ToInt32(Tbx_InputECID.Text.Trim());
         service.SendEventReport(inputId);
+    }
+
+    private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)
+    {
+        service.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87);
     }
 }

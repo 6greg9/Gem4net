@@ -16,6 +16,7 @@ public class GemEqpService
     private SecsGem? _secsGem;
     private HsmsConnection? _connector;
     public SecsGemOptions GemOptions { get; private set; }
+    public bool IsCommHostInit { get; private set; }
 
     private readonly ISecsGemLogger _logger;
     private readonly Channel<PrimaryMessageWrapper> recvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
@@ -34,10 +35,11 @@ public class GemEqpService
 
     private GemRepository _GemRepo;
 
-    public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions)
+    public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions,bool isCommHostInit =false)
     {
         _logger = logger;
         GemOptions = secsGemOptions;
+        IsCommHostInit = isCommHostInit;
 
         Enable();
         RecieveMessageHandlerTask = Task.Factory.StartNew(
@@ -238,7 +240,7 @@ public class GemEqpService
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
-        _commStateManager = new CommStateManager(_secsGem, false);
+        _commStateManager = new CommStateManager(_secsGem, IsCommHostInit);
         _ctrlStateManager = new CtrlStateManager(_secsGem);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
@@ -269,7 +271,7 @@ public class GemEqpService
 
             }
 
-            OnConnectStatusChange?.Invoke(connectState.ToString());
+            OnConnectStatusChanged?.Invoke(connectState.ToString());
         };
         //btnEnable.Enabled = false;
         _connector.LinkTestEnabled = false;//想解決莫名斷線
@@ -312,9 +314,7 @@ public class GemEqpService
     }
     #region For App Interface
 
-    public Func<string, string>? RelayRemoteCmd;
-
-    public event Action<string>? OnConnectStatusChange;
+    public event Action<string>? OnConnectStatusChanged;
     public event Action<string, string>? OnCommStateChanged;
     public event Action<string, string>? OnControlStateChanged;
 
@@ -333,7 +333,8 @@ public class GemEqpService
     public Func<(string, List<(string, string)>),
                 (int, List<(string, string)>)>? OnRemoteCommand;
 
-    public ISecsGem? GetSecsWrapper => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
+    public ISecsGem? GetSecsWrapper     // 不在ON-LINE沒有辦法使用
+        => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
                                         ? _secsGem : null;
     //數值類
     public Item? GetVariableById(int VID) {
@@ -350,15 +351,29 @@ public class GemEqpService
     }
 
     //Report類
-    public void SendTerminalMessage(string terminalMessage,int terminalId) {
-        
-        using (var s10f1 = new SecsMessage(10, 1)
+    public async Task<int> SendTerminalMessageAsync(string terminalMessage,int terminalId) {
+        int ack10 = -1;
+        try
         {
-            SecsItem= L(
+            using (var s10f1 = new SecsMessage(10, 1)
+            {
+                SecsItem = L(
                 B((byte)terminalId),
                 A(terminalMessage))
-        })
-            _ = _secsGem.SendAsync(s10f1);//射後不理
+            })
+            {
+                var rtns10f2=await  _secsGem.SendAsync(s10f1);
+                // 應先資料驗證
+                ack10 = rtns10f2.SecsItem.FirstValue<byte>();
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
+        finally
+        {
+           
+        }
+        return ack10;
+
     }
     public void SendEventReport(int eventId) {
         var reports = _GemRepo.GetReportByEventId(eventId);
@@ -381,11 +396,11 @@ public class GemEqpService
 
     public int EnableComm()
     {
-        return 0;
+        return _commStateManager.EnableComm();
     }
     public int DisableComm()
     {
-        return 0;
+        return _commStateManager.DisableComm();
     }
     /// <summary>
     /// EQUIPMENT_OFF_LINE,HOST_OFF_LINE,ATTEMPT_ON_LINE,LOCAL,REMOTE

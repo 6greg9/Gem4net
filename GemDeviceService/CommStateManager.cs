@@ -9,6 +9,7 @@ namespace GemDeviceService;
 internal class CommStateManager
 {
     bool IsHostInitial = false;
+    bool SendS1F13Disable = false;
     string MDLD = "MDLD";
     string SOFTREV = "SOFTREV";
     ISecsGem _secsGem; //可能要給個介面
