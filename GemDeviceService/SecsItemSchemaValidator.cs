@@ -30,6 +30,8 @@ public static class SecsItemSchemaValidator
                 return IsS1F15(Msg.SecsItem);
             case (1, 17):
                 return IsS1F17(Msg.SecsItem);
+            case (2, 13):
+                return IsS2F13(Msg.SecsItem);
             case (2,15):
                 return IsS2F15(Msg.SecsItem);
             case (2,25):
@@ -169,6 +171,18 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 2
+    static Func<Item?, bool> IsS2F13 = (itemRoot) =>
+    {
+        if (itemRoot == null)
+            return false;
+        if (itemRoot.Format != SecsFormat.List)
+            return false;
+        //第一層
+        if (itemRoot.Items.Where(item => item.Format != SecsFormat.U4).Count() > 0)
+            return false;
+        return true;
+
+    };
     static Func<Item?, bool> IsS2F15 = (itemRoot) =>
     {
         if (itemRoot == null)

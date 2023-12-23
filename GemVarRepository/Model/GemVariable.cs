@@ -8,6 +8,10 @@ namespace GemVarRepository.Model;
 public class GemVariable
 {
     public int     VID { get; set; }
+    /// <summary>
+    /// LIST , BOOL , ASCII , UINT_1 , UINT_2 , UINT_4 , UINT_8
+    /// INT_1 , INT_2 , INT_4 , INT_8 , FLOAT_4 , FLOAT_8
+    /// </summary>
     public string  DataType { get; set; }
     public int     Length { get; set; }
     public string  Unit { get; set; }

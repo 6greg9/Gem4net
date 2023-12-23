@@ -165,7 +165,42 @@ public class GemEqpService
                                     {
                                         SecsItem = B((byte)result)
                                     })
-                                        ReceiveSecsMsg.TryReplyAsync(rtnMsg);
+                                        ReceiveSecsMsg?.TryReplyAsync(rtnMsg);
+                                    break;
+                                //S2F13 Equipment Constant Request
+                                case SecsMessage msg when (msg.S == 2 && msg.F == 13):
+                                    var idCnt = msg.SecsItem?.Items.Length;
+                                    if (idCnt is null or 0) 
+                                    {
+                                        var allEC = _GemRepo?.GetEcNameListAll();
+                                        using (var rtnMsg = new SecsMessage(2, 14)
+                                        {
+                                            SecsItem = allEC
+                                        })
+                                            ReceiveSecsMsg?.TryReplyAsync(rtnMsg);
+                                        break;
+                                    }
+                                    // 查EC
+                                    var ecids = msg.SecsItem?.Items
+                                            .Select(item => item.Items[0].FirstValue<int>());
+                                    var ecs = _GemRepo?.GetEcNameList(ecids);
+                                    // 如果一個查不到就要回空L
+                                    if (ecs.Items.Where(item => item.Format == SecsFormat.ASCII && item.GetString() == "").Count() > 0)
+                                    {
+             
+                                        using (var rtnMsg = new SecsMessage(2, 14)
+                                        {
+                                            SecsItem = L()
+                                        })
+                                            ReceiveSecsMsg?.TryReplyAsync(rtnMsg);
+                                        break;
+                                    }
+                                    
+                                    using (var rtnMsg = new SecsMessage(2, 14)
+                                    {
+                                        SecsItem = ecs
+                                    })
+                                        ReceiveSecsMsg?.TryReplyAsync(rtnMsg);
                                     break;
                                 //S2F15 New Equipment Constant Send
                                 case SecsMessage msg when (msg.S == 2 && msg.F == 15):
