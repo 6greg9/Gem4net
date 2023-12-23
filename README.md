@@ -71,4 +71,23 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
 ## GEM-Defined Collection Events (9.3)
 ## App Configs
 - CommHostEqpTrigger
+## ITRI-like Interface
+- [ ] Initialize: 建構式加callback?
+- [ ] Close: 外部可 Enable, Disable
+- [ ] ProcessMessage: 直接把Secs4Net拿來用...
+- [X] UpdateSV: SV,DV,EC混在一起?
+- [ ] GetSV
+- [X] UpdateEC
+- [ ] GetEC
+- [X] SendTerminalMessage
+- [X] EventReportSend
+- [ ] AlarmReportSend
+- [X] EnableComm
+- [X] DisableComm
+- [X] GetCurrentCommState
+- [X] OnLineRequest
+- [X] OffLine
+- [X] OnLineLocal
+- [X] OnLineRemote
+- [ ] Command: 這個應該有細分空間
 
