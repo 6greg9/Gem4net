@@ -182,7 +182,7 @@ public class GemEqpService
                                     }
                                     // 查EC
                                     var ecids = msg.SecsItem?.Items
-                                            .Select(item => item.Items[0].FirstValue<int>());
+                                            .Select(item => item.FirstValue<int>());
                                     var ecs = _GemRepo?.GetEcNameList(ecids);
                                     // 如果一個查不到就要回空L
                                     if (ecs.Items.Where(item => item.Format == SecsFormat.ASCII && item.GetString() == "").Count() > 0)

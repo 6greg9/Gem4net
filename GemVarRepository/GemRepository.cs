@@ -1,9 +1,11 @@
 ﻿using GemVarRepository.Model;
+using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
@@ -47,7 +49,7 @@ public partial class GemRepository
     {
         var Variable = _context.Variables
             //.Where(v=>v.VarType=="SV")
-            .Where(v=>v.VID==vid).FirstOrDefault();
+            .Where(v => v.VID == vid).FirstOrDefault();
         if (Variable == null)//找不到
             return A(); // ?
 
@@ -116,7 +118,9 @@ public partial class GemRepository
                 }).ToArray());
             }
 
-        }catch(Exception ex) { 
+        }
+        catch (Exception ex)
+        {
             Debug.WriteLine(ex.ToString());
             return null;
         }
@@ -131,17 +135,17 @@ public partial class GemRepository
     {
         using (_context = new GemVarContext())
         {
-            var svNameList = vidList.Select(vid=>
+            var svNameList = vidList.Select(vid =>
         {
-            return  _context.Variables.Where(v=>v.VarType=="SV")
-           .Where(v=>v.VID== vid).FirstOrDefault();
-        }).Select(v=>
+            return _context.Variables.Where(v => v.VarType == "SV")
+           .Where(v => v.VID == vid).FirstOrDefault();
+        }).Select(v =>
        {
-           if(v is null)
+           if (v is null)
            {
                return A();// ?
            }
-           return Item.L( U4((uint)v.VID), A(v.Name),A(v.Unit));
+           return Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit));
        });
             return Item.L(svNameList.ToArray());
         }
@@ -150,8 +154,8 @@ public partial class GemRepository
     {
         using (_context = new GemVarContext())
         {
-            var itemList = _context.Variables.Where(v=> v.VarType=="SV")
-            .Select(v=> Item.L( U4((uint)v.VID), A(v.Name),A(v.Unit)));
+            var itemList = _context.Variables.Where(v => v.VarType == "SV")
+            .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
             return Item.L(itemList.ToArray());
         }
     }
@@ -163,11 +167,22 @@ public partial class GemRepository
     {
         using (_context = new GemVarContext())
         {
-            var svNameList = vidList.Select(vid =>
+            //IQueryable<GemVariable?> rtnGemVar = null;
+            List<GemVariable?> rtnGemVar = new();
+            foreach (var vid in vidList)
             {
-                return _context.Variables.Where(v => v.VarType == "EC")
-               .Where(v => v.VID == vid).FirstOrDefault();
-            }).Select(v =>
+                var rtnEc = _context.Variables.Where(v=>v.VarType=="EC").Where(v => v.VID == vid).FirstOrDefault();
+                //rtnGemVar = rtnGemVar == null ? rtnEc : rtnGemVar.Concat(rtnEc);
+                //rtnGemVar =  rtnGemVar.Concat(rtnEc);
+                rtnGemVar.Add(rtnEc); // 這樣很違反EF的原則..., 有空改成raw sql
+            }
+            //var svNameList = vidList.Select(vid =>
+            //{
+            //    return _context.Variables.Where(v => v.VarType == "EC")
+            //   .Where(v => v.VID == vid).FirstOrDefault();
+            //}); //EF 查詢到此為止
+            var rtnGemVarLst = rtnGemVar.ToList();
+            var itemLst = rtnGemVarLst.Select(v =>
             {
                 if (v is null)
                 {
@@ -175,7 +190,7 @@ public partial class GemRepository
                 }
                 return GemVariableToSecsItem(v);
             });
-            return Item.L(svNameList.ToArray());
+            return Item.L(itemLst);
         }
     }
     public Item? GetEcNameListAll()
@@ -281,20 +296,20 @@ public partial class GemRepository
     public int SetECByIdLst(List<(int, Item)> idValLst)
     {
         int EAC = -1;
-        var idLst = idValLst.Select( pair=> pair.Item1 ).ToList();
+        var idLst = idValLst.Select(pair => pair.Item1).ToList();
         using (_context = new GemVarContext())
         {
-            var ECs = _context.Variables.Where(v=>v.VarType== "EC");
+            var ECs = _context.Variables.Where(v => v.VarType == "EC");
             if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idValLst.Count)
             {
-                EAC = 1; 
+                EAC = 1;
                 return EAC;
             }
-            foreach( var idVal in  idValLst )
+            foreach (var idVal in idValLst)
             {
-                var EC = ECs.Where( ec=> ec.VID== idVal.Item1 ).First();
+                var EC = ECs.Where(ec => ec.VID == idVal.Item1).First();
                 var SetEcResult = SubSetVarById(EC, idVal);
-                if(SetEcResult!=0)
+                if (SetEcResult != 0)
                 { return SetEcResult; }
             }
             _context.SaveChanges();
@@ -422,28 +437,28 @@ public partial class GemRepository
     {
         using (_context = new GemVarContext())
         {
-            List<(int,Item)> rtnRptItems = new(); 
+            List<(int, Item)> rtnRptItems = new();
             var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
                 .Select(link => link.Report);
             var reportVars = reports
                 .Join(_context.ReportVariableLinks,
                 rpt => rpt.RPTID,
                 link => link.RPTID,
-                (rpt,link)=>
+                (rpt, link) =>
                 new
                 {
                     RptId = rpt.RPTID,
-                    Variable = _context.Variables.Where(v=>v.VID==link.VID).First()
+                    Variable = _context.Variables.Where(v => v.VID == link.VID).First()
                 }).ToList(); //.GroupBy( v=>v.RptId ).Select(v=> v.)
             //.Select(pair=> {RptId = pair.Key, Datas =  pair} );
-            var rtnReports = reportVars.GroupBy( d=> d.RptId).Select(pair=>(pair.Key,pair.ToList())).ToList();
-            foreach(var groupData in rtnReports)
+            var rtnReports = reportVars.GroupBy(d => d.RptId).Select(pair => (pair.Key, pair.ToList())).ToList();
+            foreach (var groupData in rtnReports)
             {
-                var vids = groupData.Item2.Select(v=> v.Variable.VID);
+                var vids = groupData.Item2.Select(v => v.Variable.VID);
                 var datas = SubGetSvListByVidList(vids);
                 rtnRptItems.Add((groupData.Item1, datas));
             }
-            return  L(rtnRptItems.Select( p=>L(U4((uint) p.Item1),L(p.Item2 ) ) ));
+            return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
         }
     }
 }
