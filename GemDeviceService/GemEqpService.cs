@@ -53,53 +53,58 @@ public class GemEqpService
         //_communicatinoState = CommunicationState.DISABLED;
         _GemRepo = gemReposiroty;
     }
-    async void HandleRecievedSecsMessage()
+    async void HandleRecievedSecsMessage() // 需要加個CancelToken
     {
-        await foreach (var ReceiveSecsMsg in recvBuffer.Reader.ReadAllAsync())
+        //await foreach (var ReceiveSecsMsg in recvBuffer.Reader.ReadAllAsync())
+        // 會有神秘的處理延遲的抖動, 還是樸實一點...
+        var ReceiveSecsMsg = await recvBuffer.Reader.ReadAsync();
+        //{
+        //var ReceiveSecsMsg = await recvBuffer.Reader.ReadAsync();
+        try
         {
-            //var ReceiveSecsMsg = await recvBuffer.Reader.ReadAsync();
-            try
-            {
-                //Check Comm State
-                //Disable時什麼都不回應
-                //NotCommunicatig時,由Manager處理S1F13流程
-                //如果任何通訊發生失敗，應回到Not Communicating
-                if (_commStateManager.CurrentState is CommunicationState.DISABLED)
+            //Check Comm State
+            //Disable時什麼都不回應
+            //NotCommunicatig時,由Manager處理S1F13流程
+            //如果任何通訊發生失敗，應回到Not Communicating
+            if (_commStateManager.CurrentState is CommunicationState.DISABLED)
+                return;
+            if (_commStateManager.CurrentState is not CommunicationState.COMMUNICATING)
+            { // Comm 有Host Trigger 和 Eqp Trigger
+                var msg = ReceiveSecsMsg.PrimaryMessage;
+                if (msg.S != 1 || msg.F != 13) //白名單方式
                     return;
-                if (_commStateManager.CurrentState is not CommunicationState.COMMUNICATING)
-                { // Comm 有Host Trigger 和 Eqp Trigger
-                    var msg = ReceiveSecsMsg.PrimaryMessage;
-                    if (msg.S != 1 || msg.F != 13) //白名單方式
-                        return;
 
-                }
-                //Check Ctrl State
-                if (_ctrlStateManager.IsOnLine == false)
-                {
-                    var msg = ReceiveSecsMsg.PrimaryMessage;
-                    if ((msg.S != 1 || msg.F != 13) || (msg.S != 1 || msg.F != 17))
-                    {
-                        //sNf0
-                        using var rtnSNF0 = new SecsMessage(msg.S, 0);
-                        await ReceiveSecsMsg.TryReplyAsync(rtnSNF0);
-                    }
-                }
-                //Format Validation, S9F7
-                if (SecsItemSchemaValidator.IsValid(ReceiveSecsMsg.PrimaryMessage) == false)
-                {
-                    _ = ReceiveSecsMsg.TryReplyAsync();//不帶Item, 會給S9F7
-                    await Task.Delay(10);
-                    continue;
-                }
-                //Handle PrimaryMessage
-                HandlePrimaryMessage(ReceiveSecsMsg);
             }
-            catch (Exception ex)
+            //Check Ctrl State
+            if (_ctrlStateManager.IsOnLine == false)
             {
-                Debug.WriteLine(ex.ToString());
+                var msg = ReceiveSecsMsg.PrimaryMessage;
+                if ((msg.S != 1 || msg.F != 13) || (msg.S != 1 || msg.F != 17))
+                {
+                    //sNf0
+                    using var rtnSNF0 = new SecsMessage(msg.S, 0);
+                    await ReceiveSecsMsg.TryReplyAsync(rtnSNF0);
+                }
             }
-            await Task.Delay(5);
+            //Format Validation, S9F7
+            if (SecsItemSchemaValidator.IsValid(ReceiveSecsMsg.PrimaryMessage) == false)
+            {
+                _ = ReceiveSecsMsg.TryReplyAsync();//不帶Item, 會給S9F7
+                                                   //await Task.Delay(10);
+                                                   //continue;
+                return;
+            }
+            //Handle PrimaryMessage
+            HandlePrimaryMessage(ReceiveSecsMsg);
+
+
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.ToString());
+        }
+        //await Task.Delay(5);
+        // }
     }
     async void HandlePrimaryMessage(PrimaryMessageWrapper? primaryMsgWrapper)
     {
@@ -118,7 +123,7 @@ public class GemEqpService
             //S1F3 Selected Equipment Status Request
             case SecsMessage msg when (msg.S == 1 && msg.F == 3):
                 var vids = msg.SecsItem.Items.Select(item => item.FirstValue<int>());
-                var svList = _GemRepo.GetSvListByVidList(vids);
+                var svList = _GemRepo.GetSvList(vids);
                 using (var rtnS2F4 = new SecsMessage(1, 4)
                 {
                     SecsItem = svList
@@ -223,7 +228,7 @@ public class GemEqpService
                 .Select(item => (item.Items[0].FirstValue<int>(),
                                   item.Items[1])).ToList();
                 //Debug.WriteLine("")
-                var rtnS2F15 = _GemRepo.SetECByIdLst(ecidecv);
+                var rtnS2F15 = _GemRepo.SetEcList(ecidecv);
                 using (var rtnS2F16 = new SecsMessage(2, 16)
                 {
                     SecsItem = B((byte)rtnS2F15)
@@ -249,7 +254,7 @@ public class GemEqpService
                     return OnTerminalMessageReceived?.Invoke(terminalText);
                 });
 
-                using (var rtnS10F4 = new SecsMessage(2, 26)
+                using (var rtnS10F4 = new SecsMessage(10, 4)
                 {
                     SecsItem = B(Convert.ToByte(ackc10))
                 })
@@ -376,7 +381,7 @@ public class GemEqpService
     //數值類
     public Item? GetVariableById(int VID)
     {
-        return _GemRepo.GetSvByVID(VID); //這樣還有要?
+        return _GemRepo.GetSv(VID); //這樣還有要?
     }
     public void GetVariableByName(string name)
     {
@@ -384,11 +389,11 @@ public class GemEqpService
     }
     public int UpdateSV(int VID, object varValue)
     {
-        return _GemRepo.SetVarValueById(VID, varValue);
+        return _GemRepo.SetVarValue(VID, varValue);
     }
     public int UpdateEC(List<(int, Item)> idValList)
     {
-        return _GemRepo.SetECByIdLst(idValList);
+        return _GemRepo.SetEcList(idValList);
     }
 
     //Report類
@@ -419,7 +424,7 @@ public class GemEqpService
     }
     public void SendEventReport(int eventId)
     {
-        var reports = _GemRepo.GetReportByEventId(eventId);
+        var reports = _GemRepo.GetReport(eventId);
         Random random = new Random();
         var dataId = random.Next();
         using var s6f11 = new SecsMessage(6, 11)

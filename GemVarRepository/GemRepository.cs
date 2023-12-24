@@ -27,7 +27,7 @@ public partial class GemRepository
     /// <summary>for s1f3,s1f4</summary>
     /// <param name="vidList"></param>
     /// <returns></returns>
-    public Item? GetSvListByVidList(IEnumerable<int> vidList)
+    public Item? GetSvList(IEnumerable<int> vidList)
     {
         using (_context = new GemVarContext())
         {
@@ -36,9 +36,9 @@ public partial class GemRepository
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
-        return Item.L(vidList.Select(vid => GetSvByVID(vid)).ToArray());
+        return Item.L(vidList.Select(vid => SubGetVarByVID(vid)).ToArray());
     }
-    public Item? GetSvByVID(int vid)
+    public Item? GetSv(int vid)
     {
         using (_context = new GemVarContext())
         {
@@ -111,7 +111,7 @@ public partial class GemRepository
                 var subItem = _context.Variables.Where(v => v.VarType == "SV").Where(v => v.ListSVID == variable.VID).ToList();
                 return Item.L(subItem.Select(v =>
                 {
-                    return v.DataType == "LIST" ? GetSvByVID(v.VID) : GemVariableToSecsItem(v);
+                    return v.DataType == "LIST" ? GetSv(v.VID) : GemVariableToSecsItem(v);
                 }).ToArray());
             }
 
@@ -207,7 +207,7 @@ public partial class GemRepository
     /// <param name="vid"></param>
     /// <param name="updateValue"></param>
     /// <returns></returns>
-    public int SetVarValueById(int vid, object updateValue)
+    public int SetVarValue(int vid, object updateValue)
     {
         using (_context = new GemVarContext())
         {
@@ -290,7 +290,7 @@ public partial class GemRepository
     /// </summary>
     /// <param name="idValLst"></param>
     /// <returns></returns>
-    public int SetECByIdLst(List<(int, Item)> idValLst)
+    public int SetEcList(List<(int, Item)> idValLst)
     {
         int EAC = -1;
         var idLst = idValLst.Select(pair => pair.Item1).ToList();
@@ -313,10 +313,6 @@ public partial class GemRepository
             return 0; //all success
         }
     }
-    /// <summary>
-    /// 這裡面沒SaveChange
-    /// </summary>
-    /// <returns></returns>
     int SubSetVarById(GemVariable variable, (int, Item) idVal)
     {
         try
@@ -430,7 +426,7 @@ public partial class GemRepository
     }
     #endregion
 
-    public Item? GetReportByEventId(int ceid)
+    public Item? GetReport(int ceid)
     {
         using (_context = new GemVarContext())
         {

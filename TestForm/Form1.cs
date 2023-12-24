@@ -36,7 +36,7 @@ public partial class Form1 : Form
             IpAddress = "127.0.0.1",
             Port = 5000,
             //SocketReceiveBufferSize = 8096,
-            SocketReceiveBufferSize = 1024,
+            SocketReceiveBufferSize = 8096,
             DeviceId = 0,
             LinkTestInterval = 1000 * 60,
             T6 = 5000
@@ -69,7 +69,7 @@ public partial class Form1 : Form
     private void button1_Click(object sender, EventArgs e)
     {
 
-        var test = _gemRepo.GetSvByVID(9);
+        var test = _gemRepo.GetSv(9);
         MessageBox.Show(test.ToJson());
 
         var nameList = _gemRepo.GetSvNameListAll();
@@ -250,7 +250,7 @@ public partial class Form1 : Form
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        var test = _gemRepo.GetReportByEventId(1);
+        var test = _gemRepo.GetReport(1);
         sw.Stop();
         MessageBox.Show(test.ToJson());
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
@@ -261,7 +261,7 @@ public partial class Form1 : Form
         var inputId = Convert.ToInt32(Tbx_InputVid.Text.Trim());
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        var test = _gemRepo.GetSvByVID(inputId);
+        var test = _gemRepo.GetSv(inputId);
         sw.Stop();
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
         MessageBox.Show(test.ToJson());
