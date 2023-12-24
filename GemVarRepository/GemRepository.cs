@@ -111,10 +111,7 @@ public partial class GemRepository
                 var subItem = _context.Variables.Where(v => v.VarType == "SV").Where(v => v.ListSVID == variable.VID).ToList();
                 return Item.L(subItem.Select(v =>
                 {
-                    if (v.DataType == "LIST")
-                        return GetSvByVID(v.VID);
-                    return GemVariableToSecsItem(v);
-
+                    return v.DataType == "LIST" ? GetSvByVID(v.VID) : GemVariableToSecsItem(v);
                 }).ToArray());
             }
 
@@ -136,17 +133,17 @@ public partial class GemRepository
         using (_context = new GemVarContext())
         {
             var svNameList = vidList.Select(vid =>
-        {
-            return _context.Variables.Where(v => v.VarType == "SV")
+        {   //這種寫法有一天要改
+            return _context.Variables.Where(v => v.VarType == "SV") //混到EC, EV可嗎?
            .Where(v => v.VID == vid).FirstOrDefault();
-        }).Select(v =>
-       {
-           if (v is null)
-           {
-               return A();// ?
-           }
-           return Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit));
-       });
+        }).Select(v =>  // Comment: A:0 for SVNAME and UNITS indicates unknown SVID
+        {
+            if (v is null)
+            {
+                return A();// ?
+            }
+            return Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit));
+        });
             return Item.L(svNameList.ToArray());
         }
     }
@@ -171,7 +168,7 @@ public partial class GemRepository
             List<GemVariable?> rtnGemVar = new();
             foreach (var vid in vidList)
             {
-                var rtnEc = _context.Variables.Where(v=>v.VarType=="EC").Where(v => v.VID == vid).FirstOrDefault();
+                var rtnEc = _context.Variables.Where(v => v.VarType == "EC").Where(v => v.VID == vid).FirstOrDefault();
                 //rtnGemVar = rtnGemVar == null ? rtnEc : rtnGemVar.Concat(rtnEc);
                 //rtnGemVar =  rtnGemVar.Concat(rtnEc);
                 rtnGemVar.Add(rtnEc); // 這樣很違反EF的原則..., 有空改成raw sql
