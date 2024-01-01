@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemDeviceService", "GemDevi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestForm", "TestForm\TestForm.csproj", "{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolForm", "ToolForm\ToolForm.csproj", "{C812ABAA-432A-478C-9596-0C4F4D357DF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -299,6 +299,7 @@ public class GemEqpService
         {
             OnControlStateChanged?.Invoke(transition.currentState.ToString(),
                 transition.previousState.ToString());
+            //SendEventReport(1);
         };
 
         _connector.ConnectionChanged += async (sender, connectState) =>

@@ -21,22 +21,14 @@ public partial class Form1 : Form
         _gemRepo = new GemRepository();
 
         var logger = new SecsLogger(this);
-        //var options = Options.Create(new SecsGemOptions
-        //{
-        //    IsActive = true,
-        //    IpAddress = "127.0.0.1",
-        //    Port = 5000,
-        //    SocketReceiveBufferSize = 8096,
-        //    DeviceId= 0,
-        //    T6= 5000
-        //});
+        
         service = new GemEqpService(logger, _gemRepo, new SecsGemOptions
         {
             IsActive = true,
             IpAddress = "127.0.0.1",
             Port = 5000,
             //SocketReceiveBufferSize = 8096,
-            SocketReceiveBufferSize = 8096,
+            SocketReceiveBufferSize = 1024,
             DeviceId = 0,
             LinkTestInterval = 1000 * 60,
             T6 = 5000
