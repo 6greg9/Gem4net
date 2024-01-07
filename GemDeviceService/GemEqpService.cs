@@ -141,9 +141,7 @@ public class GemEqpService
                         SecsItem = svNameList
                     })
                         await primaryMsgWrapper.TryReplyAsync(rtnS1F12);
-                }
-                else
-                {
+                }else{
                     var svNameList = _GemRepo.GetSvNameListAll();
                     using (var rtnS1F12 = new SecsMessage(1, 12)
                     {
@@ -151,7 +149,6 @@ public class GemEqpService
                     })
                         await primaryMsgWrapper.TryReplyAsync(rtnS1F12);
                 }
-
                 break;
             //S1F13 EstablishCommunicationsRequest, 要看是Host/Eqp Init
             case SecsMessage msg when (msg.S == 1 && msg.F == 13):
@@ -227,7 +224,6 @@ public class GemEqpService
                 var ecidecv = msg.SecsItem.Items
                 .Select(item => (item.Items[0].FirstValue<int>(),
                                   item.Items[1])).ToList();
-                //Debug.WriteLine("")
                 var rtnS2F15 = _GemRepo.SetEcList(ecidecv);
                 using (var rtnS2F16 = new SecsMessage(2, 16)
                 {
@@ -245,13 +241,12 @@ public class GemEqpService
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F26);
                 break;
             //S2F33 Define Report
-            case SecsMessage msg when (msg.S == 2&& msg.F == 33):
-                
+            case SecsMessage msg when (msg.S == 2 && msg.F == 33):
                 var reportDefines = msg.SecsItem[1].Items.Select((secsItem) =>
                 {
                     var rptId = secsItem[0].FirstValue<int>();
-                    var vids = secsItem[1].Items.Select(i=> i.FirstValue<int>()).ToArray();
-                    return((rptId, vids));
+                    var vids = secsItem[1].Items.Select(i => i.FirstValue<int>()).ToArray();
+                    return ((rptId, vids));
                 });
                 var DRACK = _GemRepo.DefineReport(reportDefines);
                 using (var rtnS2F34 = new SecsMessage(2, 34)
@@ -268,13 +263,23 @@ public class GemEqpService
                     var vids = secsItem[1].Items.Select(i => i.FirstValue<int>()).ToArray();
                     return ((rptId, vids));
                 });
-                // 去查
+                var LRACK = _GemRepo.LinkEvent(linkEventReports);
+                using (var rtnS2F36 = new SecsMessage(2, 36)
+                {
+                    SecsItem = B(Convert.ToByte(LRACK))
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F36);
                 break;
             //S2F37 Enable/Disable Event Report
             case SecsMessage msg when (msg.S == 2 && msg.F == 37):
                 var Enable = msg.SecsItem[0].FirstValue<bool>();
-                var lstECIDs = msg.SecsItem[1].Items.Select( i => i.FirstValue<int>() ).ToList();
-                // 去啟用
+                var lstECIDs = msg.SecsItem[1].Items.Select(i => i.FirstValue<int>()).ToList();
+                var ERACK = _GemRepo.EnableEvent(Enable, lstECIDs);
+                using (var rtnS2F38 = new SecsMessage(2, 38)
+                {
+                    SecsItem = B(Convert.ToByte(ERACK))
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F38);
                 break;
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):

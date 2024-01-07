@@ -473,11 +473,11 @@ public partial class GemRepository
                 return 0;
             }
 
-            var newRptIds = rptLst.Where(rpt=>rpt.VID.Length>0).Select(rpt=> rpt.RPTID).ToList(); //不是刪除的個數
+            var newRptIds = rptLst.Where(rpt => rpt.VID.Length > 0).Select(rpt => rpt.RPTID).ToList(); //不是刪除的個數
             if (_context.Reports.Where(rpt => newRptIds.Contains(rpt.RPTID)).Count() > 0)
                 return 3;
 
-            foreach(var rptDefine in rptLst)
+            foreach (var rptDefine in rptLst)
             {
                 if (rptDefine.VID.Length == 0)//Delete
                 {
@@ -498,7 +498,7 @@ public partial class GemRepository
                 }
                 var newAddRptVarLinks = newRptVarLinks.Select(t => new ReportVariableLink { RPTID = t.Item1, VID = t.Item2 }).ToList();
                 _context.ReportVariableLinks.AddRange(newAddRptVarLinks);
-               
+
             }
             _context.SaveChanges();
             return 0;
@@ -536,13 +536,13 @@ public partial class GemRepository
                 if (_context.Events.Where(evnt => evnt.ECID == linkDefine.CEID).Count() == 0)//CEID 不存在
                     return 4;
                 var vidLst = linkDefine.RPTIDs.ToList(); // RPTID 存在
-                if (_context.Reports.Where(rpt=>vidLst.Contains(rpt.RPTID) ).Count() ==0 )//有不存在的RPTID
+                if (_context.Reports.Where(rpt => vidLst.Contains(rpt.RPTID)).Count() == 0)//有不存在的RPTID
                     return 5;
 
                 var newEvntRptLinks = new List<(int, int)>();
                 foreach (var rptid in linkDefine.RPTIDs)
                 {
-                    newEvntRptLinks.Add(( linkDefine.CEID , rptid));
+                    newEvntRptLinks.Add((linkDefine.CEID, rptid));
                 }
                 var newAddEvntRptLinks = newEvntRptLinks
                     .Select(lnk => new EventReportLink { ECID = lnk.Item1, RPTID = lnk.Item2 }).ToList();
@@ -553,9 +553,26 @@ public partial class GemRepository
             return 0;
         }
     }
-    public int EnableEvent(bool isEnable,IEnumerable<int> ecids)
+    /// <summary>
+    /// 0 - ok, 1 - denied
+    /// </summary>
+    /// <param name="isEnable"></param>
+    /// <param name="ecids"></param>
+    /// <returns></returns>
+    public int EnableEvent(bool isEnable, IEnumerable<int> ecids)
     {
-        return 0;
+        using (_context = new GemVarContext())
+        {
+            if (_context.Events.Where(evnt => ecids.Contains(evnt.ECID)).Count() != ecids.Count()) //ECID有不存在
+                return 1;
+            foreach (var evnt in _context.Events.Where(evnt => ecids.Contains(evnt.ECID)))
+            {
+                evnt.Enabled = isEnable;
+                //另外還要把對應SV改變
+            }
+            _context.SaveChanges();
+            return 0;
+        }
     }
     #endregion
 }
