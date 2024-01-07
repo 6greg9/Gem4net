@@ -290,14 +290,14 @@ public partial class GemRepository
     /// </summary>
     /// <param name="idValLst"></param>
     /// <returns></returns>
-    public int SetEcList(List<(int, Item)> idValLst)
+    public int SetEcList(IEnumerable<(int, Item)> idValLst)
     {
         int EAC = -1;
         var idLst = idValLst.Select(pair => pair.Item1).ToList();
         using (_context = new GemVarContext())
         {
             var ECs = _context.Variables.Where(v => v.VarType == "EC");
-            if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idValLst.Count)
+            if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idLst.Count)
             {
                 EAC = 1;
                 return EAC;
@@ -444,7 +444,9 @@ public partial class GemRepository
                     Variable = _context.Variables.Where(v => v.VID == link.VID).First()
                 }).ToList(); //.GroupBy( v=>v.RptId ).Select(v=> v.)
             //.Select(pair=> {RptId = pair.Key, Datas =  pair} );
-            var rtnReports = reportVars.GroupBy(d => d.RptId).Select(pair => (pair.Key, pair.ToList())).ToList();
+            var rtnReports = reportVars
+                .GroupBy(d => d.RptId)
+                .Select(pair => (pair.Key, pair.ToList())).ToList();
             foreach (var groupData in rtnReports)
             {
                 var vids = groupData.Item2.Select(v => v.Variable.VID);
@@ -454,4 +456,106 @@ public partial class GemRepository
             return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
         }
     }
+
+    #region DynamicEventReport
+    /// <summary>
+    /// 0 - ok, 1 - out of spac, 2 - invalid format, 3 - 1 or more RPTID already defined, 4 - 1 or more invalid VID
+    /// </summary>
+    /// <returns></returns>
+    public int DefineReport(IEnumerable<(int RPTID, int[] VID)> rptLst)
+    {
+        using (_context = new GemVarContext())
+        {
+            if (rptLst.Count() == 0)//清光, 也許應該寫在其他地方...
+            {
+                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports ");
+                _context.SaveChanges();
+                return 0;
+            }
+
+            var newRptIds = rptLst.Where(rpt=>rpt.VID.Length>0).Select(rpt=> rpt.RPTID).ToList(); //不是刪除的個數
+            if (_context.Reports.Where(rpt => newRptIds.Contains(rpt.RPTID)).Count() > 0)
+                return 3;
+
+            foreach(var rptDefine in rptLst)
+            {
+                if (rptDefine.VID.Length == 0)//Delete
+                {
+                    var rpt = _context.Reports.Where(rpt => rpt.RPTID == rptDefine.RPTID);
+                    _context.Remove(rpt);
+                    continue;
+                }
+                //Create
+                var vidLst = rptDefine.VID.ToList();
+                if (_context.Variables.Where(v => vidLst.Contains(v.VID)).Count() != vidLst.Count())//有不存在的VID
+                    return 4;
+                var newRpt = new GemReport { RPTID = rptDefine.RPTID }; // Define,Remark 就算了...
+                _context.Reports.Add(newRpt);
+                var newRptVarLinks = new List<(int, int)>();
+                foreach (var vid in rptDefine.VID)
+                {
+                    newRptVarLinks.Add((rptDefine.RPTID, vid));
+                }
+                var newAddRptVarLinks = newRptVarLinks.Select(t => new ReportVariableLink { RPTID = t.Item1, VID = t.Item2 }).ToList();
+                _context.ReportVariableLinks.AddRange(newAddRptVarLinks);
+               
+            }
+            _context.SaveChanges();
+            return 0;
+        }
+
+    }
+
+    /// <summary>
+    /// 0 - ok, 1 - out of space, 2 - invalid format, 3 - 1 or more CEID links already defined, 4 - 1 or more CEID invalid, 5 - 1 or more RPTID invalid
+    /// </summary>
+    /// <param name="evntRptLinks"></param>
+    /// <returns></returns>
+    public int LinkEvent(IEnumerable<(int CEID, int[] RPTIDs)> evntRptLinks)
+    {
+        using (_context = new GemVarContext())
+        {
+            if (evntRptLinks.Count() == 0)//清光, 也許應該寫在其他地方...
+            {
+                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports ");
+                _context.SaveChanges();
+                return 0;
+            }
+            var newLinkECIDs = evntRptLinks.Where(rpt => rpt.RPTIDs.Length > 0).Select(rpt => rpt.CEID).ToList(); //不是刪除的個數
+            if (_context.EventReportLinks.Where(link => newLinkECIDs.Contains(link.ECID)).Count() > 0)
+                return 3;
+            foreach (var linkDefine in evntRptLinks)
+            {
+                if (linkDefine.RPTIDs.Length == 0)//Delete
+                {
+                    var deleteLinks = _context.EventReportLinks.Where(rpt => rpt.ECID == linkDefine.CEID);
+                    _context.Remove(deleteLinks);
+                    continue;
+                }
+                //Create
+                if (_context.Events.Where(evnt => evnt.ECID == linkDefine.CEID).Count() == 0)//CEID 不存在
+                    return 4;
+                var vidLst = linkDefine.RPTIDs.ToList(); // RPTID 存在
+                if (_context.Reports.Where(rpt=>vidLst.Contains(rpt.RPTID) ).Count() ==0 )//有不存在的RPTID
+                    return 5;
+
+                var newEvntRptLinks = new List<(int, int)>();
+                foreach (var rptid in linkDefine.RPTIDs)
+                {
+                    newEvntRptLinks.Add(( linkDefine.CEID , rptid));
+                }
+                var newAddEvntRptLinks = newEvntRptLinks
+                    .Select(lnk => new EventReportLink { ECID = lnk.Item1, RPTID = lnk.Item2 }).ToList();
+                _context.EventReportLinks.AddRange(newAddEvntRptLinks);
+
+            }
+            _context.SaveChanges();
+            return 0;
+        }
+    }
+    public int EnableEvent(bool isEnable,IEnumerable<int> ecids)
+    {
+        return 0;
+    }
+    #endregion
 }

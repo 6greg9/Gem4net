@@ -36,6 +36,12 @@ public static class SecsItemSchemaValidator
                 return IsS2F15(Msg.SecsItem);
             case (2,25):
                 return IsS2F25(Msg.SecsItem);
+            case (2,33):
+                return IsS2F33(Msg.SecsItem);
+            case (2, 35):
+                return IsS2F35(Msg.SecsItem);
+            case (2, 37):
+                return IsS2F37(Msg.SecsItem);
             case (10,3):
                 return IsS10F3(Msg.SecsItem);
             default:
@@ -212,6 +218,77 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
+    static Func<Item?, bool> IsS2F33 = (itemRoot) =>
+    {
+        if (itemRoot == null)
+            return false;
+        if (itemRoot.Format != SecsFormat.List || itemRoot.Count != 2)
+            return false;
+        if (itemRoot[0].Format != SecsFormat.U4 || itemRoot[1].Format != SecsFormat.List)
+            return false;
+        var reports = itemRoot[1];
+        foreach(var report in reports.Items) {
+            if(report.Count != 2)
+                return false;
+            
+            if (report[0].Format != SecsFormat.U4 || report[1].Format != SecsFormat.List )
+                return false;
+            var reportVids = report[1];
+            foreach(var vid in reportVids.Items)
+            {
+                if(vid.Format != SecsFormat.U4)
+                    return false;
+            }
+        }
+        return true;
+
+    };
+    static Func<Item?, bool> IsS2F35 = (itemRoot) =>
+    {
+        if (itemRoot == null)
+            return false;
+        if (itemRoot.Format != SecsFormat.List || itemRoot.Count != 2)
+            return false;
+        if (itemRoot[0].Format != SecsFormat.U4 || itemRoot[1].Format != SecsFormat.List)
+            return false;
+        var reports = itemRoot[1];
+        foreach (var report in reports.Items)
+        {
+            if (report.Count != 2)
+                return false;
+
+            if (report[0].Format != SecsFormat.U4 || report[1].Format != SecsFormat.List)
+                return false;
+            var reportVids = report[1];
+            foreach (var vid in reportVids.Items)
+            {
+                if (vid.Format != SecsFormat.U4)
+                    return false;
+            }
+        }
+        return true;
+
+    };
+    static Func<Item?, bool> IsS2F37 = (itemRoot) =>
+    {
+        if (itemRoot == null )
+            return false;
+        if (itemRoot.Format != SecsFormat.List || itemRoot.Count != 2 )
+            return false;
+        if (itemRoot[0].Format != SecsFormat.Boolean)
+            return false;
+
+        var lstCEID = itemRoot[1];
+        if( lstCEID.Format != SecsFormat.List ) 
+            return false;
+        foreach(var item in lstCEID.Items)
+        {
+            if(item.Format != SecsFormat.U4)
+                return false;
+        }
+        return true;
+
+    };
     static Func<Item?, bool> IsS2F41 = (item) =>
     {
         if (item == null)
@@ -219,7 +296,6 @@ public static class SecsItemSchemaValidator
 
         return false;
     };
-
 
     #endregion
 

@@ -244,8 +244,39 @@ public class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F26);
                 break;
+            //S2F33 Define Report
+            case SecsMessage msg when (msg.S == 2&& msg.F == 33):
+                
+                var reportDefines = msg.SecsItem[1].Items.Select((secsItem) =>
+                {
+                    var rptId = secsItem[0].FirstValue<int>();
+                    var vids = secsItem[1].Items.Select(i=> i.FirstValue<int>()).ToArray();
+                    return((rptId, vids));
+                });
+                var DRACK = _GemRepo.DefineReport(reportDefines);
+                using (var rtnS2F34 = new SecsMessage(2, 34)
+                {
+                    SecsItem = B(Convert.ToByte(DRACK))
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F34);
+                break;
+            //S2F35 Link Event Report
+            case SecsMessage msg when (msg.S == 2 && msg.F == 35):
+                var linkEventReports = msg.SecsItem[1].Items.Select((secsItem) =>
+                {
+                    var rptId = secsItem[0].FirstValue<int>();
+                    var vids = secsItem[1].Items.Select(i => i.FirstValue<int>()).ToArray();
+                    return ((rptId, vids));
+                });
+                // 去查
+                break;
+            //S2F37 Enable/Disable Event Report
+            case SecsMessage msg when (msg.S == 2 && msg.F == 37):
+                var Enable = msg.SecsItem[0].FirstValue<bool>();
+                var lstECIDs = msg.SecsItem[1].Items.Select( i => i.FirstValue<int>() ).ToList();
+                // 去啟用
+                break;
             //S10F3 Terminal Display, Single
-
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
                 var terminalText = msg.SecsItem.Items[1].GetString();
