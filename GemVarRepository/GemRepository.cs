@@ -47,6 +47,8 @@ public partial class GemRepository
     }
     Item? SubGetVarByVID(int vid)
     {
+        //在這特別處理CLOCK...
+        //但是還是每秒更新1次CLOCK?
         var Variable = _context.Variables
             //.Where(v=>v.VarType=="SV")
             .Where(v => v.VID == vid).FirstOrDefault();
@@ -63,8 +65,9 @@ public partial class GemRepository
             {
                 switch (variable.DataType)
                 {
-                    //case "BINARY":
-                    //    return Item.B
+                    case "BINARY":
+                        
+                        return Item.B(Convert.FromHexString(variable.Value));
                     case "BOOL":
                         var BOOL = Convert.ToBoolean(variable.Value);
                         return Item.Boolean(BOOL);
@@ -220,8 +223,10 @@ public partial class GemRepository
                 {
                     switch (variable.DataType)
                     {
-                        //case "BINARY":
-                        //    return Item.B
+                        case "BINARY":
+                            var HexString = Convert.ToHexString((byte[])updateValue);
+                            variable.Value = HexString;
+                            break;
                         case "BOOL":
                             var BOOL = Convert.ToBoolean(updateValue);
                             variable.Value = BOOL.ToString();

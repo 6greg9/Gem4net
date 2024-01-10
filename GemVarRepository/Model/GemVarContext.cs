@@ -61,13 +61,13 @@ public class GemVarContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
-        modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc => sc.Id);
+        //modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc => sc.Id);
         modelBuilder.Entity<ProcessParameter>()
             .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });
-        modelBuilder.Entity<ProcessParameter>()
-            .HasOne<FormattedProcessProgram>(sc => sc.ProcessProgramVersion)
-            .WithMany(sc => sc.ProcessParameters)
-            .HasForeignKey(sc => sc.ProcessProgramId);
+        //modelBuilder.Entity<ProcessParameter>()
+        //    .HasOne<FormattedProcessProgram>(sc => sc.ProcessProgramVersion)
+        //    .WithMany(sc => sc.ProcessParameters)
+        //    .HasForeignKey(sc => sc.ProcessProgramId);
 
         modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
 
