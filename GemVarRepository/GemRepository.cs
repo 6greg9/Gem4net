@@ -1,4 +1,5 @@
-﻿using GemVarRepository.Model;
+﻿using Dapper;
+using GemVarRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using System;
@@ -22,7 +23,8 @@ public partial class GemRepository
 
     public GemRepository()
     {
-
+        //EFcore加Dapper做成撒尿牛肉丸
+        //SqlMapper.AddTypeHandler(new GemVarTypeHandler());
     }
     /// <summary>for s1f3,s1f4</summary>
     /// <param name="vidList"></param>
