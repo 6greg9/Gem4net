@@ -15,7 +15,8 @@ public class GemVarContext : DbContext
     public DbSet<GemReport> Reports { get; set; }
     public DbSet<EventReportLink> EventReportLinks { get; set; }
     public DbSet<ReportVariableLink> ReportVariableLinks { get; set; }
-    //public DbSet<ProcessProgram> ProcessPrograms { get; set; }
+    public DbSet<ProcessProgram> ProcessPrograms { get; set; }
+    public DbSet<FormattedProcessProgram> FormattedProcessPrograms { get; set; }
 
     public string DbPath { get; }
     public GemVarContext()
@@ -61,9 +62,9 @@ public class GemVarContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
-        //modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc => sc.Id);
-        modelBuilder.Entity<ProcessParameter>()
-            .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });
+        modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc => new { sc.ID, sc.PPID });
+        //modelBuilder.Entity<ProcessParameter>()
+        //    .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });
         //modelBuilder.Entity<ProcessParameter>()
         //    .HasOne<FormattedProcessProgram>(sc => sc.ProcessProgramVersion)
         //    .WithMany(sc => sc.ProcessParameters)

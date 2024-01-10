@@ -62,6 +62,9 @@ partial class Form1
         Btn_S10F1TerminalRequest = new Button();
         Tbx_TerminalInput = new RichTextBox();
         Tbx_Terminal = new RichTextBox();
+        Page_ProcessProgram = new TabPage();
+        Btn_SelectAllPP = new Button();
+        Btn_InsertPP = new Button();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         Tab_GemState.SuspendLayout();
@@ -69,6 +72,7 @@ partial class Form1
         Tab_Variables.SuspendLayout();
         Page_Events.SuspendLayout();
         Page_Terminal.SuspendLayout();
+        Page_ProcessProgram.SuspendLayout();
         SuspendLayout();
         // 
         // button1
@@ -227,6 +231,7 @@ partial class Form1
         Tab_Events.Controls.Add(Tab_Variables);
         Tab_Events.Controls.Add(Page_Events);
         Tab_Events.Controls.Add(Page_Terminal);
+        Tab_Events.Controls.Add(Page_ProcessProgram);
         Tab_Events.Location = new Point(12, 228);
         Tab_Events.Name = "Tab_Events";
         Tab_Events.SelectedIndex = 0;
@@ -406,6 +411,37 @@ partial class Form1
         Tbx_Terminal.TabIndex = 11;
         Tbx_Terminal.Text = "";
         // 
+        // Page_ProcessProgram
+        // 
+        Page_ProcessProgram.Controls.Add(Btn_InsertPP);
+        Page_ProcessProgram.Controls.Add(Btn_SelectAllPP);
+        Page_ProcessProgram.Location = new Point(4, 32);
+        Page_ProcessProgram.Name = "Page_ProcessProgram";
+        Page_ProcessProgram.Size = new Size(1345, 398);
+        Page_ProcessProgram.TabIndex = 5;
+        Page_ProcessProgram.Text = "ProcessProgram";
+        Page_ProcessProgram.UseVisualStyleBackColor = true;
+        // 
+        // Btn_SelectAllPP
+        // 
+        Btn_SelectAllPP.Location = new Point(343, 123);
+        Btn_SelectAllPP.Name = "Btn_SelectAllPP";
+        Btn_SelectAllPP.Size = new Size(147, 46);
+        Btn_SelectAllPP.TabIndex = 0;
+        Btn_SelectAllPP.Text = "SelectAllPP";
+        Btn_SelectAllPP.UseVisualStyleBackColor = true;
+        Btn_SelectAllPP.Click += Btn_SelectAllPP_Click;
+        // 
+        // Btn_InsertPP
+        // 
+        Btn_InsertPP.Location = new Point(599, 176);
+        Btn_InsertPP.Name = "Btn_InsertPP";
+        Btn_InsertPP.Size = new Size(147, 46);
+        Btn_InsertPP.TabIndex = 1;
+        Btn_InsertPP.Text = "InsertPP";
+        Btn_InsertPP.UseVisualStyleBackColor = true;
+        Btn_InsertPP.Click += Btn_InsertPP_Click;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(11F, 23F);
@@ -424,6 +460,7 @@ partial class Form1
         Page_Events.ResumeLayout(false);
         Page_Events.PerformLayout();
         Page_Terminal.ResumeLayout(false);
+        Page_ProcessProgram.ResumeLayout(false);
         ResumeLayout(false);
     }
 
@@ -463,4 +500,7 @@ partial class Form1
     private Button Btn_S10F1TerminalRequest;
     private RichTextBox Tbx_TerminalInput;
     private RichTextBox Tbx_Terminal;
+    private TabPage Page_ProcessProgram;
+    private Button Btn_InsertPP;
+    private Button Btn_SelectAllPP;
 }

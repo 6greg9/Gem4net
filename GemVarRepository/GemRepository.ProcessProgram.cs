@@ -12,23 +12,41 @@ namespace GemVarRepository;
 public partial class GemRepository
 {
     // 純增刪查改不做資料驗證
-    public int GetProcessProgram(string PPID)
+    public int GetProcessProgramPFormatted(string PPID)
     {
         using (_context = new GemVarContext())
         {
             var cn = _context.Database.GetDbConnection();
-            //cn.Execute
+            var pp = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
             return 0;
         }
         return 0;
     }
-    public int GetProcessProgram(IEnumerable<string> PPIDs)
+    public int GetProcessProgramFormatted(IEnumerable<string> PPIDs)
     {
         return 0;
     }
-    public int CreateProcessProgram()
+    public IEnumerable<FormattedProcessProgram> GetFormattedPPAll()
     {
-        return 0;
+        using (_context = new GemVarContext())
+        {
+            var cn = _context.Database.GetDbConnection();
+            var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
+            return PPs;
+        }
+    }
+    public int CreateProcessProgram(FormattedProcessProgram pp)
+    {
+        using (_context = new GemVarContext())
+        {
+            var cn = _context.Database.GetDbConnection();
+            cn.Execute("INSERT INTO FormattedProcessPrograms(ID, PPID, UpdateTime, Status, PPBody," +
+                " Editor, Description, ApprovalLevel, SoftwareRevision, EquipmentModelType) " +
+                 "VALUES(@ID, @PPID, @UpdateTime, @Status, @PPBody," +
+                 " @Editor, @Description, @ApprovalLevel, @SoftwareRevision, @EquipmentModelType)", pp);
+
+            return 0;
+        }
     }
     public int UpdateProcessProgram() { return 0; }
 

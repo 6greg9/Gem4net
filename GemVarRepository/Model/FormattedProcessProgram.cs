@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GemVarRepository.Model;
 public class FormattedProcessProgram
 {
+    public Guid ID { get; set; }
     /// <summary>
     /// or PPNAME ?
     /// </summary>
@@ -29,4 +33,37 @@ public class FormattedProcessProgram
     public string? ApprovalLevel { get; set; }
     public string? SoftwareRevision { get; set; }
     public string? EquipmentModelType { get; set; }
+}
+public class PPBody
+{
+    public List<ProcessCommand>? ProcessCommands { get; set; } = new();
+}
+public class ProcessCommand
+{
+    public string CommandCode { get; set; }
+    public List<ProcessParameter>? ProcessParameters { get; set; } = new();//JSON column
+}
+public class ProcessParameter
+{
+    public string DataType { get; set; }
+    public int Length { get; set; }
+    public string Unit { get; set; }
+    public string Value { get; set; }
+    public string Name { get; set; }
+    public string? Definition { get; set; }
+    public string? Remark { get; set; }
+
+}
+
+public class PPBodyHandler : SqlMapper.TypeHandler<PPBody>
+{
+    public override PPBody Parse(object value)
+    {
+        return JsonSerializer.Deserialize<PPBody>((string)value);
+    }
+
+    public override void SetValue(IDbDataParameter parameter, PPBody value)
+    {
+        parameter.Value = JsonSerializer.Serialize(value);
+    }
 }

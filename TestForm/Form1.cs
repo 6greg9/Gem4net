@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 public partial class Form1 : Form
 {
@@ -21,7 +22,7 @@ public partial class Form1 : Form
         _gemRepo = new GemRepository();
 
         var logger = new SecsLogger(this);
-        
+
         service = new GemEqpService(logger, _gemRepo, new SecsGemOptions
         {
             IsActive = true,
@@ -280,5 +281,33 @@ public partial class Form1 : Form
     private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)
     {
         service.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87);
+    }
+
+    private void Btn_InsertPP_Click(object sender, EventArgs e)
+    {
+        var pp = new FormattedProcessProgram();
+        pp.ID = Guid.NewGuid();
+        pp.PPID = "test" + DateTime.Now.ToString("YYYYMMddhhmmss");
+        pp.UpdateTime = DateTime.Now;
+        pp.Status = 1;
+        pp.Editor = "87";
+        pp.ApprovalLevel = "-1";
+        pp.Description = "sss";
+        pp.SoftwareRevision = "fff";
+        pp.EquipmentModelType = "model";
+        var ppBody = new PPBody();
+        var temperatureCmd = new ProcessCommand();
+        temperatureCmd.CommandCode = "temperCC";
+        temperatureCmd.ProcessParameters.Add(
+            new ProcessParameter { Name = "TempA", Value = "87.9", 
+                DataType = "FT_4", Unit="C",Length=8, Definition="test", Remark="YOOOOOOO" });
+        ppBody.ProcessCommands.Add(temperatureCmd);
+        pp.PPBody = JsonSerializer.Serialize(ppBody);
+        _gemRepo.CreateProcessProgram(pp);
+    }
+
+    private void Btn_SelectAllPP_Click(object sender, EventArgs e)
+    {
+
     }
 }

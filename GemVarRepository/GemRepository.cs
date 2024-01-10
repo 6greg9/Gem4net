@@ -24,7 +24,7 @@ public partial class GemRepository
     public GemRepository()
     {
         //EFcore加Dapper做成撒尿牛肉丸
-        //SqlMapper.AddTypeHandler(new GemVarTypeHandler());
+        SqlMapper.AddTypeHandler(new PPBodyHandler());
     }
     /// <summary>for s1f3,s1f4</summary>
     /// <param name="vidList"></param>
