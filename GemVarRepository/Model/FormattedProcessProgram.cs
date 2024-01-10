@@ -23,8 +23,10 @@ public class FormattedProcessProgram
     /// JSON !!!
     /// </summary>
     public string PPBody { get; set; }
-    //public List<ProcessParameter> ProcessParameters { get; set; } = new();
+    
     public string? Editor { get; set; }
     public string? Description { get; set; }
     public string? ApprovalLevel { get; set; }
+    public string? SoftwareRevision { get; set; }
+    public string? EquipmentModelType { get; set; }
 }
