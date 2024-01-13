@@ -3,6 +3,7 @@ using GemVarRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -20,7 +21,6 @@ public partial class GemRepository
     /// The database
     /// </summary>
     private GemVarContext _context;
-
     public GemRepository()
     {
         //EFcore加Dapper做成撒尿牛肉丸
@@ -42,6 +42,12 @@ public partial class GemRepository
     }
     public Item? GetSv(int vid)
     {
+        //Item? rtn = null;
+        //_context.GetSingleton(() =>
+        //{
+        //    rtn = SubGetVarByVID(vid);
+        //});
+        //return null;
         using (_context = new GemVarContext())
         {
             return SubGetVarByVID(vid);

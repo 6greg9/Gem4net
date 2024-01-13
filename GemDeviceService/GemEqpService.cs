@@ -51,7 +51,7 @@ public class GemEqpService
         });
 
         //_communicatinoState = CommunicationState.DISABLED;
-        _GemRepo = gemReposiroty;
+        _GemRepo = ThreadSafeClassProxy.Create(gemReposiroty);
     }
     async void HandleRecievedSecsMessage() // 需要加個CancelToken
     {
