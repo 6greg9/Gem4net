@@ -295,13 +295,13 @@ public partial class Form1 : Form
         pp.Description = "sss";
         pp.SoftwareRevision = "fff";
         pp.EquipmentModelType = "model";
-        var ppBody = new PPBody();
+        var ppBody = new List<ProcessCommand>();
         var temperatureCmd = new ProcessCommand();
         temperatureCmd.CommandCode = "temperCC";
         temperatureCmd.ProcessParameters.Add(
             new ProcessParameter { Name = "TempA", Value = "87.9", 
                 DataType = "FT_4", Unit="C",Length=8, Definition="test", Remark="YOOOOOOO" });
-        ppBody.ProcessCommands.Add(temperatureCmd);
+        ppBody.Add(temperatureCmd);
         pp.PPBody = JsonSerializer.Serialize(ppBody);
         _gemRepo.CreateProcessProgram(pp);
     }

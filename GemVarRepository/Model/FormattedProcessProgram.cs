@@ -26,7 +26,7 @@ public class FormattedProcessProgram
     /// <summary>
     /// JSON !!!
     /// </summary>
-    public string PPBody { get; set; }
+    public string PPBody { get; set; } 
     
     public string? Editor { get; set; }
     public string? Description { get; set; }
@@ -34,10 +34,10 @@ public class FormattedProcessProgram
     public string? SoftwareRevision { get; set; }
     public string? EquipmentModelType { get; set; }
 }
-public class PPBody
-{
-    public List<ProcessCommand>? ProcessCommands { get; set; } = new();
-}
+//public class PPBody
+//{
+//    public List<ProcessCommand>? ProcessCommands { get; set; } = new();
+//}
 public class ProcessCommand
 {
     public string CommandCode { get; set; }
@@ -55,14 +55,14 @@ public class ProcessParameter
 
 }
 
-public class PPBodyHandler : SqlMapper.TypeHandler<PPBody>
+public class PPBodyHandler : SqlMapper.TypeHandler<List<ProcessCommand>>
 {
-    public override PPBody Parse(object value)
+    public override List<ProcessCommand> Parse(object value)
     {
-        return JsonSerializer.Deserialize<PPBody>((string)value);
+        return JsonSerializer.Deserialize<List<ProcessCommand>>((string)value);
     }
 
-    public override void SetValue(IDbDataParameter parameter, PPBody value)
+    public override void SetValue(IDbDataParameter parameter, List<ProcessCommand> value)
     {
         parameter.Value = JsonSerializer.Serialize(value);
     }

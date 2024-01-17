@@ -224,7 +224,8 @@ public static class SecsItemSchemaValidator
             return false;
         if (itemRoot.Format != SecsFormat.List || itemRoot.Count != 2)
             return false;
-        if (itemRoot[0].Format != SecsFormat.U4 || itemRoot[1].Format != SecsFormat.List)
+        if (!(itemRoot[0].Format is SecsFormat.U4 or SecsFormat.U2 or SecsFormat.U1 
+            && itemRoot[1].Format == SecsFormat.List))
             return false;
         var reports = itemRoot[1];
         foreach(var report in reports.Items) {

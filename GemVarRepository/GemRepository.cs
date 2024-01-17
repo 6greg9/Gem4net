@@ -13,6 +13,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static Secs4Net.Item;
 namespace GemVarRepository;
 public partial class GemRepository
@@ -481,7 +482,8 @@ public partial class GemRepository
         {
             if (rptLst.Count() == 0)//清光, 也許應該寫在其他地方...
             {
-                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports ");
+                //_context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports "); sqlite 居然沒有Truncate
+                _context.Database.ExecuteSqlRaw("DELETE FROM Reports");
                 _context.SaveChanges();
                 return 0;
             }
