@@ -496,8 +496,9 @@ public partial class GemRepository
             {
                 if (rptDefine.VID.Length == 0)//Delete
                 {
-                    var rpt = _context.Reports.Where(rpt => rpt.RPTID == rptDefine.RPTID);
-                    _context.Remove(rpt);
+                    var rpt = _context.Reports.Where(rpt => rpt.RPTID == rptDefine.RPTID);//.First();
+                    _context.RemoveRange(rpt);
+                        //_context.Remove(rpt);
                     continue;
                 }
                 //Create

@@ -248,7 +248,7 @@ public class GemEqpService
                     var rptId = secsItem[0].FirstValue<int>();
                     var vids = secsItem[1].Items.Select(i => i.FirstValue<int>()).ToArray();
                     return ((rptId, vids));
-                });
+                }).ToList();
                 var DRACK = _GemRepo.DefineReport(reportDefines);
                 using (var rtnS2F34 = new SecsMessage(2, 34)
                 {
