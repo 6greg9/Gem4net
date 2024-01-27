@@ -533,7 +533,7 @@ public partial class GemRepository
         {
             if (evntRptLinks.Count() == 0)//清光, 也許應該寫在其他地方...
             {
-                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports ");
+                _context.Database.ExecuteSqlRaw("DELETE FROM Events");
                 _context.SaveChanges();
                 return 0;
             }
@@ -545,7 +545,7 @@ public partial class GemRepository
                 if (linkDefine.RPTIDs.Length == 0)//Delete
                 {
                     var deleteLinks = _context.EventReportLinks.Where(rpt => rpt.ECID == linkDefine.CEID);
-                    _context.Remove(deleteLinks);
+                    _context.RemoveRange(deleteLinks);
                     continue;
                 }
                 //Create
@@ -555,7 +555,7 @@ public partial class GemRepository
                 if (_context.Reports.Where(rpt => vidLst.Contains(rpt.RPTID)).Count() == 0)//有不存在的RPTID
                     return 5;
 
-                var newEvntRptLinks = new List<(int, int)>();
+                var newEvntRptLinks = new List<(int, int)>();// ( CEID, RPTID )
                 foreach (var rptid in linkDefine.RPTIDs)
                 {
                     newEvntRptLinks.Add((linkDefine.CEID, rptid));
@@ -581,11 +581,30 @@ public partial class GemRepository
         {
             if (_context.Events.Where(evnt => ecids.Contains(evnt.ECID)).Count() != ecids.Count()) //ECID有不存在
                 return 1;
-            foreach (var evnt in _context.Events.Where(evnt => ecids.Contains(evnt.ECID)))
+            if (ecids.Count() == 0) // 全部
             {
-                evnt.Enabled = isEnable;
-                //另外還要把對應SV改變
+                foreach (var evnt in _context.Events)
+                {
+                    evnt.Enabled = isEnable;
+                    if (evnt.EnabledVid != null)
+                    {
+                        SetVarValue((int)evnt.EnabledVid, isEnable);
+                    }
+                }
             }
+            else
+            {
+                foreach (var evnt in _context.Events.Where(evnt => ecids.Contains(evnt.ECID)))
+                {
+                    evnt.Enabled = isEnable;
+                    //另外還要把對應SV改變
+                    if (evnt.EnabledVid != null)
+                    {
+                        SetVarValue((int)evnt.EnabledVid, isEnable);
+                    }
+                }
+            }
+            
             _context.SaveChanges();
             return 0;
         }

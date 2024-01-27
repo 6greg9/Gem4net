@@ -35,6 +35,8 @@ public class GemEqpService
 
     private GemRepository _GemRepo;
 
+    public event Func<RemoteCommand,RemoteCommand> OnRemoteCommand;
+
     public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions, bool isCommHostInit = false)
     {
         _logger = logger;

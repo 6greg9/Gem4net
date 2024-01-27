@@ -250,7 +250,8 @@ public static class SecsItemSchemaValidator
             return false;
         if (itemRoot.Format != SecsFormat.List || itemRoot.Count != 2)
             return false;
-        if (itemRoot[0].Format != SecsFormat.U4 || itemRoot[1].Format != SecsFormat.List)
+        if (!(itemRoot[0].Format is SecsFormat.U4 or SecsFormat.U2 or SecsFormat.U1
+            && itemRoot[1].Format == SecsFormat.List))
             return false;
         var reports = itemRoot[1];
         foreach (var report in reports.Items)
@@ -290,12 +291,26 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F41 = (item) =>
+    static Func<Item?, bool> IsS2F41 = (itemRoot) =>
     {
-        if (item == null)
+        if (itemRoot == null)
             return false;
-
-        return false;
+        if (itemRoot.Format != SecsFormat.List)
+            return false;
+        //第一層
+        if (itemRoot.Items.Count() != 2)
+            return false;
+        if (itemRoot.Items[0].Format != SecsFormat.ASCII || itemRoot.Items[1].Format != SecsFormat.List)
+            return false;
+        var CommandParaList = itemRoot.Items[1];
+        if( CommandParaList.Items.Where(i=>i.Format != SecsFormat.List || i.Items.Count() !=2).Count()>0 )
+            return false;
+        foreach (var item in CommandParaList.Items)
+        {
+            if (item.Items[0].Format != SecsFormat.ASCII)
+                return false;
+        }
+        return true;
     };
 
     #endregion
