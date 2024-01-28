@@ -35,7 +35,7 @@ public class GemEqpService
 
     private GemRepository _GemRepo;
 
-    public event Func<RemoteCommand,RemoteCommand> OnRemoteCommand;
+    
 
     public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions, bool isCommHostInit = false)
     {
@@ -284,6 +284,34 @@ public class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F38);
                 break;
+            //S2F41 Host Command Send
+            case SecsMessage msg when (msg.S == 2 && msg.F == 41):
+                var RemoteCmd = new RemoteCommand();
+                RemoteCmd.HCACK = -1;
+                RemoteCmd.Name = msg.SecsItem.Items[0].GetString();
+                foreach( var par in msg.SecsItem.Items[1].Items)
+                {
+                    RemoteCmd.Parameters.Add( 
+                        new CommandParameter { CPACK=-1, Name = par[0].ToString(), Value = par[1] });
+                }
+
+                var cmdResult = OnRemoteCommand.Invoke(RemoteCmd);
+                var rtnSecsItem = msg.SecsItem;
+                rtnSecsItem.Items[0] = B((byte)cmdResult.HCACK);
+
+                int index = 0;
+                foreach ( var par in cmdResult.Parameters)
+                {
+                    rtnSecsItem.Items[1][index][1] = B((byte)par.CPACK);
+                    index++;
+                }
+
+                using (var rtnS2F42 = new SecsMessage(2, 42)
+                {
+                    SecsItem = rtnSecsItem
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F42);
+                break;
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
@@ -412,8 +440,7 @@ public class GemEqpService
     /// Input : ( RCMD, L( CPNAME, CPVAL ) ) , Output : ( HACK, L( CPNAME, CPVAL ) ) 
     /// HACK : 0 - ok, completed , 1 - invalid command , 2 - cannot do now , 3 - parameter error , 4 - initiated for asynchronous completion , 5 - rejected, already in desired condition , 6 - invalid object
     /// </summary>
-    public Func<(string, List<(string, string)>),
-                (int, List<(string, string)>)>? OnRemoteCommand;
+    public event Func<RemoteCommand, RemoteCommand> OnRemoteCommand;
 
     public ISecsGem? GetSecsWrapper     // 不在ON-LINE沒有辦法使用
         => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
