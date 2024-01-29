@@ -56,6 +56,16 @@ public partial class Form1 : Form
             return 0;
         };
 
+        service.OnRemoteCommand += (remoteCmd) =>
+        {
+            var rtn = remoteCmd;
+            rtn.HCACK = 0;
+            rtn.Parameters.ForEach(p =>
+            {
+                p.CPACK = 0;
+            });
+            return rtn;
+        };
 
     }
     GemEqpService service;
