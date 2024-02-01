@@ -317,8 +317,39 @@ public static class SecsItemSchemaValidator
 
     #endregion
 
+    #region Stream 6
+    static Func<Item?, bool> IsS6F15=(item)=>
+    {
+        if ( item != null )
+            return false;
+
+        return true;
+    };
+    static Func<Item?, bool> IsS6F19=(item)=>
+    {
+        if ( item != null )
+            return false;
+
+        return true;
+    };
+    #endregion
+
     #region Stream 7
     static Func<Item?, bool> IsS7F19=(item)=>
+    {
+        if ( item != null )
+            return false;
+
+        return true;
+    };
+    static Func<Item?, bool> IsS7F23=(item)=>
+    {
+        if ( item != null )
+            return false;
+
+        return true;
+    };
+    static Func<Item?, bool> IsS7F25=(item)=>
     {
         if ( item != null )
             return false;
