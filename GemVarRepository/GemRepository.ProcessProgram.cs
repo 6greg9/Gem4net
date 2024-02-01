@@ -12,7 +12,7 @@ namespace GemVarRepository;
 public partial class GemRepository
 {
     // 純增刪查改不做資料驗證
-    public int GetProcessProgramPFormatted(string PPID)
+    public int GetProcessProgramFormatted(string PPID)
     {
         using (_context = new GemVarContext())
         {

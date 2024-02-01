@@ -312,6 +312,17 @@ public class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F42);
                 break;
+            //S7F19 Current Process Program Dir Request
+            case SecsMessage msg when (msg.S == 7 && msg.F == 19):
+                var ppArry = _GemRepo.GetFormattedPPAll().Select( pp=> A( pp.PPID) ).ToArray();
+                var itemS7F20 = L(ppArry);
+                using (var rtnS7F20 = new SecsMessage(7, 20)
+                {
+                    SecsItem = itemS7F20
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
+                break;
+                
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 

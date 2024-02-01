@@ -42,6 +42,8 @@ public static class SecsItemSchemaValidator
                 return IsS2F35(Msg.SecsItem);
             case (2, 37):
                 return IsS2F37(Msg.SecsItem);
+            case (7, 19):
+                return IsS7F19(Msg.SecsItem);
             case (10,3):
                 return IsS10F3(Msg.SecsItem);
             default:
@@ -313,6 +315,16 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
+    #endregion
+
+    #region Stream 7
+    static Func<Item?, bool> IsS7F19=(item)=>
+    {
+        if ( item != null )
+            return false;
+
+        return true;
+    };
     #endregion
 
     #region　Stream 10
