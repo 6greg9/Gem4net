@@ -19,9 +19,9 @@ public partial class Form1 : Form
     public Form1()
     {
         InitializeComponent();
-        _gemRepo = new GemRepository();
+        _gemRepo = new GemRepository("GemVariablesDb.sqlite");
 
-        var logger = new SecsLogger(this);
+        ISecsGemLogger logger = new SecsLogger(this);
 
         service = new GemEqpService(logger, _gemRepo, new SecsGemOptions
         {
@@ -48,15 +48,13 @@ public partial class Form1 : Form
         };
         service.OnTerminalMessageReceived += (msg) =>
         {
-
             this.Invoke(new Action(() =>
             {
                 Tbx_Terminal.AppendText(msg + "\n");
             }));
             return 0;
         };
-
-        service.OnRemoteCommand += (remoteCmd) =>
+        service.OnRemoteCommandReceived += (remoteCmd) =>
         {
             var rtn = remoteCmd;
             rtn.HCACK = 0;
@@ -65,6 +63,10 @@ public partial class Form1 : Form
                 p.CPACK = 0;
             });
             return rtn;
+        };
+        service.OnEcRecieved += (ecLst) =>
+        {
+            return 0; // OK
         };
 
     }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GemDeviceService;
+namespace GemDeviceService.Communication;
 internal class CommStateManager
 {
     bool IsHostInitial = false;
@@ -16,10 +16,10 @@ internal class CommStateManager
 
     public CommStateManager(ISecsGem secsGem, bool isHostInit = false)
     {
-        IsHostInitial= isHostInit;
+        IsHostInitial = isHostInit;
         _secsGem = secsGem;
         CurrentState = CommunicationState.DISABLED;
-        
+
     }
 
     #region State, TransitionEvent
@@ -31,13 +31,13 @@ internal class CommStateManager
         {
             PreviousState = _currentState;
             _currentState = value;
-            if(CurrentState != PreviousState)
+            if (CurrentState != PreviousState)
                 NotifyCommStateChanged?.Invoke((_currentState, PreviousState));//別手動Ivoke狀態變化
         }
     }
 
     public CommunicationState PreviousState { get; private set; }
-    public event Action<(CommunicationState currentState,CommunicationState previousState )>? NotifyCommStateChanged;
+    public event Action<(CommunicationState currentState, CommunicationState previousState)>? NotifyCommStateChanged;
     #endregion
 
     #region State Machine
@@ -47,7 +47,8 @@ internal class CommStateManager
     Task CommDelayTimerTask;
     CancellationTokenSource CommDelayTimerTaskCts;
 
-    public void EnterCommunicationState() {
+    public void EnterCommunicationState()
+    {
         //要看IsHostInit給不同Action
         if (IsHostInitial == true)
         {
@@ -57,7 +58,7 @@ internal class CommStateManager
         if (CommStateCheckTask.Status == TaskStatus.Running)
             return;
 
-        CommStateCheckTaskCts= new CancellationTokenSource();
+        CommStateCheckTaskCts = new CancellationTokenSource();
         var token = CommStateCheckTaskCts.Token;
         CommStateCheckTask = Task.Run(async () =>
         {
@@ -65,35 +66,35 @@ internal class CommStateManager
             Task<SecsMessage> S1F14Waiter;
             //要看IsHostInit, 而進入不同狀態
             GotoWaitCRA();
-            while( !token.IsCancellationRequested && ! (CurrentState==CommunicationState.COMMUNICATING) )
+            while (!token.IsCancellationRequested && !(CurrentState == CommunicationState.COMMUNICATING))
             {
                 switch (CurrentState)
                 {
                     case CommunicationState.WAIT_CRA:
                         var S1F14 = await S1F14Waiter;
-                        if(S1F14Waiter.IsCompleted)
+                        if (S1F14Waiter.IsCompleted)
                         {
                             //格式檢查
                             //Root
                             var Root = S1F14.SecsItem;
-                            if (!(Root.Format == SecsFormat.List) || (Root.Count != 2))
+                            if (!(Root.Format == SecsFormat.List) || Root.Count != 2)
                                 break;
                             //First
                             //要看IsHostInit而有不同判斷
                             var FirstLevel = Root.Items;
-                            if(FirstLevel.Count() != 2)
+                            if (FirstLevel.Count() != 2)
                             {
                                 break;
                             }
                             var COMMACK = FirstLevel.Take(1).FirstOrDefault();
-                            if(COMMACK == Item.B(1) ) //被拒絕
+                            if (COMMACK == Item.B(1)) //被拒絕
                             {
                                 GotoWaitDelay();
                             }
-                            else if ( COMMACK == Item.B(0) )//成功
+                            else if (COMMACK == Item.B(0))//成功
                             {
                                 CurrentState = CommunicationState.COMMUNICATING;
-                                
+
                             }
 
                         }
@@ -104,12 +105,12 @@ internal class CommStateManager
 
                         break;
                     case CommunicationState.WAIT_DELAY:
-                        if( CommDelayTimerTask.IsCompleted == true)
+                        if (CommDelayTimerTask.IsCompleted == true)
                         {
                             GotoWaitCRA();
                         }
                         break;
-                    
+
                     default: break;
                 }
 
@@ -128,7 +129,7 @@ internal class CommStateManager
             void GotoWaitDelay()
             {
                 CommStateCheckTaskCts = new CancellationTokenSource();
-                CommDelayTimerTask = Task.Delay(1000, CommStateCheckTaskCts.Token );// Tooxx?
+                CommDelayTimerTask = Task.Delay(1000, CommStateCheckTaskCts.Token);// Tooxx?
                 CurrentState = CommunicationState.WAIT_DELAY;
             }
         });
@@ -155,7 +156,7 @@ internal class CommStateManager
                 return 1;//模式不應該
             }
         });
-        
+
     }
 
     #endregion
@@ -164,12 +165,12 @@ internal class CommStateManager
 
     public int EnableComm()
     {
-        if( _currentState == CommunicationState.DISABLED)
+        if (_currentState == CommunicationState.DISABLED)
         {
             EnterCommunicationState();
             return 0;
         }
-        return 1; 
+        return 1;
     }
     public int DisableComm()
     {
@@ -181,7 +182,7 @@ internal class CommStateManager
             return 0;
         }
         return 1;
-            
+
     }
 
     #endregion

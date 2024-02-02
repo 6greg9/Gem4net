@@ -9,17 +9,20 @@ using static Secs4Net.Item;
 using System.Reflection.Metadata;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using GemDeviceService.Communication;
+using GemDeviceService.Control;
 
 namespace GemDeviceService;
-public class GemEqpService
+public partial class GemEqpService
 {
     private SecsGem? _secsGem;
     private HsmsConnection? _connector;
+    private CancellationTokenSource _hsmsCancellationTokenSource = new();
     public SecsGemOptions GemOptions { get; private set; }
     public bool IsCommHostInit { get; private set; }
 
     private readonly ISecsGemLogger _logger;
-    private readonly Channel<PrimaryMessageWrapper> recvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
+    private readonly Channel<PrimaryMessageWrapper> RecvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
         new UnboundedChannelOptions()
         {
             SingleWriter = false,
@@ -31,38 +34,123 @@ public class GemEqpService
     private CtrlStateManager _ctrlStateManager;
 
     private Task RecieveMessageHandlerTask;
-    private CancellationTokenSource _cancellationTokenSource = new();
+    CancellationTokenSource SecsMsgHandlerTaskCTS = new();
 
     private GemRepository _GemRepo;
-
-    
 
     public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions, bool isCommHostInit = false)
     {
         _logger = logger;
         GemOptions = secsGemOptions;
         IsCommHostInit = isCommHostInit;
+        _GemRepo = gemReposiroty;
 
         Enable();
+
         RecieveMessageHandlerTask = Task.Run(() =>
         {
-            while (true)
-            {
-                HandleRecievedSecsMessage();
-            }
-        });
+            var token = SecsMsgHandlerTaskCTS.Token;
+            while (token.IsCancellationRequested != true)
+                HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage); 
 
+        });
         //_communicatinoState = CommunicationState.DISABLED;
         //_GemRepo = ThreadSafeClassProxy.Create(gemReposiroty);
-        _GemRepo = gemReposiroty;
+
     }
-    async void HandleRecievedSecsMessage() // 需要加個CancelToken
+
+    /// <summary>
+    /// 啟動HSMS, 初始化GEM
+    /// </summary>
+    public async void Enable()
+    {
+        _secsGem?.Dispose();
+
+        if (_connector is not null)
+        {
+            await _connector.DisposeAsync();
+        }
+
+        var options = Options.Create(GemOptions);
+        //var options = secsGemOptions;
+        _connector = new HsmsConnection(options, _logger);
+        _connector.LinkTestEnabled = false; //想解決莫名斷線
+        _secsGem = new SecsGem(options, _connector, _logger);
+
+        //狀態管理
+        _commStateManager = new CommStateManager(_secsGem, IsCommHostInit);
+        _ctrlStateManager = new CtrlStateManager(_secsGem);
+        _commStateManager.NotifyCommStateChanged += (transition) =>
+        {
+            if (transition.currentState == CommunicationState.COMMUNICATING)
+            {
+                _ctrlStateManager.EnterControlState(); //成功進入Communicating後, CtrlState開始
+            }
+
+            OnCommStateChanged?.Invoke(transition.currentState.ToString(),
+                transition.previousState.ToString());
+        };
+        _ctrlStateManager.NotifyCommStateChanged += (transition) =>
+        {
+            OnControlStateChanged?.Invoke(transition.currentState.ToString(),
+                transition.previousState.ToString());
+            //SendEventReport(1);
+        };
+
+        _connector.ConnectionChanged += async (sender, connectState) =>
+        {
+            if (connectState == ConnectionState.Selected)
+            {
+                _commStateManager.EnterCommunicationState();
+            }
+            else
+            {
+                _commStateManager.LeaveCommunicationState();
+            }
+
+            OnConnectStatusChanged?.Invoke(connectState.ToString());
+        };
+
+        _connector.LinkTestEnabled = false;//想解決莫名斷線
+        _ = _connector.StartAsync(_hsmsCancellationTokenSource.Token); // HSMS, 啟動
+
+        try
+        {
+            await foreach (var primaryMessage in _secsGem.GetPrimaryMessageAsync(_hsmsCancellationTokenSource.Token))
+            {
+                await RecvBuffer.Writer.WriteAsync(primaryMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Debug(ex.ToString());
+        }
+    }
+    public async void Disable() // 各種cancel, dispose
+    {
+        if (!_hsmsCancellationTokenSource.IsCancellationRequested)
+        {
+            _hsmsCancellationTokenSource.Cancel();
+            _hsmsCancellationTokenSource.Dispose();
+        }
+        if (_connector is not null)
+        {
+            await _connector.DisposeAsync();
+        }
+        _secsGem?.Dispose();
+        _hsmsCancellationTokenSource = new CancellationTokenSource();
+
+        _secsGem = null;
+
+        RecvBuffer.Reader.ReadAllAsync(); //清理 buffer
+    }
+
+    async void HandleRecievedSecsMessage(Channel<PrimaryMessageWrapper> recvBuffer, Action<PrimaryMessageWrapper> handlePrimaryMessage)
     {
         //await foreach (var ReceiveSecsMsg in recvBuffer.Reader.ReadAllAsync())
         // 會有神秘的處理延遲的抖動, 還是樸實一點...
         var ReceiveSecsMsg = await recvBuffer.Reader.ReadAsync();
-        //{
-        //var ReceiveSecsMsg = await recvBuffer.Reader.ReadAsync();
+
         try
         {
             //Check Comm State
@@ -98,18 +186,36 @@ public class GemEqpService
                 return;
             }
             //Handle PrimaryMessage
-            HandlePrimaryMessage(ReceiveSecsMsg);
-
+            handlePrimaryMessage(ReceiveSecsMsg);  //就在這裡一大包
 
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.ToString());
+            this._logger.Error(ex.ToString());
         }
-        //await Task.Delay(5);
-        // }
     }
-    async void HandlePrimaryMessage(PrimaryMessageWrapper? primaryMsgWrapper)
+    void HandlePrimaryMessage(PrimaryMessageWrapper primaryMsgWrapper)
+    {
+        switch (primaryMsgWrapper.PrimaryMessage)
+        {
+            case SecsMessage msg when (msg.S == 1):
+                HandleStream1(primaryMsgWrapper);
+                break;
+            case SecsMessage msg when (msg.S == 2):
+                HandleStream2(primaryMsgWrapper);
+                break;
+            case SecsMessage msg when (msg.S == 7 ):
+                HandleStream7(primaryMsgWrapper);
+                break;
+            case SecsMessage msg when (msg.S == 10 ):
+                HandleStream10(primaryMsgWrapper);
+                break;
+            default:
+                break;
+        }
+    }
+
+    async void HandleStream1(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
@@ -144,7 +250,9 @@ public class GemEqpService
                         SecsItem = svNameList
                     })
                         await primaryMsgWrapper.TryReplyAsync(rtnS1F12);
-                }else{
+                }
+                else
+                {
                     var svNameList = _GemRepo.GetSvNameListAll();
                     using (var rtnS1F12 = new SecsMessage(1, 12)
                     {
@@ -187,6 +295,13 @@ public class GemEqpService
                 })
                     primaryMsgWrapper?.TryReplyAsync(rtnMsg);
                 break;
+            default: break;
+        }
+    }
+    async void HandleStream2(PrimaryMessageWrapper? primaryMsgWrapper)
+    {
+        switch (primaryMsgWrapper.PrimaryMessage)
+        {
             //S2F13 Equipment Constant Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 13):
                 var idCnt = msg.SecsItem?.Items.Length;
@@ -228,10 +343,10 @@ public class GemEqpService
                 var ecidecv = msg.SecsItem.Items
                 .Select(item => (item.Items[0].FirstValue<int>(),
                                   item.Items[1])).ToList();
-                rtnS2F15 = OnEcRecieved.Invoke(ecidecv);
-                if(rtnS2F15 == 0)
+                rtnS2F15 = OnEcRecieved!.Invoke(ecidecv);
+                if (rtnS2F15 == 0)
                     rtnS2F15 = _GemRepo.SetEcList(ecidecv);
-                 
+
                 using (var rtnS2F16 = new SecsMessage(2, 16)
                 {
                     SecsItem = B((byte)rtnS2F15)
@@ -293,18 +408,18 @@ public class GemEqpService
                 var RemoteCmd = new RemoteCommand();
                 RemoteCmd.HCACK = -1;
                 RemoteCmd.Name = msg.SecsItem.Items[0].GetString();
-                foreach( var par in msg.SecsItem.Items[1].Items)
+                foreach (var par in msg.SecsItem.Items[1].Items)
                 {
-                    RemoteCmd.Parameters.Add( 
-                        new CommandParameter { CPACK=-1, Name = par[0].ToString(), Value = par[1] });
+                    RemoteCmd.Parameters.Add(
+                        new CommandParameter { CPACK = -1, Name = par[0].ToString(), Value = par[1] });
                 }
 
-                var cmdResult = OnRemoteCommand.Invoke(RemoteCmd);//交給應用程式惹
+                var cmdResult = OnRemoteCommandReceived.Invoke(RemoteCmd);//交給應用程式惹
                 var rtnSecsItem = msg.SecsItem;
                 rtnSecsItem.Items[0] = B((byte)cmdResult.HCACK);
 
                 int index = 0;
-                foreach ( var par in cmdResult.Parameters)
+                foreach (var par in cmdResult.Parameters)
                 {
                     rtnSecsItem.Items[1][index][1] = B((byte)par.CPACK);
                     index++;
@@ -316,6 +431,13 @@ public class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F42);
                 break;
+                default : break;
+        }
+    }
+    async void HandleStream7(PrimaryMessageWrapper? primaryMsgWrapper)
+    {
+        switch (primaryMsgWrapper.PrimaryMessage)
+        {
             //S7F19 Current Process Program Dir Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 19):
                 var ppArry = _GemRepo.GetFormattedPPAll().Select( pp=> A( pp.PPID) ).ToArray();
@@ -326,6 +448,14 @@ public class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
                 break;
+            default:
+                break;
+        }
+    }
+    async void HandleStream10(PrimaryMessageWrapper? primaryMsgWrapper)
+    {
+        switch (primaryMsgWrapper.PrimaryMessage)
+        {
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
@@ -345,228 +475,4 @@ public class GemEqpService
                 break;
         }
     }
-    /// <summary>
-    /// 啟動HSMS, 初始化GEM
-    /// </summary>
-    public async void Enable()
-    {
-        _secsGem?.Dispose();
-
-        if (_connector is not null)
-        {
-            await _connector.DisposeAsync();
-        }
-
-        var options = Options.Create(GemOptions);
-        //var options = secsGemOptions;
-        _connector = new HsmsConnection(options, _logger);
-        _connector.LinkTestEnabled = false; //想解決莫名斷線
-        _secsGem = new SecsGem(options, _connector, _logger);
-
-        //狀態管理
-        _commStateManager = new CommStateManager(_secsGem, IsCommHostInit);
-        _ctrlStateManager = new CtrlStateManager(_secsGem);
-        _commStateManager.NotifyCommStateChanged += (transition) =>
-        {
-            if (transition.currentState == CommunicationState.COMMUNICATING)
-            {
-                _ctrlStateManager.EnterControlState(); //成功進入Communicating後, CtrlState開始
-            }
-
-            OnCommStateChanged?.Invoke(transition.currentState.ToString(),
-                transition.previousState.ToString());
-        };
-        _ctrlStateManager.NotifyCommStateChanged += (transition) =>
-        {
-            OnControlStateChanged?.Invoke(transition.currentState.ToString(),
-                transition.previousState.ToString());
-            //SendEventReport(1);
-        };
-
-        _connector.ConnectionChanged += async (sender, connectState) =>
-        {
-            if (connectState == ConnectionState.Selected)
-            {
-                _commStateManager.EnterCommunicationState();
-
-            }
-            else
-            {
-                _commStateManager.LeaveCommunicationState();
-
-            }
-
-            OnConnectStatusChanged?.Invoke(connectState.ToString());
-        };
-        //btnEnable.Enabled = false;
-        _connector.LinkTestEnabled = false;//想解決莫名斷線
-        _ = _connector.StartAsync(_cancellationTokenSource.Token);
-        //btnDisable.Enabled = true;
-        //_communicatinoState = CommunicationState.WAIT_CRA;
-        try
-        {
-            await foreach (var primaryMessage in _secsGem.GetPrimaryMessageAsync(_cancellationTokenSource.Token))
-            {
-                await recvBuffer.Writer.WriteAsync(primaryMessage);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.Debug(ex.ToString());
-        }
-    }
-    public async void Disable()
-    {
-        if (!_cancellationTokenSource.IsCancellationRequested)
-        {
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource.Dispose();
-        }
-        if (_connector is not null)
-        {
-            await _connector.DisposeAsync();
-        }
-        _secsGem?.Dispose();
-        _cancellationTokenSource = new CancellationTokenSource();
-
-        _secsGem = null;
-        //btnEnable.Enabled = true;
-        //btnDisable.Enabled = false;
-        //lbStatus.Text = "Disable";
-        //recvBuffer.Clear();
-        recvBuffer.Reader.ReadAllAsync();
-        //richTextBox1.Clear();
-    }
-    #region For App Interface
-
-    public event Action<string>? OnConnectStatusChanged;
-    public event Action<string, string>? OnCommStateChanged;
-    public event Action<string, string>? OnControlStateChanged;
-    /// <summary>
-    /// 0 - ok, 1 - one or more constants does not exist, 2 - busy, 3 - one or more values out of range
-    /// </summary>
-    public event Func<List<(int,Item)>, int> OnEcRecieved;
-    public event Action<SecsMessage>? OnSecsMessageSend;
-    public event Action? OnProcessProgramChanged;
-    /// <summary>
-    /// 0 - accepted for display , 1 - message will not be displayed , 2 - terminal not available
-    /// </summary>
-    public event Func<string, int>? OnTerminalMessageReceived;
-    /// <summary>
-    /// for S2F41
-    /// Input : ( RCMD, L( CPNAME, CPVAL ) ) , Output : ( HACK, L( CPNAME, CPVAL ) ) 
-    /// HACK : 0 - ok, completed , 1 - invalid command , 2 - cannot do now , 3 - parameter error , 4 - initiated for asynchronous completion , 5 - rejected, already in desired condition , 6 - invalid object
-    /// </summary>
-    public event Func<RemoteCommand, RemoteCommand> OnRemoteCommand;
-
-    public ISecsGem? GetSecsWrapper     // 不在ON-LINE沒有辦法使用
-        => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
-                                        ? _secsGem : null;
-    //數值類
-    public Item? GetVariableById(int VID)
-    {
-        return _GemRepo.GetSv(VID); //這樣還有要?
-    }
-    public void GetVariableByName(string name)
-    {
-        // 
-    }
-    public int UpdateSV(int VID, object varValue)
-    {
-        return _GemRepo.SetVarValue(VID, varValue);
-    }
-    public int UpdateEC(List<(int, Item)> idValList)
-    {
-        return _GemRepo.SetEcList(idValList);
-    }
-
-    //Report類
-    public async Task<int> SendTerminalMessageAsync(string terminalMessage, int terminalId)
-    {
-        int ack10 = -1;
-        try
-        {
-            using (var s10f1 = new SecsMessage(10, 1)
-            {
-                SecsItem = L(
-                B((byte)terminalId),
-                A(terminalMessage))
-            })
-            {
-                var rtns10f2 = await _secsGem.SendAsync(s10f1);
-                // 應先資料驗證
-                ack10 = rtns10f2.SecsItem.FirstValue<byte>();
-            }
-        }
-        catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
-        finally
-        {
-
-        }
-        return ack10;
-
-    }
-    public void SendEventReport(int eventId)
-    {
-        var reports = _GemRepo.GetReport(eventId);
-        Random random = new Random();
-        var dataId = random.Next();
-        using var s6f11 = new SecsMessage(6, 11)
-        {
-            SecsItem = L(
-            U4((uint)dataId), //DATAID
-            U4((uint)eventId), //CEID
-            reports
-            ),
-        };
-        _ = _secsGem?.SendAsync(s6f11);//射後不理
-    }
-    public void SendAlarmReport(string alarmId) { }
-
-    //需要補上CommState, CtrlState的限制,
-    //大部分語句在進入On-Line後才可使用, 理論上只須限制在ON-line
-
-    public int EnableComm()
-    {
-        return _commStateManager.EnableComm();
-    }
-    public int DisableComm()
-    {
-        return _commStateManager.DisableComm();
-    }
-    /// <summary>
-    /// EQUIPMENT_OFF_LINE,HOST_OFF_LINE,ATTEMPT_ON_LINE,LOCAL,REMOTE
-    /// </summary>
-    /// <returns></returns>
-    public ControlState GetCurrentCommState()
-    {
-        return _ctrlStateManager.CurrentState;
-    }
-    public int RequestOnline()
-    {
-        return _ctrlStateManager.OnLineRequest();
-    }
-    public int GoOffline()
-    {
-        return _ctrlStateManager.OffLine();
-    }
-    public int GoOnlineLocal()
-    {
-        return _ctrlStateManager.OnLineLocal();
-    }
-    public int GoOnlineRemote()
-    {
-        return _ctrlStateManager.OnLineRemote();
-    }
-
-    /// <summary>
-    /// Equip的主動Command ?
-    /// </summary>
-    /// <returns></returns>
-    public int Command()
-    {
-        return 0;
-    }
-
-    #endregion
 }

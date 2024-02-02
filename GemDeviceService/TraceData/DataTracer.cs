@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GemDeviceService.Service;
-public class TraceDataCollectionService
-{
-    //試試Tasks.DataFlow
-}
+namespace GemDeviceService.TraceData;
 public class DataTracer
 {
     /// <summary>
@@ -25,15 +20,16 @@ public class DataTracer
     /// <summary>
     /// REPGSZ: report group size, 就是幾次Sample送出一次Report
     /// </summary>
-    public int ReportGroupSize { get;private set; }
+    public int ReportGroupSize { get; private set; }
 
     public string DetailDescription { get; set; }
 
-    public List<int> SampledVIDs { get; private set; } 
+    public List<int> SampledVIDs { get; private set; }
 
     Timer SampleTimer { get; set; }
-    public DataTracer(string trid,TimeSpan dataSamplePeriod,int totalSampleAmount,
-        int reportGroupSize, List<int> sampleVIDs) {
+    public DataTracer(string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
+        int reportGroupSize, List<int> sampleVIDs)
+    {
         TRID = trid;
         TotalSampleAmount = totalSampleAmount;
         ReportGroupSize = reportGroupSize;

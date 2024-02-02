@@ -19,11 +19,12 @@ public class GemVarContext : DbContext
     public DbSet<FormattedProcessProgram> FormattedProcessPrograms { get; set; }
 
     public string DbPath { get; }
-    public GemVarContext()
+    public GemVarContext(string dbPath)
     {
         var folder = Environment.SpecialFolder.MyDocuments;
         var path = Environment.GetFolderPath(folder);
-        DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+        //DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+        DbPath = System.IO.Path.Join(path, dbPath);
     }
 
     // The following configures EF to create a Sqlite database file in the

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GemDeviceService;
+namespace GemDeviceService.Communication;
 public enum CommunicationState
 {
     DISABLED,

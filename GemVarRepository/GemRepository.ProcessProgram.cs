@@ -14,7 +14,7 @@ public partial class GemRepository
     // 純增刪查改不做資料驗證
     public int GetProcessProgramFormatted(string PPID)
     {
-        using (_context = new GemVarContext())
+        using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             var pp = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
@@ -28,7 +28,7 @@ public partial class GemRepository
     }
     public IEnumerable<FormattedProcessProgram> GetFormattedPPAll()
     {
-        using (_context = new GemVarContext())
+        using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
@@ -37,7 +37,7 @@ public partial class GemRepository
     }
     public int CreateProcessProgram(FormattedProcessProgram pp)
     {
-        using (_context = new GemVarContext())
+        using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             cn.Execute("INSERT INTO FormattedProcessPrograms(ID, PPID, UpdateTime, Status, PPBody," +

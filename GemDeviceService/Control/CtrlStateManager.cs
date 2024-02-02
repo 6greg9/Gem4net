@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GemDeviceService;
+namespace GemDeviceService.Control;
 public class CtrlStateManager
 {
     #region State, TransitionEvent
@@ -17,7 +17,7 @@ public class CtrlStateManager
         {
             PreviousState = _currentState;
             _currentState = value;
-            if(CurrentState != PreviousState)
+            if (CurrentState != PreviousState)
             {
                 NotifyCommStateChanged?.Invoke((_currentState, PreviousState));//別手動Ivoke狀態變化
 
@@ -25,7 +25,7 @@ public class CtrlStateManager
         }
     }
     public ControlState PreviousState { get; private set; }
-    public event Action<(ControlState currentState,ControlState previousState )>? NotifyCommStateChanged;
+    public event Action<(ControlState currentState, ControlState previousState)>? NotifyCommStateChanged;
     public bool IsOnLine => CurrentState is ControlState.LOCAL or ControlState.REMOTE;
     #endregion
 
@@ -34,9 +34,10 @@ public class CtrlStateManager
     public ControlState DefaultAfterFailOnline = ControlState.HOST_OFF_LINE;
     Task CtrlStateCheckTask = Task.CompletedTask;
     CancellationTokenSource CtrlStateCheckTaskCts;
-    SecsGem _secsGem;
-    public CtrlStateManager(SecsGem secsGem) {
-        _secsGem= secsGem;
+    ISecsGem _secsGem;
+    public CtrlStateManager(ISecsGem secsGem)
+    {
+        _secsGem = secsGem;
 
     }
 
@@ -50,28 +51,28 @@ public class CtrlStateManager
         var token = CtrlStateCheckTaskCts.Token;
         CtrlStateCheckTask = Task.Run(async () =>
         {
-            while( !token.IsCancellationRequested )
+            while (!token.IsCancellationRequested)
             {
-                switch( _currentState )
+                switch (_currentState)
                 {
                     case ControlState.EQUIPMENT_OFF_LINE:
                         CtrlStateCheckTaskCts.Cancel(); //可以不用一直執行
                         break;
                     case ControlState.ATTEMPT_ON_LINE:
                         var onlineReqResult = await S1F2Waiter;
-                        if(S1F2Waiter.IsFaulted == true)
+                        if (S1F2Waiter.IsFaulted == true)
                         {
                             CurrentState = DefaultAfterFailOnline;
                             break;
                         }
-                            
-                        if ( onlineReqResult.S == 1 && onlineReqResult.F == 2)
+
+                        if (onlineReqResult.S == 1 && onlineReqResult.F == 2)
                         {
                             CurrentState = DefaultLocalRemote;
                         }
                         else
                         {
-                            CurrentState= DefaultAfterFailOnline;
+                            CurrentState = DefaultAfterFailOnline;
                         }
                         break;
                     case ControlState.HOST_OFF_LINE:
@@ -105,7 +106,7 @@ public class CtrlStateManager
 
     public int OnLineRequest()
     {
-        if(CurrentState != ControlState.EQUIPMENT_OFF_LINE)
+        if (CurrentState != ControlState.EQUIPMENT_OFF_LINE)
         {
             return 1;
         }
@@ -117,15 +118,15 @@ public class CtrlStateManager
         return 0;
     }
 
-    public int OffLine() 
+    public int OffLine()
     {
         CurrentState = ControlState.EQUIPMENT_OFF_LINE;
         return 0;
     }
-    
-    public int OnLineRemote() 
+
+    public int OnLineRemote()
     {
-        if( CurrentState is ControlState.LOCAL or ControlState.REMOTE)
+        if (CurrentState is ControlState.LOCAL or ControlState.REMOTE)
         {
             CurrentState = ControlState.REMOTE;
             return 0;
@@ -145,7 +146,7 @@ public class CtrlStateManager
 
     public int HandleS1F15()
     {
-        if(IsOnLine == true)
+        if (IsOnLine == true)
         {
             CurrentState = ControlState.HOST_OFF_LINE;
             return 0;
@@ -155,7 +156,7 @@ public class CtrlStateManager
 
     public int HandleS1F17()
     {
-        if(CurrentState == ControlState.HOST_OFF_LINE)
+        if (CurrentState == ControlState.HOST_OFF_LINE)
         {
             CurrentState = DefaultOnOffLine;
             return 0;

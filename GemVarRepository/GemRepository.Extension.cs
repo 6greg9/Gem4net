@@ -19,22 +19,22 @@ public static class UseGemDbcontextExtensions
     private static SemaphoreSlim semaphore = new SemaphoreSlim(1);
     public static void GetSingleton(this GemVarContext resource, Action action)
     {
-        using (resource = new())
-        {
-            semaphore.Wait(); // 嘗試進入，如果有其他執行緒已經進入，則會等待
+        //using (resource = new(DbFilePath))
+        //{
+        //    semaphore.Wait(); // 嘗試進入，如果有其他執行緒已經進入，則會等待
 
-            try
-            {
-                action.Invoke();
-                // 這裡的程式碼只能由一個執行緒同時執行
-                // ...
-            }
-            finally
-            {
-                semaphore.Release(); // 釋放 SemaphoreSlim，允許其他等待的執行緒進入
-            }
+        //    try
+        //    {
+        //        action.Invoke();
+        //        // 這裡的程式碼只能由一個執行緒同時執行
+        //        // ...
+        //    }
+        //    finally
+        //    {
+        //        semaphore.Release(); // 釋放 SemaphoreSlim，允許其他等待的執行緒進入
+        //    }
            
-        }
+        //}
     }
 }
 /// <summary>

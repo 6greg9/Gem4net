@@ -16,4 +16,8 @@
     
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Alarm\" />
+  </ItemGroup>
+
 </Project>
