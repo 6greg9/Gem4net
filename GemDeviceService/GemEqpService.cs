@@ -224,10 +224,14 @@ public class GemEqpService
                 break;
             //S2F15 New Equipment Constant Send
             case SecsMessage msg when (msg.S == 2 && msg.F == 15):
+                int rtnS2F15 = 0;
                 var ecidecv = msg.SecsItem.Items
                 .Select(item => (item.Items[0].FirstValue<int>(),
                                   item.Items[1])).ToList();
-                var rtnS2F15 = _GemRepo.SetEcList(ecidecv);
+                rtnS2F15 = OnEcRecieved.Invoke(ecidecv);
+                if(rtnS2F15 == 0)
+                    rtnS2F15 = _GemRepo.SetEcList(ecidecv);
+                 
                 using (var rtnS2F16 = new SecsMessage(2, 16)
                 {
                     SecsItem = B((byte)rtnS2F15)
@@ -295,7 +299,7 @@ public class GemEqpService
                         new CommandParameter { CPACK=-1, Name = par[0].ToString(), Value = par[1] });
                 }
 
-                var cmdResult = OnRemoteCommand.Invoke(RemoteCmd);
+                var cmdResult = OnRemoteCommand.Invoke(RemoteCmd);//交給應用程式惹
                 var rtnSecsItem = msg.SecsItem;
                 rtnSecsItem.Items[0] = B((byte)cmdResult.HCACK);
 
@@ -439,7 +443,10 @@ public class GemEqpService
     public event Action<string>? OnConnectStatusChanged;
     public event Action<string, string>? OnCommStateChanged;
     public event Action<string, string>? OnControlStateChanged;
-
+    /// <summary>
+    /// 0 - ok, 1 - one or more constants does not exist, 2 - busy, 3 - one or more values out of range
+    /// </summary>
+    public event Func<List<(int,Item)>, int> OnEcRecieved;
     public event Action<SecsMessage>? OnSecsMessageSend;
     public event Action? OnProcessProgramChanged;
     /// <summary>
