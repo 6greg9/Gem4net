@@ -44,6 +44,10 @@ public static class SecsItemSchemaValidator
                 return IsS2F37(Msg.SecsItem);
             case (7, 19):
                 return IsS7F19(Msg.SecsItem);
+            case (7, 23):
+                return IsS7F23(Msg.SecsItem);
+            case (7, 25):
+                return IsS7F25(Msg.SecsItem);
             case (10,3):
                 return IsS10F3(Msg.SecsItem);
             default:
@@ -344,14 +348,30 @@ public static class SecsItemSchemaValidator
     };
     static Func<Item?, bool> IsS7F23=(item)=>
     {
-        if ( item != null )
+        if (item == null)
             return false;
-
+        if (item.Format != SecsFormat.List)
+            return false;
+        //第一層
+        if (item.Items.Count() != 4)
+            return false;
+        if (item.Items[0].Format != SecsFormat.ASCII || item.Items[1].Format != SecsFormat.ASCII
+         || item.Items[2].Format != SecsFormat.ASCII || item.Items[3].Format != SecsFormat.List)
+            return false;
+        var ProcessCommandList = item.Items[3];
+        foreach( var cc in item.Items )
+        {
+            if(cc.Format != SecsFormat.List || cc.Items.Count()!=2)
+                return false;
+            if(!(cc.Items[0].Format == SecsFormat.ASCII || cc.Items[0].Format==SecsFormat.U2 || cc.Items[0].Format==SecsFormat.U4 )
+            || cc.Items[1].Format != SecsFormat.List)
+                return false;
+        }
         return true;
     };
     static Func<Item?, bool> IsS7F25=(item)=>
     {
-        if ( item != null )
+        if ( item.Format != SecsFormat.ASCII )
             return false;
 
         return true;

@@ -326,7 +326,6 @@ public class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
                 break;
-                
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
