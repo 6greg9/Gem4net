@@ -93,6 +93,14 @@ public partial class Form1 : Form
             var fpp = _gemRepo.GetProcessProgramFormatted(ppid).ToList();
             return _gemRepo.FormattedProcessProgramToSecsItem(fpp.First());
         };
+        service.OnProcessProgramDeleteAllReq += () =>
+        {
+            return _gemRepo.DeleteProcessProgramAll();
+        };
+        service.OnProcessProgramDeleteReq += (ppLst) =>
+        {
+            return _gemRepo.DeleteProcessProgram(ppLst);
+        };
     }
     private sealed class SecsLogger : ISecsGemLogger
     {

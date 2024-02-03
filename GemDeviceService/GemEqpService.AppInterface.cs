@@ -73,6 +73,10 @@ public partial class GemEqpService
     }
 
     //Report類
+    /// <summary>S10F1</summary>
+    /// <param name="terminalMessage"></param>
+    /// <param name="terminalId"></param>
+    /// <returns></returns>
     public async Task<int> SendTerminalMessageAsync(string terminalMessage, int terminalId)
     {
         int ack10 = -1;

@@ -456,7 +456,7 @@ public partial class GemEqpService
                 if (msg.SecsItem.Count == 0)
                 {
                     var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
-                    ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
+                    ackc7 = OnProcessProgramDeleteAllReq.Invoke();
                 }
                 else
                 {

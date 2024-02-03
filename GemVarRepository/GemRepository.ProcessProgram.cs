@@ -56,7 +56,7 @@ public partial class GemRepository
         using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
-            var rows = cn.Execute($"DELETE FROM FormattedProcessProgram where PPID = @ppid",ppids.ToArray());
+            var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms where PPID IN @ppids", new { ppids = ppids });
             if (rows > 0)
             {
                 return 0;
@@ -69,7 +69,7 @@ public partial class GemRepository
         using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
-            var rows = cn.Execute($"DELETE FROM FormattedProcessProgram ");
+            var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms ");
             return 0;
         }
     }
