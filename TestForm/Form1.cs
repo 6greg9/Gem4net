@@ -11,11 +11,12 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
-
+using Secs4Net;
+using static Secs4Net.Item;
 public partial class Form1 : Form
 {
     GemRepository _gemRepo;
-
+    GemEqpService service;
     public Form1()
     {
         InitializeComponent();
@@ -68,55 +69,30 @@ public partial class Form1 : Form
         {
             return 0; // OK
         };
-
-    }
-    GemEqpService service;
-    private void button1_Click(object sender, EventArgs e)
-    {
-
-        var test = _gemRepo.GetSv(9);
-        MessageBox.Show(test.ToJson());
-
-        var nameList = _gemRepo.GetSvNameListAll();
-        MessageBox.Show(nameList.ToJson());
-        //using (var db = new GemVarContext())
-        //{
-        //    //var test = db.Variables.Where(v=> v.VID== 7).FirstOrDefault();
-        //    //MessageBox.Show(test.Name);
-
-
-
-        //    var testListSV = db.Variables.Where(v=>v.VID==9).FirstOrDefault();
-        //    if (testListSV != null && testListSV.DataType == "LIST")
-        //    {
-
-        //        var children = db.Variables.Where(v=>v.ListSVID==testListSV.VID).ToList();
-        //        // var temp = Item.L(1);
-        //        Item temp;
-
-        //        if (children.Where(v => v.DataType == "LIST").Count() > 0)
-        //        {
-        //            temp = Item.L(children.Select(v => Item.I2(69)).ToArray());
-        //        }
-        //        else
-        //        {
-        //            temp = Item.L(children.Select(v => Item.I2(69)).ToArray());
-        //        }
-
-        //        MessageBox.Show(temp.ToJson());
-        //    }
-
-        //}
-    }
-
-    private void button2_Click(object sender, EventArgs e)
-    {
-        service.Enable();
-    }
-
-    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-
+        service.OnFormattedProcessProgramReceived += (formatedPP) =>
+        {
+            return 0; // 要自行依照process program 結構來處理
+            var pp = new FormattedProcessProgram();
+            pp.PPID = formatedPP.Items[0].GetString();
+            pp.EquipmentModelType = formatedPP.Items[1].GetString();
+            pp.SoftwareRevision = formatedPP.Items[2].GetString();
+            foreach (var processCmd in formatedPP.Items[3].Items)
+            {
+                var pCmd = new ProcessCommand { CommandCode = processCmd.Items[0].GetString() };
+                var paras = processCmd.Items[1];
+                foreach (var para in paras.Items) // 這個要很注意客製
+                {
+                    var p = new ProcessParameter();
+                    p.Value = para.GetString();
+                }
+            }
+            var rtn = _gemRepo.CreateProcessProgram(pp);
+        };
+        service.OnFormattedProcessProgramReq += (ppid) => // 好像可以自動處理?
+        {
+            var fpp = _gemRepo.GetProcessProgramFormatted(ppid).ToList();
+            return _gemRepo.FormattedProcessProgramToSecsItem(fpp.First());
+        };
     }
     private sealed class SecsLogger : ISecsGemLogger
     {
@@ -195,6 +171,55 @@ public partial class Form1 : Form
         }
 #endif
     }
+    
+    private void button1_Click(object sender, EventArgs e)
+    {
+
+        var test = _gemRepo.GetSv(9);
+        MessageBox.Show(test.ToJson());
+
+        var nameList = _gemRepo.GetSvNameListAll();
+        MessageBox.Show(nameList.ToJson());
+        //using (var db = new GemVarContext())
+        //{
+        //    //var test = db.Variables.Where(v=> v.VID== 7).FirstOrDefault();
+        //    //MessageBox.Show(test.Name);
+
+
+
+        //    var testListSV = db.Variables.Where(v=>v.VID==9).FirstOrDefault();
+        //    if (testListSV != null && testListSV.DataType == "LIST")
+        //    {
+
+        //        var children = db.Variables.Where(v=>v.ListSVID==testListSV.VID).ToList();
+        //        // var temp = Item.L(1);
+        //        Item temp;
+
+        //        if (children.Where(v => v.DataType == "LIST").Count() > 0)
+        //        {
+        //            temp = Item.L(children.Select(v => Item.I2(69)).ToArray());
+        //        }
+        //        else
+        //        {
+        //            temp = Item.L(children.Select(v => Item.I2(69)).ToArray());
+        //        }
+
+        //        MessageBox.Show(temp.ToJson());
+        //    }
+
+        //}
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+        service.Enable();
+    }
+
+    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+    
 
     /// <summary>
     /// 粗暴用法

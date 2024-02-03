@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Alarm\**" />
+    <EmbeddedResource Remove="Alarm\**" />
+    <None Remove="Alarm\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Secs4Net" Version="2.2.1" />
     <PackageReference Include="Secs4Net.Sml" Version="2.2.1" />
   </ItemGroup>
@@ -14,10 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\GemVarRepository\GemVarRepository.csproj" />
     
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Alarm\" />
   </ItemGroup>
 
 </Project>

@@ -7,20 +7,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
-
+using Secs4Net;
+using static Secs4Net.Item;
+using SQLitePCL;
 namespace GemVarRepository;
 public partial class GemRepository
 {
     // 純增刪查改不做資料驗證
-    public int GetProcessProgramFormatted(string PPID)
+    public IEnumerable<FormattedProcessProgram> GetProcessProgramFormatted(string PPID)
     {
         using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
-            var pp = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
-            return 0;
+            var pps = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
+            return pps;
         }
-        return 0;
+        return null;
     }
     public int GetProcessProgramFormatted(IEnumerable<string> PPIDs)
     {
@@ -48,7 +50,53 @@ public partial class GemRepository
             return 0;
         }
     }
-    public int UpdateProcessProgram() { return 0; }
+    public int UpdateProcessProgram(FormattedProcessProgram fpp) { return 0; }
 
-    public int DeleteProcessProgram() { return 0; } 
+    public int DeleteProcessProgram(List<string> ppid) {
+        using (_context = new GemVarContext(DbFilePath))
+        {
+            var cn = _context.Database.GetDbConnection();
+            var rows = cn.Execute($"DELETE FROM FormattedProcessProgram where PPID in {ppid}");
+            if (rows > 0)
+            {
+                return 0;
+            }
+            return 1;
+        }
+    }
+    public int DeleteProcessProgramAll()
+    {
+        using (_context = new GemVarContext(DbFilePath))
+        {
+            var cn = _context.Database.GetDbConnection();
+            var rows = cn.Execute($"DELETE FROM FormattedProcessProgram ");
+            return 0;
+        }
+    }
+
+    public Item FormattedProcessProgramToSecsItem (FormattedProcessProgram fpp)
+    {
+        var secsFpp = Item.L();
+        secsFpp.Items.Append(A(fpp.PPID));
+        secsFpp.Items.Append(A(fpp.EquipmentModelType));
+        secsFpp.Items.Append(A(fpp.SoftwareRevision));
+        var secsPPbody = Item.L();
+        var PPbody = new PPBodyHandler().Parse(fpp.PPBody);
+        foreach (var processCmd in PPbody)
+        {
+            var secsPPcmd = Item.L();
+            secsPPcmd.Items.Append(A(processCmd.CommandCode));
+            var secsParaLst = Item.L();
+            foreach (var para in processCmd.ProcessParameters)
+            {
+                var secsPara = VarStringToItem(para.DataType, para.Value);
+                return secsPara;
+                
+            }
+            secsPPcmd.Items.Append(secsParaLst);
+            secsPPbody.Items.Append(secsPPcmd);
+        }
+        secsFpp.Items.Append(secsPPbody);
+        return secsFpp;
+    }
 }

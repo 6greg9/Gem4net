@@ -10,6 +10,8 @@ using System.Reflection.Metadata;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using GemDeviceService.Control;
+using GemVarRepository.Model;
+using System.Security;
 
 namespace GemDeviceService;
 public partial class GemEqpService
@@ -30,7 +32,15 @@ public partial class GemEqpService
     /// HACK : 0 - ok, completed , 1 - invalid command , 2 - cannot do now , 3 - parameter error , 4 - initiated for asynchronous completion , 5 - rejected, already in desired condition , 6 - invalid object
     /// </summary>
     public event Func<RemoteCommand, RemoteCommand> OnRemoteCommandReceived;
+    //public event Func<FormattedProcessProgram, int> OnFormattedProcessProgramReceived;
 
+    /// <summary>
+    /// ACKC7: 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow, 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
+    /// </summary>
+    public event Func<Item, int> OnFormattedProcessProgramReceived;//還是應該自行解析處理, 只串接SF
+    public event Func<string, Item> OnFormattedProcessProgramReq;
+    public event Func<List<string>, int> OnProcessProgramDeleteReq;
+    public event Func<int> OnProcessProgramDeleteAllReq;
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;
     #endregion

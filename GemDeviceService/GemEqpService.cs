@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using GemDeviceService.Communication;
 using GemDeviceService.Control;
+using GemVarRepository.Model;
 
 namespace GemDeviceService;
 public partial class GemEqpService
@@ -19,6 +20,9 @@ public partial class GemEqpService
     private HsmsConnection? _connector;
     private CancellationTokenSource _hsmsCancellationTokenSource = new();
     public SecsGemOptions GemOptions { get; private set; }
+
+    public string MDLN { get; private set; } = "MDLN";//機台型號
+    public string SOFTREV { get; private set; } = "SOFTREV";//軟體版本
     public bool IsCommHostInit { get; private set; }
 
     private readonly ISecsGemLogger _logger;
@@ -44,6 +48,14 @@ public partial class GemEqpService
         GemOptions = secsGemOptions;
         IsCommHostInit = isCommHostInit;
         _GemRepo = gemReposiroty;
+
+        // ef core 第一次使用會花費很長時間
+        var mdln = _GemRepo.GetSv("MDLN");
+        if (mdln != null)
+            MDLN = mdln.GetString();
+        var softrev = _GemRepo.GetSv("SOFTREV");
+        if (softrev != null)
+            SOFTREV = softrev.GetString();
 
         Enable();
 
@@ -447,6 +459,44 @@ public partial class GemEqpService
                     SecsItem = itemS7F20
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
+                break;
+            //S7F17 Delete Process Program Send
+            case SecsMessage msg when (msg.S == 7 && msg.F == 19):
+                int ackc7 = -1;
+                if (msg.SecsItem.Count == 0)
+                {
+                    var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
+                    ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
+                }
+                else
+                {
+                    var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
+                    ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
+                }
+                    _GemRepo.DeleteProcessProgramAll();
+                using (var rtnS7F20 = new SecsMessage(7, 18)
+                {
+                    SecsItem = B((byte)ackc7)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
+                break;
+            //S7F23 Formatted Process Program Send
+            case SecsMessage msg when (msg.S == 7 && msg.F == 23):
+                var ACKC7 = OnFormattedProcessProgramReceived.Invoke(msg.SecsItem);
+                using (var rtnS7F24 = new SecsMessage(7, 24)
+                {
+                    SecsItem = B((byte)ACKC7)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F24);
+                break;
+            //S7F25 Formatted Process Program Request
+            case SecsMessage msg when (msg.S == 7 && msg.F == 25):
+                var pp = OnFormattedProcessProgramReq.Invoke(msg.SecsItem.GetString());
+                using (var rtnS7F26 = new SecsMessage(7, 26)
+                {
+                    SecsItem = pp
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F26);
                 break;
             default:
                 break;
