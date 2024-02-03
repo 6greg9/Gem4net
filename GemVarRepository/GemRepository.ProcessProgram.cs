@@ -52,11 +52,11 @@ public partial class GemRepository
     }
     public int UpdateProcessProgram(FormattedProcessProgram fpp) { return 0; }
 
-    public int DeleteProcessProgram(List<string> ppid) {
+    public int DeleteProcessProgram(List<string> ppids) {
         using (_context = new GemVarContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
-            var rows = cn.Execute($"DELETE FROM FormattedProcessProgram where PPID in {ppid}");
+            var rows = cn.Execute($"DELETE FROM FormattedProcessProgram where PPID = @ppid",ppids.ToArray());
             if (rows > 0)
             {
                 return 0;

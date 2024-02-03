@@ -450,18 +450,8 @@ public partial class GemEqpService
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
-            //S7F19 Current Process Program Dir Request
-            case SecsMessage msg when (msg.S == 7 && msg.F == 19):
-                var ppArry = _GemRepo.GetFormattedPPAll().Select( pp=> A( pp.PPID) ).ToArray();
-                var itemS7F20 = L(ppArry);
-                using (var rtnS7F20 = new SecsMessage(7, 20)
-                {
-                    SecsItem = itemS7F20
-                })
-                    await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
-                break;
             //S7F17 Delete Process Program Send
-            case SecsMessage msg when (msg.S == 7 && msg.F == 19):
+            case SecsMessage msg when (msg.S == 7 && msg.F == 17):
                 int ackc7 = -1;
                 if (msg.SecsItem.Count == 0)
                 {
@@ -474,15 +464,25 @@ public partial class GemEqpService
                     ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
                 }
                     _GemRepo.DeleteProcessProgramAll();
-                using (var rtnS7F20 = new SecsMessage(7, 18)
+                using (var rtnS7F18 = new SecsMessage(7, 18)
                 {
                     SecsItem = B((byte)ackc7)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F18);
+                break;
+            //S7F19 Current Process Program Dir Request
+            case SecsMessage msg when (msg.S == 7 && msg.F == 19):
+                var ppArry = _GemRepo.GetFormattedPPAll().Select(pp => A(pp.PPID)).ToArray();
+                var itemS7F20 = L(ppArry);
+                using (var rtnS7F20 = new SecsMessage(7, 20)
+                {
+                    SecsItem = itemS7F20
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS7F20);
                 break;
             //S7F23 Formatted Process Program Send
             case SecsMessage msg when (msg.S == 7 && msg.F == 23):
-                var ACKC7 = OnFormattedProcessProgramReceived.Invoke(msg.SecsItem);
+                var ACKC7 = OnFormattedProcessProgramReceived.Invoke(msg.SecsItem); //已經存在是要蓋過去?
                 using (var rtnS7F24 = new SecsMessage(7, 24)
                 {
                     SecsItem = B((byte)ACKC7)
