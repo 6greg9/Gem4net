@@ -104,7 +104,7 @@ public partial class GemEqpService
     }
     public void SendEventReport(int eventId)
     {
-        var reports = _GemRepo.GetReport(eventId);
+        var reports = _GemRepo.GetReportsByCeid(eventId);
         Random random = new Random();
         var dataId = random.Next();
         using var s6f11 = new SecsMessage(6, 11)

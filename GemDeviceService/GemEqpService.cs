@@ -216,6 +216,9 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 2):
                 HandleStream2(primaryMsgWrapper);
                 break;
+            case SecsMessage msg when (msg.S == 6):
+                HandleStream6(primaryMsgWrapper);
+                break;
             case SecsMessage msg when (msg.S == 7 ):
                 HandleStream7(primaryMsgWrapper);
                 break;
@@ -226,7 +229,6 @@ public partial class GemEqpService
                 break;
         }
     }
-
     async void HandleStream1(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
@@ -444,6 +446,41 @@ public partial class GemEqpService
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F42);
                 break;
                 default : break;
+        }
+    }
+    async void HandleStream6(PrimaryMessageWrapper? primaryMsgWrapper)
+    {
+        switch (primaryMsgWrapper.PrimaryMessage)
+        {
+            //S6F15 Event Report Request
+            case SecsMessage msg when (msg.S == 6 && msg.F == 15):
+                var eventId = msg.SecsItem[0].FirstValue<int>();
+                var reports = _GemRepo.GetReportsByCeid(eventId);
+                Random random = new Random();
+                var dataId = random.Next();
+                using (var rtnS6F16 = new SecsMessage(6, 16)
+                {
+                    SecsItem = L(
+                    U4((uint)dataId), //DATAID
+                    U4((uint)eventId), //CEID
+                    reports
+                    ),
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS6F16);
+                
+                break;
+            //S6F19 Individual Report Request
+            case SecsMessage msg when (msg.S == 6 && msg.F == 19):
+                var rptId = msg.SecsItem.FirstValue<int>();
+                var rptItem = _GemRepo.GetReportByRpid(rptId);
+                using (var rtnS6F20 = new SecsMessage(6, 20)
+                {
+                    SecsItem = rptItem
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS6F20);
+                break;
+            default:
+                break;
         }
     }
     async void HandleStream7(PrimaryMessageWrapper? primaryMsgWrapper)

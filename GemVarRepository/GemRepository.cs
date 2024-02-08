@@ -94,7 +94,7 @@ public partial class GemRepository
             if (variable.DataType != "LIST")
             {
                 return VarStringToItem(variable.DataType, variable.Value);
-                
+
             }
             else
             {
@@ -112,7 +112,7 @@ public partial class GemRepository
             return null;
         }
     }
-    Item VarStringToItem(string dataType,string varStr)
+    Item VarStringToItem(string dataType, string varStr)
     {
         switch (dataType)
         {
@@ -464,7 +464,7 @@ public partial class GemRepository
     }
     #endregion
 
-    public Item? GetReport(int ceid)
+    public Item? GetReportsByCeid(int ceid)
     {
         using (_context = new GemVarContext(DbFilePath))
         {
@@ -494,7 +494,26 @@ public partial class GemRepository
             return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
         }
     }
-
+    public Item? GetReportByRpid(int rpid)
+    {
+        using (_context = new GemVarContext(DbFilePath))
+        {
+            var rptVarLink = _context.ReportVariableLinks.Where(rpt => rpt.RPTID == rpid);
+            if (!rptVarLink.Any())
+            {
+                return L();
+            }
+            var reportVars = rptVarLink
+                .Join(_context.Variables,
+                    link => link.VID,
+                    variable => variable.VID,
+                    (link, variable) => variable
+                ).ToList()
+                .Select(v=> GemVariableToSecsItem(v) ).ToArray();
+            return L(reportVars);
+            
+        }
+    }
     #region DynamicEventReport
     /// <summary>
     /// 0 - ok, 1 - out of spac, 2 - invalid format, 3 - 1 or more RPTID already defined, 4 - 1 or more invalid VID
@@ -522,7 +541,7 @@ public partial class GemRepository
                 {
                     var rpt = _context.Reports.Where(rpt => rpt.RPTID == rptDefine.RPTID);//.First();
                     _context.RemoveRange(rpt);
-                        //_context.Remove(rpt);
+                    //_context.Remove(rpt);
                     continue;
                 }
                 //Create
@@ -628,7 +647,7 @@ public partial class GemRepository
                     }
                 }
             }
-            
+
             _context.SaveChanges();
             return 0;
         }

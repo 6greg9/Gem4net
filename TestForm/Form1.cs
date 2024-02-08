@@ -288,7 +288,7 @@ public partial class Form1 : Form
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        var test = _gemRepo.GetReport(1);
+        var test = _gemRepo.GetReportsByCeid(1);
         sw.Stop();
         MessageBox.Show(test.ToJson());
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
