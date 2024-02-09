@@ -13,13 +13,20 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Secs4Net;
 using static Secs4Net.Item;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 public partial class Form1 : Form
 {
     GemRepository _gemRepo;
     GemEqpService service;
     public Form1()
     {
+
         InitializeComponent();
+        
+        
+
         _gemRepo = new GemRepository("GemVariablesDb.sqlite");
 
         ISecsGemLogger logger = new SecsLogger(this);
@@ -34,19 +41,21 @@ public partial class Form1 : Form
             DeviceId = 0,
             LinkTestInterval = 1000 * 60,
             T6 = 5000
-        });
+        }); // 建構式就啟動惹..
+
         service.OnConnectStatusChanged += (status) =>
         {
             this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
         };
-        service.OnCommStateChanged += (current, previous) =>
+        service.OnCommStateChanged += (cur, pre) =>
         {
-            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{previous} --> {current}\n"); ; }));
+            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{pre} --> {cur}\n"); ; }));
         };
         service.OnControlStateChanged += (current, previous) =>
         {
             this.Invoke(new Action(() => { rtbx_Ctrl.AppendText($"{previous} --> {current}\n"); ; }));
         };
+
         service.OnTerminalMessageReceived += (msg) =>
         {
             this.Invoke(new Action(() =>
@@ -101,6 +110,8 @@ public partial class Form1 : Form
         {
             return _gemRepo.DeleteProcessProgram(ppLst);
         };
+
+        
     }
     private sealed class SecsLogger : ISecsGemLogger
     {

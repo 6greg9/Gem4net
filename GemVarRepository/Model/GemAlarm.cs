@@ -8,7 +8,7 @@ namespace GemVarRepository.Model;
 public class GemAlarm
 {
     /// <summary> 警報ID </summary>
-    public bool ALID { get; set; } 
+    public int ALID { get; set; } 
     /// <summary> 警報狀態 </summary>
     public bool ALCD { get; set; }
     public int? AlarmStateVid { get; set; }

@@ -5,11 +5,12 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace GemVarRepository.Model;
-public class GemVarContext : DbContext
+public class GemDbContext : DbContext
 {
-
+    //這裡屬性名稱會影響在資料庫裡的名稱
     public DbSet<GemVariable> Variables { get; set; }
     public DbSet<GemEvent> Events { get; set; }
     public DbSet<GemReport> Reports { get; set; }
@@ -17,14 +18,21 @@ public class GemVarContext : DbContext
     public DbSet<ReportVariableLink> ReportVariableLinks { get; set; }
     public DbSet<ProcessProgram> ProcessPrograms { get; set; }
     public DbSet<FormattedProcessProgram> FormattedProcessPrograms { get; set; }
-
-    public string DbPath { get; }
-    public GemVarContext(string dbPath)
+    public DbSet<GemAlarm> Alarms { get; set; }
+    public string DbPath { get; private set; }
+    IConfiguration configuration { get; set; }
+    public GemDbContext()
     {
+        //var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json"); 
+        //configuration = builder.Build();
         var folder = Environment.SpecialFolder.MyDocuments;
         var path = Environment.GetFolderPath(folder);
-        //DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
-        DbPath = System.IO.Path.Join(path, dbPath);
+        
+        //DbPath = configuration.GetConnectionString("GemSqliteDb")
+        //    ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+
+        DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+
     }
 
     // The following configures EF to create a Sqlite database file in the
@@ -37,6 +45,7 @@ public class GemVarContext : DbContext
         modelBuilder.Entity<GemEvent>().HasKey(sc => sc.ECID);
         modelBuilder.Entity<GemReport>().HasKey(sc => sc.RPTID);
         modelBuilder.Entity<GemVariable>().HasKey(sc => sc.VID);
+        modelBuilder.Entity<GemAlarm>().HasKey(sc => sc.ALID);
 
         modelBuilder.Entity<EventReportLink>().HasKey(sc => new { sc.ECID, sc.RPTID });
 

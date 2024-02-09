@@ -18,12 +18,19 @@ public partial class GemEqpService
 {
     #region Events
 
-    // State Changed
+    #region State Changed
+    /// <summary> Connecting,Connected, Selected, Retry,</summary>
     public event Action<string>? OnConnectStatusChanged;
-    public event Action<string, string>? OnCommStateChanged;
-    public event Action<string, string>? OnControlStateChanged;
 
-    // Command Received
+    /// <summary> DISABLED, WAIT_CR_FROM_HOST, WAIT_DELAY, WAIT_CRA, COMMUNICATING</summary>
+    public event Action<string, string>? OnCommStateChanged;
+
+    /// <summary>EQUIPMENT_OFF_LINE,HOST_OFF_LINE,ATTEMPT_ON_LINE, LOCAL,REMOTE</summary>
+    public event Action<string, string>? OnControlStateChanged;
+    #endregion
+
+    #region Command Received
+
     /// <summary> 0 - ok, 1 - one or more constants does not exist, 2 - busy, 3 - one or more values out of range/// </summary>
     public event Func<List<(int,Item)>, int>? OnEcRecieved;
     /// <summary> 0 - accepted for display , 1 - message will not be displayed , 2 - terminal not available</summary>
@@ -43,9 +50,12 @@ public partial class GemEqpService
     public event Func<int> OnProcessProgramDeleteAllReq;
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;
+
     #endregion
 
-    #region States
+    #endregion
+
+    #region Query States
     public ISecsGem? GetSecsWrapper     // 不在ON-LINE沒有辦法使用
         => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
                                         ? _secsGem : null;

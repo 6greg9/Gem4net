@@ -17,7 +17,7 @@ public partial class GemRepository
 public static class UseGemDbcontextExtensions
 {
     private static SemaphoreSlim semaphore = new SemaphoreSlim(1);
-    public static void GetSingleton(this GemVarContext resource, Action action)
+    public static void GetSingleton(this GemDbContext resource, Action action)
     {
         //using (resource = new(DbFilePath))
         //{
