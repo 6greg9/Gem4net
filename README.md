@@ -84,4 +84,70 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
 - [X] OnLineLocal
 - [X] OnLineRemote
 - [ ] Command: 這個應該有細分空間
+## 架構說明
+### 查詢類型語句
+不會改變資料狀態,例如S1F1,S1F3,S2F13
+```mermaid
+%%{init: {'theme':'forest'}}%%
+sequenceDiagram
+    participant SecsHost
+    participant GemService
+    participant GemRepository
+    participant EqpApp
+    SecsHost->>GemService: Primary Message
+    opt need to query 
+      GemService->>GemRepository: Query
+      GemRepository-->>GemService: Return GEM State
+    end
+    GemService-->>SecsHost: Secondary Message
+```
+### 指令類型語句
+會改變設備或資料狀態的語句,例如S2F15,S2F33,S2F41,S7F23
+```mermaid
+%%{init: {'theme':'forest'}}%%
+sequenceDiagram
+    participant SecsHost
+    participant GemService
+    participant GemRepository
+    participant EqpApp
+    SecsHost->>GemService: Primary Message
+    GemService->>EqpApp: On Command Received
+    EqpApp-->>GemService: Return Command Result
+    alt need to query
+        GemService->>GemRepository: Query or Command
+        GemRepository-->>GemService: Return GEM State or Result
+    else only result
+        
+    end
+    GemService-->>SecsHost: Secondary Message
+    opt State Changed Event
+        GemService->>GemRepository: Query
+        GemRepository-->>GemService: Return GEM State
+        GemService->>SecsHost: Primary Message
+        SecsHost->>GemService: Secondary Message
+    end
+    
+```
+### 設備主動語句
+設備主動發起,例如S6F11, S5F1, S10F1
+```mermaid
+%%{init: {'theme':'forest'}}%%
+sequenceDiagram
+    participant SecsHost
+    participant GemService
+    participant GemRepository
+    participant EqpApp
+    EqpApp->>GemService: Eqpipment Initial Req
+    alt need to query
+        GemService->>GemRepository: Query or Command
+        GemRepository-->>GemService: Return GEM State or Result
+    else only result
+    end
+    GemService->>SecsHost: Primary Message
+    SecsHost->>GemService: Secondary Message
+    opt Respoonse From Host
+        GemService->>EqpApp: Result
+    end
+    
+```
 
