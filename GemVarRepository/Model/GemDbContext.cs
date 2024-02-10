@@ -23,15 +23,15 @@ public class GemDbContext : DbContext
     IConfiguration configuration { get; set; }
     public GemDbContext()
     {
-        //var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json"); 
-        //configuration = builder.Build();
+        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+        configuration = builder.Build();
         var folder = Environment.SpecialFolder.MyDocuments;
         var path = Environment.GetFolderPath(folder);
-        
-        //DbPath = configuration.GetConnectionString("GemSqliteDb")
-        //    ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
 
-        DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+        DbPath = configuration.GetConnectionString("GemSqliteDb")
+            ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+
+        //DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
 
     }
 

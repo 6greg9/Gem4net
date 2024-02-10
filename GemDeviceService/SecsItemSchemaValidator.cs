@@ -330,6 +330,35 @@ public static class SecsItemSchemaValidator
 
     #endregion
 
+    #region Stream 5
+    static Func<Item?, bool> IsS5F3 = (item) =>
+    {
+        if (item is null) return false;
+        if (item.Format != SecsFormat.List || item.Items.Length !=2)
+            return false;
+        if (item.Items[0].Format != SecsFormat.Binary || item.Items[1].Format != SecsFormat.U4)
+            return false;
+        return true;
+    };
+    static Func<Item?, bool> IsS5F5 = (item) =>
+    {
+        if (item is null) return false;
+        if (item.Format != SecsFormat.List )
+            return false;
+        foreach( var alid in item.Items)
+        {
+            if(alid.Format != SecsFormat.U4)
+                return false;
+        }
+
+        return true;
+    };
+    static Func<Item?, bool> IsS5F7 = (item) =>
+    {
+        if (item is not null) return false;
+        return true;
+    };
+    #endregion
     #region Stream 6
     static Func<Item?, bool> IsS6F15 = (item) =>
     {
