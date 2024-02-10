@@ -101,6 +101,16 @@ sequenceDiagram
     end
     GemService-->>SecsHost: Secondary Message
 ```
+### 更新設備狀態變數
+```mermaid
+%%{init: {'theme':'forest'}}%%
+sequenceDiagram
+    participant SecsHost
+    participant GemService
+    participant GemRepository
+    participant EqpApp
+    EqpApp->>GemRepository: Update
+```
 ### 指令類型語句
 會改變設備或資料狀態的語句,例如S2F15,S2F33,S2F41,S7F23
 ```mermaid
