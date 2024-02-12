@@ -216,6 +216,9 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 2):
                 HandleStream2(primaryMsgWrapper);
                 break;
+            case SecsMessage msg when (msg.S == 5):
+                HandleStream5(primaryMsgWrapper);
+                break;
             case SecsMessage msg when (msg.S == 6):
                 HandleStream6(primaryMsgWrapper);
                 break;

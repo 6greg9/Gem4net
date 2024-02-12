@@ -27,8 +27,13 @@ public partial class GemRepository
     public GemRepository(string dbFilePath)
     {
         DbFilePath = dbFilePath;
-        
-        
+        using (_context = new GemDbContext())
+        {
+            _ = _context.Variables.ToListAsync();
+            _ = _context.Events.ToListAsync();
+            _ = _context.Alarms.ToListAsync();
+        }
+
         //EFcore加Dapper做成撒尿牛肉丸
         SqlMapper.AddTypeHandler(new PPBodyHandler());
     }
@@ -246,7 +251,7 @@ public partial class GemRepository
     /// <param name="vid"></param>
     /// <param name="updateValue"></param>
     /// <returns></returns>
-    public int SetVarValue(int vid, object updateValue) 
+    public int SetVarValue(int vid, object updateValue)
     {
         using (_context = new GemDbContext())
         {
@@ -512,9 +517,9 @@ public partial class GemRepository
                     variable => variable.VID,
                     (link, variable) => variable
                 ).ToList()
-                .Select(v=> GemVariableToSecsItem(v) ).ToArray();
+                .Select(v => GemVariableToSecsItem(v)).ToArray();
             return L(reportVars);
-            
+
         }
     }
     #region DynamicEventReport
