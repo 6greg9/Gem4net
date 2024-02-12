@@ -448,6 +448,82 @@ public partial class GemEqpService
                 default : break;
         }
     }
+    async void HandleStream5(PrimaryMessageWrapper? primaryMsgWrapper)
+    {
+        switch (primaryMsgWrapper.PrimaryMessage)
+        {
+            //S5F3 Enable/Disable Alarm Send
+            case SecsMessage msg when (msg.S == 5 && msg.F == 3):
+
+                var aled = (int)msg.SecsItem.Items[1].FirstValue<byte>() >= 128 ? true : false;
+                var alid = (int)msg.SecsItem.Items[2].FirstValue<int>();
+                var ackc5 = _GemRepo.EnableAlarm(alid, aled); // 這個回應碼要再看清楚
+
+                using (var rtnS10F4 = new SecsMessage(10, 4)
+                {
+                    SecsItem = B(Convert.ToByte(ackc5))
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS10F4);
+                break;
+            //S5F5 Enable/Disable Alarm Send
+            case SecsMessage msg when (msg.S == 5 && msg.F == 5):
+                var alarmIdVector = new List<int>();
+                foreach( var alrmid in msg.SecsItem.Items)
+                {
+                    alarmIdVector.Add( alrmid.FirstValue<int>());
+                }
+                IEnumerable<GemAlarm> alrmLst;
+                if(alarmIdVector.Count == 0)
+                {
+                    alrmLst = _GemRepo.GetAlarmAll();
+                }
+                else
+                {
+                    alrmLst =_GemRepo.GetAlarm(alarmIdVector);
+                }
+                var secsAlrmLst = alrmLst.Select(alrm=>
+                {
+                    if (alrm is null)
+                        return L();
+                    var alcd = alrm.ALCD ? 128 : 0;
+                    var alid = Convert.ToUInt32(alrm.ALID);
+                    var altx = alrm.ALTX;
+                    return L(B((byte)alcd), U4(alid),A(altx));
+                    
+                }).ToArray();
+
+                using (var rtnS5F6 = new SecsMessage(5, 6)
+                {
+                    SecsItem = L(secsAlrmLst)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS5F6);
+                break;
+            //S5F7 Enable Alarm Send
+            case SecsMessage msg when (msg.S == 5 && msg.F == 7):
+
+                
+                var secsEnabledAlrmLst = _GemRepo.GetAlarmAll()
+                    .Where(alrm=>alrm.ALED==true).Select(alrm =>
+                {
+                    if (alrm is null)
+                        return L();
+                    var alcd = alrm.ALCD ? 128 : 0;
+                    var alid = Convert.ToUInt32(alrm.ALID);
+                    var altx = alrm.ALTX;
+                    return L(B((byte)alcd), U4(alid), A(altx));
+
+                }).ToArray();
+
+                using (var rtnS5F8 = new SecsMessage(5, 8)
+                {
+                    SecsItem = L(secsEnabledAlrmLst)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS5F8);
+                break;
+            default:
+                break;
+        }
+    }
     async void HandleStream6(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)

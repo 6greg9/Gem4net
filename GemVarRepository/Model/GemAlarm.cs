@@ -18,6 +18,6 @@ public class GemAlarm
     public int? AlarmEnableVid { get; set; }
     public bool DefaultAlarmEnable { get; set; }
     /// <summary> 警報文字說明 </summary>
-    public bool ALTX { get; set; }
+    public string ALTX { get; set; }
 
 }

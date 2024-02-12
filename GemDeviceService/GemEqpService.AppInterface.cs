@@ -127,7 +127,58 @@ public partial class GemEqpService
         };
         _ = _secsGem?.SendAsync(s6f11);//射後不理
     }
-    public void SendAlarmReport(string alarmId) { }
+    /// <summary>
+    /// 0:OK, 1:ALID not found, 2: not Enabled
+    /// </summary>
+    /// <param name="alrmSet"></param>
+    /// <param name="alrmId"></param>
+    /// <param name="alrmText"></param>
+    /// <returns></returns>
+    public Task<int> SendAlarmReport(bool alrmSet, int alrmId,string alrmText ) {
+
+        return Task.Run(() =>
+        {
+            var alrm = _GemRepo.GetAlarm(alrmId);
+            if (alrm == null)
+                return 1;
+            if(alrm.ALED!= true) return 2;
+            var secsAlrmCode = alrmSet ? 128 : 0;
+            //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
+            using var s5f1 = new SecsMessage(5, 1)
+            {
+                SecsItem = L(
+                B((byte)secsAlrmCode),
+                U4((uint)alrmId), //CEID
+                A(alrmText)
+                ),
+            };
+            _ = _secsGem?.SendAsync(s5f1);//射後不理
+            return 0;
+        });
+        
+    }
+    public Task<int> SendAlarmReport(bool alrmSet, int alrmId)
+    {
+        return Task.Run(() =>
+        {
+            var alrm = _GemRepo.GetAlarm(alrmId);
+            if (alrm == null)
+                return 1;
+            if (alrm.ALED != true) return 1;
+            var secsAlrmCode = alrmSet ? 128 : 0;
+            //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
+            using var s5f1 = new SecsMessage(5, 1)
+            {
+                SecsItem = L(
+                B((byte)secsAlrmCode),
+                U4((uint)alrmId), //CEID
+                A(alrm.ALTX)
+                ),
+            };
+            _ = _secsGem?.SendAsync(s5f1);//射後不理
+            return 0;
+        });
+    }
 
     //需要補上CommState, CtrlState的限制,
     //大部分語句在進入On-Line後才可使用, 理論上只須限制在ON-line
