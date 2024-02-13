@@ -51,10 +51,10 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
 - [ ] S6F1  Trace Data Send
 - [X] S6F11 Event Report Send
 - [ ] S6F13 Annotated Event Report Send
-- [ ] S6F15 Event Report Request
+- [X] S6F15 Event Report Request
 - [ ] S6F17 Annotated Event Report Request
-- [ ] S6F19 Individual Report Request
-- [ ] S5
+- [x] S6F19 Individual Report Request
+- [X] S5
 - [X] S7F17 Delete Process Program Send
 - [X] S7F19 Current Process Program Dir Request
 - [X] S7F23 Formatted Process Program Send
@@ -159,5 +159,37 @@ sequenceDiagram
         GemService->>EqpApp: Result
     end
     
+```
+## Data Model
+```mermaid
+%%{init: {'theme':'forest'}}%%
+erDiagram
+    Variables{
+        int VID PK
+        string Format
+        string DataType
+        string Value
+        int ListVID
+    }
+    Events{
+        int ECID PK
+        bool Enabled
+    }
+    Reports{
+        int RPTID PK
+    }
+    EventReportLinks{
+        int ECID PK, FK
+        int RPTID PK, FK
+    }
+    ReportVariableLinks{
+        int RPTID PK, FK
+        int VID PK, FK
+    }
+    ReportVariableLinks }o--|| Variables : has
+    ReportVariableLinks }o--|| Reports :has
+    EventReportLinks }o--|| Events : has
+    EventReportLinks }o--|| Reports : has
+    Variables ||--o{ Variables : ListType
 ```
 
