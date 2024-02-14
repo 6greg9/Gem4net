@@ -24,8 +24,8 @@ public partial class Form1 : Form
     {
 
         InitializeComponent();
-        
-        
+
+
 
         _gemRepo = new GemRepository("GemVariablesDb.sqlite");
 
@@ -111,7 +111,7 @@ public partial class Form1 : Form
             return _gemRepo.DeleteProcessProgram(ppLst);
         };
 
-        
+
     }
     private sealed class SecsLogger : ISecsGemLogger
     {
@@ -190,7 +190,7 @@ public partial class Form1 : Form
         }
 #endif
     }
-    
+
     private void button1_Click(object sender, EventArgs e)
     {
 
@@ -238,7 +238,7 @@ public partial class Form1 : Form
     {
 
     }
-    
+
 
     /// <summary>
     /// �ʼɥΪk
@@ -355,8 +355,16 @@ public partial class Form1 : Form
         var temperatureCmd = new ProcessCommand();
         temperatureCmd.CommandCode = "temperCC";
         temperatureCmd.ProcessParameters.Add(
-            new ProcessParameter { Name = "TempA", Value = "87.9", 
-                DataType = "FT_4", Unit="C",Length=8, Definition="test", Remark="YOOOOOOO" });
+            new ProcessParameter
+            {
+                Name = "TempA",
+                Value = "87.9",
+                DataType = "FT_4",
+                Unit = "C",
+                Length = 8,
+                Definition = "test",
+                Remark = "YOOOOOOO"
+            });
         ppBody.Add(temperatureCmd);
         pp.PPBody = JsonSerializer.Serialize(ppBody);
         _gemRepo.CreateProcessProgram(pp);
@@ -366,4 +374,11 @@ public partial class Form1 : Form
     {
 
     }
+
+    private void Btn_SendAlarm_Click(object sender, EventArgs e)
+    {
+        service.SendAlarmReport((bool)Cbx_SetAlarm.Enabled, (int)Num_AlarmId.Value ,Tbx_AlarmText.Text);
+    }
+
+ 
 }

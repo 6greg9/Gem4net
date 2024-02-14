@@ -63,8 +63,13 @@ partial class Form1
         Tbx_TerminalInput = new RichTextBox();
         Tbx_Terminal = new RichTextBox();
         Page_ProcessProgram = new TabPage();
-        Btn_SelectAllPP = new Button();
         Btn_InsertPP = new Button();
+        Btn_SelectAllPP = new Button();
+        Page_Alarm = new TabPage();
+        Cbx_SetAlarm = new CheckBox();
+        Tbx_AlarmText = new TextBox();
+        Btn_SendAlarm = new Button();
+        Num_AlarmId = new NumericUpDown();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         Tab_GemState.SuspendLayout();
@@ -73,6 +78,8 @@ partial class Form1
         Page_Events.SuspendLayout();
         Page_Terminal.SuspendLayout();
         Page_ProcessProgram.SuspendLayout();
+        Page_Alarm.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)Num_AlarmId).BeginInit();
         SuspendLayout();
         // 
         // button1
@@ -232,6 +239,7 @@ partial class Form1
         Tab_Events.Controls.Add(Page_Events);
         Tab_Events.Controls.Add(Page_Terminal);
         Tab_Events.Controls.Add(Page_ProcessProgram);
+        Tab_Events.Controls.Add(Page_Alarm);
         Tab_Events.Location = new Point(12, 228);
         Tab_Events.Name = "Tab_Events";
         Tab_Events.SelectedIndex = 0;
@@ -422,6 +430,16 @@ partial class Form1
         Page_ProcessProgram.Text = "ProcessProgram";
         Page_ProcessProgram.UseVisualStyleBackColor = true;
         // 
+        // Btn_InsertPP
+        // 
+        Btn_InsertPP.Location = new Point(599, 176);
+        Btn_InsertPP.Name = "Btn_InsertPP";
+        Btn_InsertPP.Size = new Size(147, 46);
+        Btn_InsertPP.TabIndex = 1;
+        Btn_InsertPP.Text = "InsertPP";
+        Btn_InsertPP.UseVisualStyleBackColor = true;
+        Btn_InsertPP.Click += Btn_InsertPP_Click;
+        // 
         // Btn_SelectAllPP
         // 
         Btn_SelectAllPP.Location = new Point(343, 123);
@@ -432,15 +450,52 @@ partial class Form1
         Btn_SelectAllPP.UseVisualStyleBackColor = true;
         Btn_SelectAllPP.Click += Btn_SelectAllPP_Click;
         // 
-        // Btn_InsertPP
+        // Page_Alarm
         // 
-        Btn_InsertPP.Location = new Point(599, 176);
-        Btn_InsertPP.Name = "Btn_InsertPP";
-        Btn_InsertPP.Size = new Size(147, 46);
-        Btn_InsertPP.TabIndex = 1;
-        Btn_InsertPP.Text = "InsertPP";
-        Btn_InsertPP.UseVisualStyleBackColor = true;
-        Btn_InsertPP.Click += Btn_InsertPP_Click;
+        Page_Alarm.Controls.Add(Num_AlarmId);
+        Page_Alarm.Controls.Add(Cbx_SetAlarm);
+        Page_Alarm.Controls.Add(Tbx_AlarmText);
+        Page_Alarm.Controls.Add(Btn_SendAlarm);
+        Page_Alarm.Location = new Point(4, 32);
+        Page_Alarm.Name = "Page_Alarm";
+        Page_Alarm.Size = new Size(1345, 398);
+        Page_Alarm.TabIndex = 6;
+        Page_Alarm.Text = "Alarm";
+        Page_Alarm.UseVisualStyleBackColor = true;
+        // 
+        // Cbx_SetAlarm
+        // 
+        Cbx_SetAlarm.AutoSize = true;
+        Cbx_SetAlarm.Location = new Point(98, 55);
+        Cbx_SetAlarm.Name = "Cbx_SetAlarm";
+        Cbx_SetAlarm.Size = new Size(114, 27);
+        Cbx_SetAlarm.TabIndex = 2;
+        Cbx_SetAlarm.Text = "SetAlarm";
+        Cbx_SetAlarm.UseVisualStyleBackColor = true;
+        // 
+        // Tbx_AlarmText
+        // 
+        Tbx_AlarmText.Location = new Point(98, 123);
+        Tbx_AlarmText.Name = "Tbx_AlarmText";
+        Tbx_AlarmText.Size = new Size(193, 30);
+        Tbx_AlarmText.TabIndex = 1;
+        // 
+        // Btn_SendAlarm
+        // 
+        Btn_SendAlarm.Location = new Point(321, 104);
+        Btn_SendAlarm.Name = "Btn_SendAlarm";
+        Btn_SendAlarm.Size = new Size(135, 49);
+        Btn_SendAlarm.TabIndex = 0;
+        Btn_SendAlarm.Text = "SendAlarm";
+        Btn_SendAlarm.UseVisualStyleBackColor = true;
+        Btn_SendAlarm.Click += Btn_SendAlarm_Click;
+        // 
+        // Num_AlarmId
+        // 
+        Num_AlarmId.Location = new Point(101, 87);
+        Num_AlarmId.Name = "Num_AlarmId";
+        Num_AlarmId.Size = new Size(111, 30);
+        Num_AlarmId.TabIndex = 3;
         // 
         // Form1
         // 
@@ -461,6 +516,9 @@ partial class Form1
         Page_Events.PerformLayout();
         Page_Terminal.ResumeLayout(false);
         Page_ProcessProgram.ResumeLayout(false);
+        Page_Alarm.ResumeLayout(false);
+        Page_Alarm.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)Num_AlarmId).EndInit();
         ResumeLayout(false);
     }
 
@@ -503,4 +561,9 @@ partial class Form1
     private TabPage Page_ProcessProgram;
     private Button Btn_InsertPP;
     private Button Btn_SelectAllPP;
+    private TabPage Page_Alarm;
+    private Button Btn_SendAlarm;
+    private CheckBox Cbx_SetAlarm;
+    private TextBox Tbx_AlarmText;
+    private NumericUpDown Num_AlarmId;
 }
