@@ -1,7 +1,7 @@
 namespace ToolForm;
 
 using CsvHelper;
-using GemVarRepository.Model;
+using Gem4NetRepository.Model;
 using static Dapper.SqlMapper;
 
 using System.Globalization;

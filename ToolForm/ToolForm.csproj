@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GemVarRepository\GemVarRepository.csproj" />
+    <ProjectReference Include="..\Gem4NetRepository\Gem4NetRepository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

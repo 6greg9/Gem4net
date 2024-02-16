@@ -1,7 +1,7 @@
 namespace TestForm;
-using GemVarRepository;
-using GemVarRepository.Model;
-using GemDeviceService;
+using Gem4NetRepository;
+using Gem4NetRepository.Model;
+using Gem4Net;
 using Secs4Net;
 using Secs4Net.Sml;
 using Secs4Net.Extensions;
