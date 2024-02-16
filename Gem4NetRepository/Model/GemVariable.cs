@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4NetRepository.Model;
+namespace Gem4netRepository.Model;
 public class GemVariable
 {
     public int     VID { get; set; }

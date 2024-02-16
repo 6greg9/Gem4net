@@ -5,7 +5,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4Net;
+namespace Gem4net;
 public class RemoteCommand
 {
     public string Name { get; set; }

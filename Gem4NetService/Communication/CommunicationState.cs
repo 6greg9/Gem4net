@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4Net.Communication;
+namespace Gem4net.Communication;
 public enum CommunicationState
 {
     DISABLED,

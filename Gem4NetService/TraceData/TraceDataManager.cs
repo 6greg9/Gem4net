@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gem4NetRepository;
-namespace Gem4Net.TraceData;
+using Gem4netRepository;
+namespace Gem4net.TraceData;
 public class TraceDataManager
 {
     GemRepository _repo {  get; set; }

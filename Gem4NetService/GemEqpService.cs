@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Secs4Net;
 using Secs4Net.Extensions;
-using Gem4NetRepository;
+using Gem4netRepository;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Threading.Channels;
@@ -9,11 +9,11 @@ using static Secs4Net.Item;
 using System.Reflection.Metadata;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Gem4Net.Communication;
-using Gem4Net.Control;
-using Gem4NetRepository.Model;
+using Gem4net.Communication;
+using Gem4net.Control;
+using Gem4netRepository.Model;
 
-namespace Gem4Net;
+namespace Gem4net;
 public partial class GemEqpService
 {
     private SecsGem? _secsGem;

@@ -1,8 +1,8 @@
-﻿using Gem4NetRepository.Model;
+﻿using Gem4netRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-namespace Gem4NetRepository;
+namespace Gem4netRepository;
 public class Program
 {
     public Program()

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4Net;
+namespace Gem4net;
 public static class SecsItemSchemaValidator
 {
     public static Func<SecsMessage, bool> IsValid = (Msg) =>

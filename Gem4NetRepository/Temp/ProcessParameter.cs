@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4NetRepository.Temp;
+namespace Gem4netRepository.Temp;
 [ComplexType]
 public class ProcessParameter
 {
