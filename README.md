@@ -111,7 +111,14 @@ sequenceDiagram
 ### 指令類型語句
 會改變設備或資料狀態的語句,例如S2F15,S2F33,S2F41,S7F23
 ```mermaid
-%%{init: {'theme':'forest'}}%%
+%%{
+  init: {
+    'theme': 'forest',
+    'themeVariables': {
+      'fontSize':'48px'
+    }
+  }
+}%%
 sequenceDiagram
     participant SecsHost
     participant GemService
@@ -138,7 +145,14 @@ sequenceDiagram
 ### 設備主動語句
 設備主動發起,例如S6F11, S5F1, S10F1
 ```mermaid
-%%{init: {'theme':'forest'}}%%
+%%{
+  init: {
+    'theme': 'forest',
+    'themeVariables': {
+      'fontSize':'48px'
+    }
+  }
+}%%
 sequenceDiagram
     participant SecsHost
     participant GemService
@@ -159,7 +173,14 @@ sequenceDiagram
 ```
 ## Data Model
 ```mermaid
-%%{init: {'theme':'forest'}}%%
+%%{
+  init: {
+    'theme': 'forest',
+    'themeVariables': {
+      'fontSize':'48px'
+    }
+  }
+}%%
 erDiagram
     Variables{
         int VID PK
