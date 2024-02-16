@@ -1,13 +1,10 @@
-# Gem4NetDeviceService
-## 使用套件
-### [secs4net](https://github.com/mkjeff/secs4net)  
-- 已有功能
-  - HSMS
-### SQLite
-### EF Core
-sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強, 而且微軟將來會優化?
-### Dapper
-主要是ProcessProgram部分, 用SqlMapper處理類json結構
+# Gem4Net
+- 依賴套件
+  - [secs4net](https://github.com/mkjeff/secs4net)
+    - HSMS, Tx TimeOut
+    - S9系列
+  - SQLite + EF Core + Dapper
+
 ## 預計開發功能
 - Equipment Processing States	
 - Host Initiated S1=F13/F14 Scenario	
@@ -61,9 +58,9 @@ sqlsugar似乎更優秀, 重點是有singleton, ef core 在code first 比較強,
 - [X] S7F25 Formatted Process Program Request
 - [X] S10F1 Terminal Request
 - [X] S10F3 Terminal Display, Single
-## Variable Item Dictionary in SEMI E5 (8.4)
-## GEM-Defined Collection Events (9.3)
-## App Configs
+### Variable Item Dictionary in SEMI E5 (8.4)
+### GEM-Defined Collection Events (9.3)
+### App Configs
 - CommHostEqpTrigger
 ## ITRI-like Interface
 - [ ] Initialize: 建構式加callback?
