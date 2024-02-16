@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Gem4netRepository.Migrations
+namespace Gem4NetRepository.Migrations
 {
     /// <inheritdoc />
     public partial class AddAlarm : Migration

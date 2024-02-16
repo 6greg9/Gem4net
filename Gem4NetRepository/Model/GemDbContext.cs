@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Gem4netRepository.Model;
+namespace Gem4NetRepository.Model;
 public class GemDbContext : DbContext
 {
     //這裡屬性名稱會影響在資料庫裡的名稱

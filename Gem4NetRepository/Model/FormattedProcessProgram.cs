@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Gem4netRepository.Model;
+namespace Gem4NetRepository.Model;
 public class FormattedProcessProgram
 {
     public Guid ID { get; set; }

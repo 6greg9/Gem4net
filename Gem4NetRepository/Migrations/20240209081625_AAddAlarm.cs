@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Gem4netRepository.Migrations
+namespace Gem4NetRepository.Migrations
 {
     /// <inheritdoc />
     public partial class AAddAlarm : Migration

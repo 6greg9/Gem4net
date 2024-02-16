@@ -1,4 +1,4 @@
-﻿using Gem4netRepository.Model;
+﻿using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4netRepository;
+namespace Gem4NetRepository;
 public partial class GemRepository
 {
     // S5系列

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4net.Control;
+namespace Gem4Net.Control;
 public enum ControlState
 {
     EQUIPMENT_OFF_LINE,

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4net.Control;
+namespace Gem4Net.Control;
 public class CtrlStateManager
 {
     #region State, TransitionEvent

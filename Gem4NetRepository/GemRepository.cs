@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Gem4netRepository.Model;
+using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Secs4Net;
@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static Secs4Net.Item;
-namespace Gem4netRepository;
+namespace Gem4NetRepository;
 public partial class GemRepository
 {
     /// <summary>

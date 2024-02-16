@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4net;
+namespace Gem4Net;
 public class GemEqpAppConfig
 {
     /// <summary>

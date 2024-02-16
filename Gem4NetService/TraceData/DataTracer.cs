@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace Gem4net.TraceData;
+namespace Gem4Net.TraceData;
 public class DataTracer
 {
     /// <summary>

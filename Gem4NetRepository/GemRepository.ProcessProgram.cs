@@ -1,4 +1,4 @@
-﻿using Gem4netRepository.Model;
+﻿using Gem4NetRepository.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using static Secs4Net.Item;
 using SQLitePCL;
-namespace Gem4netRepository;
+namespace Gem4NetRepository;
 public partial class GemRepository
 {
     // 純增刪查改不做資料驗證

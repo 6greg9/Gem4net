@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Gem4NetService\Gem4netService.csproj" />
-    <ProjectReference Include="..\Gem4NetRepository\Gem4netRepository.csproj" />
+    <ProjectReference Include="..\Gem4NetService\Gem4NetService.csproj" />
+    <ProjectReference Include="..\Gem4NetRepository\Gem4NetRepository.csproj" />
     
   </ItemGroup>
 

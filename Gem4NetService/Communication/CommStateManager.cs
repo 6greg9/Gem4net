@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4net.Communication;
+namespace Gem4Net.Communication;
 internal class CommStateManager
 {
     bool IsHostInitial = false;

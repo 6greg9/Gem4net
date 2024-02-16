@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gem4netRepository", "Gem4NetRepository\Gem4netRepository.csproj", "{9C27CF30-EBA0-4078-B9F0-DD7A22A84585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gem4NetRepository", "Gem4NetRepository\Gem4NetRepository.csproj", "{9C27CF30-EBA0-4078-B9F0-DD7A22A84585}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gem4netService", "Gem4NetService\Gem4netService.csproj", "{5A76CC16-31CC-43E1-9D37-BA7AFF7AB989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gem4NetService", "Gem4NetService\Gem4NetService.csproj", "{5A76CC16-31CC-43E1-9D37-BA7AFF7AB989}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestForm", "TestForm\TestForm.csproj", "{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}"
 EndProject

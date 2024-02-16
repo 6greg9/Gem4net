@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4netRepository.Model;
+namespace Gem4NetRepository.Model;
 public class ProcessProgram
 {
     public string PPID { get; set; }

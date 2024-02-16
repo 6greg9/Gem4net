@@ -1,4 +1,4 @@
-﻿using Gem4netRepository.Model;
+﻿using Gem4NetRepository.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4netRepository;
+namespace Gem4NetRepository;
 public partial class GemRepository
 {
 
