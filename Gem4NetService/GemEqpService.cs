@@ -458,11 +458,11 @@ public partial class GemEqpService
             //S5F3 Enable/Disable Alarm Send
             case SecsMessage msg when (msg.S == 5 && msg.F == 3):
 
-                var aled = (int)msg.SecsItem.Items[1].FirstValue<byte>() >= 128 ? true : false;
-                var alid = (int)msg.SecsItem.Items[2].FirstValue<int>();
+                var aled = (int)msg.SecsItem.Items[0].FirstValue<byte>() >= 128 ? true : false;
+                var alid = (int)msg.SecsItem.Items[1].FirstValue<int>();
                 var ackc5 = _GemRepo.EnableAlarm(alid, aled); // 這個回應碼要再看清楚
 
-                using (var rtnS10F4 = new SecsMessage(10, 4)
+                using (var rtnS10F4 = new SecsMessage(5, 4)
                 {
                     SecsItem = B(Convert.ToByte(ackc5))
                 })
@@ -470,11 +470,8 @@ public partial class GemEqpService
                 break;
             //S5F5 Enable/Disable Alarm Send
             case SecsMessage msg when (msg.S == 5 && msg.F == 5):
-                var alarmIdVector = new List<int>();
-                foreach( var alrmid in msg.SecsItem.Items)
-                {
-                    alarmIdVector.Add( alrmid.FirstValue<int>());
-                }
+                var alarmIdVector = new List<uint>();
+
                 IEnumerable<GemAlarm> alrmLst;
                 if(alarmIdVector.Count == 0)
                 {
@@ -482,7 +479,7 @@ public partial class GemEqpService
                 }
                 else
                 {
-                    alrmLst =_GemRepo.GetAlarm(alarmIdVector);
+                    alrmLst =_GemRepo.GetAlarm(alarmIdVector.Select(uint16=>(int)uint16) ); 
                 }
                 var secsAlrmLst = alrmLst.Select(alrm=>
                 {

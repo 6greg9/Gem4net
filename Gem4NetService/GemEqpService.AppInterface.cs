@@ -141,6 +141,8 @@ public partial class GemEqpService
             var alrm = _GemRepo.GetAlarm(alrmId);
             if (alrm == null)
                 return 1;
+            if (alrm.ALCD != alrmSet)
+                _GemRepo.SetAlarmCode(alrmId, alrmSet);
             if(alrm.ALED!= true) return 2;
             var secsAlrmCode = alrmSet ? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
@@ -164,7 +166,9 @@ public partial class GemEqpService
             var alrm = _GemRepo.GetAlarm(alrmId);
             if (alrm == null)
                 return 1;
-            if (alrm.ALED != true) return 1;
+            if (alrm.ALED != true) return 2;
+            if (alrm.ALCD != alrmSet)
+                _GemRepo.SetAlarmCode(alrmId, alrmSet);
             var secsAlrmCode = alrmSet ? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
             using var s5f1 = new SecsMessage(5, 1)

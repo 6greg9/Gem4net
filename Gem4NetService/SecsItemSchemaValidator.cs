@@ -44,6 +44,10 @@ public static class SecsItemSchemaValidator
                 return IsS2F37(Msg.SecsItem);
             case (2, 41):
                 return IsS2F41(Msg.SecsItem);
+            case (5, 3):
+                return IsS5F3(Msg.SecsItem);
+            case (5, 5):
+                return IsS5F5(Msg.SecsItem);
             case (6, 15):
                 return IsS6F15(Msg.SecsItem);
             case (6, 19):
@@ -343,13 +347,13 @@ public static class SecsItemSchemaValidator
     static Func<Item?, bool> IsS5F5 = (item) =>
     {
         if (item is null) return false;
-        if (item.Format != SecsFormat.List )
+        if (item.Format is not SecsFormat.U4 )
             return false;
-        foreach( var alid in item.Items)
-        {
-            if(alid.Format != SecsFormat.U4)
-                return false;
-        }
+        //foreach( var alid in item.Items)
+        //{
+        //    if(alid.Format != SecsFormat.U4)
+        //        return false;
+        //}
 
         return true;
     };
@@ -359,6 +363,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
     #endregion
+
     #region Stream 6
     static Func<Item?, bool> IsS6F15 = (item) =>
     {

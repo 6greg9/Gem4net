@@ -377,7 +377,7 @@ public partial class Form1 : Form
 
     private void Btn_SendAlarm_Click(object sender, EventArgs e)
     {
-        service.SendAlarmReport((bool)Cbx_SetAlarm.Enabled, (int)Num_AlarmId.Value ,Tbx_AlarmText.Text);
+        service.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value );
     }
 
  

@@ -14,7 +14,7 @@ public partial class GemRepository
     {
         using (_context = new GemDbContext())
         {
-            return _context.Alarms.Where(alrm => alrm.ALID == alarmId).First();
+            return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
         }
     }
     public IEnumerable<GemAlarm?> GetAlarm(IEnumerable<int> alarmIds)
