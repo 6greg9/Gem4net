@@ -16,7 +16,7 @@ public partial class GemRepository
     // 純增刪查改不做資料驗證
     public IEnumerable<FormattedProcessProgram> GetProcessProgramFormatted(string PPID)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             var pps = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
@@ -30,7 +30,7 @@ public partial class GemRepository
     }
     public IEnumerable<FormattedProcessProgram> GetFormattedPPAll()
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram").ToList();
@@ -39,7 +39,7 @@ public partial class GemRepository
     }
     public int CreateProcessProgram(FormattedProcessProgram pp)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             cn.Execute("INSERT INTO FormattedProcessPrograms(ID, PPID, UpdateTime, Status, PPBody," +
@@ -53,7 +53,7 @@ public partial class GemRepository
     public int UpdateProcessProgram(FormattedProcessProgram fpp) { return 0; }
 
     public int DeleteProcessProgram(List<string> ppids) {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms where PPID IN @ppids", new { ppids = ppids });
@@ -66,7 +66,7 @@ public partial class GemRepository
     }
     public int DeleteProcessProgramAll()
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var cn = _context.Database.GetDbConnection();
             var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms ");

@@ -27,7 +27,7 @@ public partial class GemRepository
     public GemRepository(string dbFilePath)
     {
         DbFilePath = dbFilePath;
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             _ = _context.Variables.ToListAsync();
             _ = _context.Events.ToListAsync();
@@ -42,7 +42,7 @@ public partial class GemRepository
     /// <returns></returns>
     public Item? GetSvList(IEnumerable<int> vidList)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             return SubGetSvListByVidList(vidList);
         }
@@ -59,14 +59,14 @@ public partial class GemRepository
         //    rtn = SubGetVarByVID(vid);
         //});
         //return null;
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             return SubGetVarByVID(vid);
         }
     }
     public Item? GetSv(string name)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             return SubGetVarByName(name);
         }
@@ -167,6 +167,18 @@ public partial class GemRepository
                 return Item.J(); // !?
         }
     }
+    public Item? GetSvAll()
+    {
+        using (_context = new GemDbContext(DbFilePath))
+        {
+            return SubGetSvAll();
+        }
+    }
+    public Item? SubGetSvAll()
+    {
+        var VarLst = _context.Variables.ToList().Select(v => GemVariableToSecsItem(v)).ToArray();
+        return Item.L(VarLst);
+    }
     /// <summary>
     /// for s1f11,s1f12
     /// </summary>
@@ -174,7 +186,7 @@ public partial class GemRepository
     /// <returns></returns>
     public Item? GetSvNameList(IEnumerable<int> vidList)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var svNameList = vidList.Select(vid =>
         {   //這種寫法有一天要改
@@ -193,20 +205,21 @@ public partial class GemRepository
     }
     public Item? GetSvNameListAll()
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var itemList = _context.Variables.Where(v => v.VarType == "SV")
             .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
             return Item.L(itemList.ToArray());
         }
     }
+
     /// <summary>
     /// for s2f14
     /// </summary>
     /// <returns></returns>
     public Item? GetEcNameList(IEnumerable<int> vidList)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             //IQueryable<GemVariable?> rtnGemVar = null;
             List<GemVariable?> rtnGemVar = new();
@@ -236,7 +249,7 @@ public partial class GemRepository
     }
     public Item? GetEcNameListAll()
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var ecLst = _context.Variables.Where(v => v.VarType == "EC");
             var itemList = ecLst.ToList().Select(v => GemVariableToSecsItem(v)); // 這裡有EF的坑
@@ -253,7 +266,7 @@ public partial class GemRepository
     /// <returns></returns>
     public int SetVarValue(int vid, object updateValue)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var variable = _context.Variables.FirstOrDefault(v => v.VID == vid);
             if (variable is null)
@@ -340,7 +353,7 @@ public partial class GemRepository
     {
         int EAC = -1;
         var idLst = idValLst.Select(pair => pair.Item1).ToList();
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var ECs = _context.Variables.Where(v => v.VarType == "EC");
             if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idLst.Count)
@@ -474,7 +487,7 @@ public partial class GemRepository
 
     public Item? GetReportsByCeid(int ceid)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             List<(int, Item)> rtnRptItems = new();
             var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
@@ -504,7 +517,7 @@ public partial class GemRepository
     }
     public Item? GetReportByRpid(int rpid)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var rptVarLink = _context.ReportVariableLinks.Where(rpt => rpt.RPTID == rpid);
             if (!rptVarLink.Any())
@@ -529,7 +542,7 @@ public partial class GemRepository
     /// <returns></returns>
     public int DefineReport(IEnumerable<(int RPTID, int[] VID)> rptLst)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             if (rptLst.Count() == 0)//清光, 也許應該寫在其他地方...
             {
@@ -580,7 +593,7 @@ public partial class GemRepository
     /// <returns></returns>
     public int LinkEvent(IEnumerable<(int CEID, int[] RPTIDs)> evntRptLinks)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             if (evntRptLinks.Count() == 0)//清光, 也許應該寫在其他地方...
             {
@@ -628,7 +641,7 @@ public partial class GemRepository
     /// <returns></returns>
     public int EnableEvent(bool isEnable, IEnumerable<int> ecids)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             if (_context.Events.Where(evnt => ecids.Contains(evnt.ECID)).Count() != ecids.Count()) //ECID有不存在
                 return 1;

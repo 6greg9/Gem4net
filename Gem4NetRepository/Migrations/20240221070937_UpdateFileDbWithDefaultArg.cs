@@ -5,7 +5,7 @@
 namespace Gem4NetRepository.Migrations
 {
     /// <inheritdoc />
-    public partial class AAdddAlarmm : Migration
+    public partial class UpdateFileDbWithDefaultArg : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

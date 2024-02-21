@@ -249,7 +249,16 @@ public partial class GemEqpService
             //S1F3 Selected Equipment Status Request
             case SecsMessage msg when (msg.S == 1 && msg.F == 3):
                 var vids = msg.SecsItem.Items.Select(item => item.FirstValue<int>());
-                var svList = _GemRepo.GetSvList(vids);
+                Item? svList;
+                if (vids is null || vids.Count()==0)
+                {
+                    svList = _GemRepo.GetSvAll();
+                }
+                else
+                {
+                    svList = _GemRepo.GetSvList(vids);
+                }
+                    
                 using (var rtnS2F4 = new SecsMessage(1, 4)
                 {
                     SecsItem = svList

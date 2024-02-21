@@ -1,4 +1,3 @@
-namespace TestForm;
 using Gem4NetRepository;
 using Gem4NetRepository.Model;
 using Gem4Net;
@@ -9,13 +8,13 @@ using Secs4Net.Json;
 using Microsoft.Extensions.Options;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Diagnostics;
-using System.Security.Cryptography;
 using System.Text.Json;
-using Secs4Net;
-using static Secs4Net.Item;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
+using Dapper;
+using System.Data.SQLite;
+using System.Data;
+
+namespace TestForm;
+
 public partial class Form1 : Form
 {
     GemRepository _gemRepo;
@@ -111,7 +110,40 @@ public partial class Form1 : Form
             return _gemRepo.DeleteProcessProgram(ppLst);
         };
 
-
+        timer1.Start();
+    }
+    int cnt = 0;
+    public Task UpdateVariables()
+    {
+        var cnStr = " Data Source= C:\\Users\\guicheng.zhang\\Documents\\GemVariablesDb.sqlite";
+        return Task.Run(() =>
+        {
+            //交易
+            //using (var tranScope = new TransactionScope())
+            //{
+            try
+            {
+                using (IDbConnection cn = new SQLiteConnection(cnStr))
+                {
+                    string strSql = "UPDATE Variables SET Value=@value WHERE VID=@vid;" ;
+                    //刪除多筆參數
+                    var datas = new []{ new {vid = "1",value=(cnt*0.1).ToString() }
+                                        , new {vid = "2" ,value  = (cnt *0.2).ToString() }
+                                        , new {vid = "3" ,value  = (cnt *0.3).ToString() }
+                                        , new { vid = "4", value = (cnt * 0.4).ToString() }
+                                        , new { vid = "5", value = (cnt * 0.5).ToString() },
+                                         new { vid = "6", value = (cnt * 0.6).ToString() }};
+                    cn.Execute(strSql, datas);
+                }
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            
+            //}
+            cnt += 1;
+        });
     }
     private sealed class SecsLogger : ISecsGemLogger
     {
@@ -377,8 +409,11 @@ public partial class Form1 : Form
 
     private void Btn_SendAlarm_Click(object sender, EventArgs e)
     {
-        service.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value );
+        service.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value);
     }
 
- 
+    private void timer1_Tick(object sender, EventArgs e)
+    {
+        UpdateVariables();
+    }
 }

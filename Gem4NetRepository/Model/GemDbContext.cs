@@ -20,17 +20,19 @@ public class GemDbContext : DbContext
     public DbSet<FormattedProcessProgram> FormattedProcessPrograms { get; set; }
     public DbSet<GemAlarm> Alarms { get; set; }
     public string DbPath { get; private set; }
-    IConfiguration configuration { get; set; }
-    public GemDbContext()
+    //IConfiguration configuration { get; set; }
+    public GemDbContext(string dbFile = "GemSqliteDb")
     {
-        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-        configuration = builder.Build();
         var folder = Environment.SpecialFolder.MyDocuments;
         var path = Environment.GetFolderPath(folder);
 
-        DbPath = configuration.GetConnectionString("GemSqliteDb")
+        //參數方式
+        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+        var configuration = builder.Build();
+        DbPath = configuration.GetConnectionString(dbFile)
             ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
 
+        //migration用的
         //DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
 
     }
@@ -46,6 +48,8 @@ public class GemDbContext : DbContext
         modelBuilder.Entity<GemReport>().HasKey(sc => sc.RPTID);
         modelBuilder.Entity<GemVariable>().HasKey(sc => sc.VID);
         modelBuilder.Entity<GemAlarm>().HasKey(sc => sc.ALID);
+        modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
+        modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc =>  sc.PPID );
 
         modelBuilder.Entity<EventReportLink>().HasKey(sc => new { sc.ECID, sc.RPTID });
 
@@ -72,7 +76,7 @@ public class GemDbContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
-        modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc => new { sc.ID, sc.PPID });
+        
         //modelBuilder.Entity<ProcessParameter>()
         //    .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });
         //modelBuilder.Entity<ProcessParameter>()
@@ -80,8 +84,8 @@ public class GemDbContext : DbContext
         //    .WithMany(sc => sc.ProcessParameters)
         //    .HasForeignKey(sc => sc.ProcessProgramId);
 
-        modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
-
+        
+        
         //modelBuilder.Entity<FormattedProcessProgram>()
         //    .HasKey(sc => new { sc.PPID });//內部加上ComplexType標籤
     }

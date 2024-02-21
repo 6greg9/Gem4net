@@ -12,14 +12,14 @@ public partial class GemRepository
     // S5系列
     public GemAlarm? GetAlarm(int alarmId)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
         }
     }
     public IEnumerable<GemAlarm?> GetAlarm(IEnumerable<int> alarmIds)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var tempAlarm = new List<GemAlarm?>();
             foreach (var alid in alarmIds)
@@ -31,7 +31,7 @@ public partial class GemRepository
     }
     public IEnumerable<GemAlarm> GetAlarmAll()
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             return _context.Alarms.ToList();
         }
@@ -43,7 +43,7 @@ public partial class GemRepository
     /// <returns></returns>
     public int SetAlarmCode(int alid, bool alcd)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var targetAlarm = _context.Alarms
                 .Where(alrm => alrm.ALID == alid).Take(1);
@@ -60,7 +60,7 @@ public partial class GemRepository
     }
     public int EnableAlarm(int alid, bool enable)
     {
-        using (_context = new GemDbContext())
+        using (_context = new GemDbContext(DbFilePath))
         {
             var targetAlarm = _context.Alarms
                 .Where(alrm => alrm.ALID == alid).Take(1);

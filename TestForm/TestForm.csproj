@@ -14,6 +14,8 @@
     <PackageReference Include="Secs4Net" Version="2.2.1" />
     <PackageReference Include="Secs4Net.Json" Version="2.2.1" />
     <PackageReference Include="Secs4Net.Sml" Version="2.2.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
 
   <ItemGroup>

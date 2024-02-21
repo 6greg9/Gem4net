@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gem4NetRepository.Migrations
 {
     [DbContext(typeof(GemDbContext))]
-    [Migration("20240209081854_AAdddAlarm")]
-    partial class AAdddAlarm
+    [Migration("20240221070553_UpdateFileDb")]
+    partial class UpdateFileDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace Gem4NetRepository.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
 
-            modelBuilder.Entity("GemVarRepository.Model.EventReportLink", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.EventReportLink", b =>
                 {
                     b.Property<int>("ECID")
                         .HasColumnType("INTEGER");
@@ -35,11 +35,8 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("EventReportLinks");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.FormattedProcessProgram", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.FormattedProcessProgram", b =>
                 {
-                    b.Property<Guid>("ID")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("PPID")
                         .HasColumnType("TEXT");
 
@@ -55,6 +52,9 @@ namespace Gem4NetRepository.Migrations
                     b.Property<string>("EquipmentModelType")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("ID")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PPBody")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -68,12 +68,12 @@ namespace Gem4NetRepository.Migrations
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("ID", "PPID");
+                    b.HasKey("PPID");
 
                     b.ToTable("FormattedProcessPrograms");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemAlarm", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemAlarm", b =>
                 {
                     b.Property<int>("ALID")
                         .ValueGeneratedOnAdd()
@@ -85,8 +85,9 @@ namespace Gem4NetRepository.Migrations
                     b.Property<bool>("ALED")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("ALTX")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ALTX")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("AlarmEnableVid")
                         .HasColumnType("INTEGER");
@@ -105,7 +106,7 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("Alarms");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemEvent", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemEvent", b =>
                 {
                     b.Property<int>("ECID")
                         .ValueGeneratedOnAdd()
@@ -138,7 +139,7 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemReport", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemReport", b =>
                 {
                     b.Property<int>("RPTID")
                         .ValueGeneratedOnAdd()
@@ -155,7 +156,7 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("Reports");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemVariable", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemVariable", b =>
                 {
                     b.Property<int>("VID")
                         .ValueGeneratedOnAdd()
@@ -209,7 +210,7 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("Variables");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.ProcessProgram", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.ProcessProgram", b =>
                 {
                     b.Property<string>("PPID")
                         .HasColumnType("TEXT");
@@ -227,7 +228,7 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("ProcessPrograms");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.ReportVariableLink", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.ReportVariableLink", b =>
                 {
                     b.Property<int>("VID")
                         .HasColumnType("INTEGER");
@@ -242,15 +243,15 @@ namespace Gem4NetRepository.Migrations
                     b.ToTable("ReportVariableLinks");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.EventReportLink", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.EventReportLink", b =>
                 {
-                    b.HasOne("GemVarRepository.Model.GemEvent", "Event")
+                    b.HasOne("Gem4NetRepository.Model.GemEvent", "Event")
                         .WithMany("ReportEvents")
                         .HasForeignKey("ECID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GemVarRepository.Model.GemReport", "Report")
+                    b.HasOne("Gem4NetRepository.Model.GemReport", "Report")
                         .WithMany("EventReports")
                         .HasForeignKey("RPTID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -261,15 +262,15 @@ namespace Gem4NetRepository.Migrations
                     b.Navigation("Report");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.ReportVariableLink", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.ReportVariableLink", b =>
                 {
-                    b.HasOne("GemVarRepository.Model.GemReport", "Report")
+                    b.HasOne("Gem4NetRepository.Model.GemReport", "Report")
                         .WithMany("ReportVariables")
                         .HasForeignKey("RPTID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GemVarRepository.Model.GemVariable", "Variable")
+                    b.HasOne("Gem4NetRepository.Model.GemVariable", "Variable")
                         .WithMany("ReportVariables")
                         .HasForeignKey("VID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -280,19 +281,19 @@ namespace Gem4NetRepository.Migrations
                     b.Navigation("Variable");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemEvent", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemEvent", b =>
                 {
                     b.Navigation("ReportEvents");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemReport", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemReport", b =>
                 {
                     b.Navigation("EventReports");
 
                     b.Navigation("ReportVariables");
                 });
 
-            modelBuilder.Entity("GemVarRepository.Model.GemVariable", b =>
+            modelBuilder.Entity("Gem4NetRepository.Model.GemVariable", b =>
                 {
                     b.Navigation("ReportVariables");
                 });
