@@ -110,39 +110,46 @@ public partial class Form1 : Form
             return _gemRepo.DeleteProcessProgram(ppLst);
         };
 
-        timer1.Start();
+        UpdateVariables();
+        
     }
     int cnt = 0;
-    public Task UpdateVariables()
+    public void UpdateVariables()
     {
         var cnStr = " Data Source= C:\\Users\\guicheng.zhang\\Documents\\GemVariablesDb.sqlite";
-        return Task.Run(() =>
+        Task.Run(async () =>
         {
+            while (true)
+            {
+                try
+                {
+                    using (IDbConnection cn = new SQLiteConnection(cnStr))
+                    {
+                        string strSql = "UPDATE Variables SET Value=@value WHERE VID=@vid;" ;
+                        //埃掸把计
+                        var datas = new []{ new {vid = "1001",value=(cnt*0.1).ToString() }
+                                        , new { vid = "1002" ,value  = (cnt *0.2).ToString() }
+                                        , new { vid = "1003" ,value  = (cnt *0.3).ToString() }
+                                        , new { vid = "1004", value = (cnt * 0.4).ToString() }
+                                        , new { vid = "1005", value = (cnt * 0.5).ToString() },
+                                          new { vid = "1006", value = (cnt * 0.6).ToString() }};
+                        cn.Execute(strSql, datas);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                cnt += 1;
+                //await Task.Delay(20);
+            }
             //ユ
             //using (var tranScope = new TransactionScope())
             //{
-            try
-            {
-                using (IDbConnection cn = new SQLiteConnection(cnStr))
-                {
-                    string strSql = "UPDATE Variables SET Value=@value WHERE VID=@vid;" ;
-                    //埃掸把计
-                    var datas = new []{ new {vid = "1",value=(cnt*0.1).ToString() }
-                                        , new {vid = "2" ,value  = (cnt *0.2).ToString() }
-                                        , new {vid = "3" ,value  = (cnt *0.3).ToString() }
-                                        , new { vid = "4", value = (cnt * 0.4).ToString() }
-                                        , new { vid = "5", value = (cnt * 0.5).ToString() },
-                                         new { vid = "6", value = (cnt * 0.6).ToString() }};
-                    cn.Execute(strSql, datas);
-                }
-            }
-            catch(Exception ex) 
-            {
-                Console.WriteLine(ex.ToString());
-            }
             
+
             //}
-            cnt += 1;
+            
         });
     }
     private sealed class SecsLogger : ISecsGemLogger
@@ -412,8 +419,5 @@ public partial class Form1 : Form
         service.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value);
     }
 
-    private void timer1_Tick(object sender, EventArgs e)
-    {
-        UpdateVariables();
-    }
+    
 }
