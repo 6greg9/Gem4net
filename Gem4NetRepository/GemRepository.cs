@@ -32,6 +32,7 @@ public partial class GemRepository
             _ = _context.Variables.ToListAsync();
             _ = _context.Events.ToListAsync();
             _ = _context.Alarms.ToListAsync();
+            //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
 
         //EFcore加Dapper做成撒尿牛肉丸

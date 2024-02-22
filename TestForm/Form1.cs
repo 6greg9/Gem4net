@@ -121,27 +121,50 @@ public partial class Form1 : Form
         {
             while (true)
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 try
                 {
+                    
                     using (IDbConnection cn = new SQLiteConnection(cnStr))
                     {
-                        string strSql = "UPDATE Variables SET Value=@value WHERE VID=@vid;" ;
+                        //var tran = cn.BeginTransaction();
+                        //string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
                         //刪除多筆參數
-                        var datas = new []{ new {vid = "1001",value=(cnt*0.1).ToString() }
-                                        , new { vid = "1002" ,value  = (cnt *0.2).ToString() }
-                                        , new { vid = "1003" ,value  = (cnt *0.3).ToString() }
-                                        , new { vid = "1004", value = (cnt * 0.4).ToString() }
-                                        , new { vid = "1005", value = (cnt * 0.5).ToString() },
-                                          new { vid = "1006", value = (cnt * 0.6).ToString() }};
-                        cn.Execute(strSql, datas);
+                        var datas = new []{
+                          new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
+                        , new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
+                        , new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
+                        , new { vid = "1004", value = (cnt * 0.4).ToString("0.##") }
+                        , new { vid = "1005", value = (cnt * 0.5).ToString("0.##") }
+                        , new { vid = "1006", value = (cnt * 0.6).ToString("0.##") }
+                        , new { vid = "1007", value = (cnt * 0.7).ToString("0.##") }
+                        , new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
+                        , new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
+                        , new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
+                        var sql = "UPDATE Variables SET Value =  CASE VID";
+                        var inStr = "";
+                        foreach (var data in datas)
+                        {
+                            var caseStr =" WHEN "+ data.vid.ToString()+" THEN '"+data.value.ToString()+"'";
+                            sql += caseStr;
+                            inStr += " ,"+data.vid.ToString() ;
+                        }
+                        sql += "ELSE Value END  WHERE VID IN ( "+inStr.Substring(2)+")";//土炮
+                        
+                        cn.Execute(sql);
+                        //tran.Commit();
                     }
+                    
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Debug.WriteLine(ex.ToString());
                 }
                 cnt += 1;
                 //await Task.Delay(20);
+                sw.Stop();
+                Debug.WriteLine($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
             }
             //交易
             //using (var tranScope = new TransactionScope())
