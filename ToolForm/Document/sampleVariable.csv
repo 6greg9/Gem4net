@@ -1,0 +1,11 @@
+VID,DataType,Length,Unit,Value,Name,Definition,Remark,VarType,System,MinValue,MaxValue,DefaultValue,ListSVID
+1001,FLOAT_4,,oC,758.8,OvenA_Temperature_1_PV,,,SV,0,,,0,
+1002,FLOAT_4,,0,1517.6,OvenA_Temperature_2_PV,,SV,SV,0,,10000,,
+1003,FLOAT_4,0, ,2276.4,OvenA_Temperature_3_PV,,SV,SV,0,0,,,
+1004,FLOAT_4,,,3035.2,OvenA_Temperature_4_PV,,,SV,0,,,,
+1005,FLOAT_4,,,3794,OvenA_Temperature_5_PV,,,SV,0,,,,
+1006,FLOAT_4,,,4552.8,OvenA_Temperature_6_PV,,,SV,0,,,,
+1007,FLOAT_4,,,5311.6,OvenA_Temperature_7_PV,,,SV,0,,,,
+1008,FLOAT_4,,,6070.4,OvenA_Temperature_8_PV,,,SV,0,,,,
+1009,FLOAT_4,,,6829.2,OvenA_Temperature_9_PV,,,SV,0,,,,
+1010,FLOAT_4,,,7588,OvenA_Temperature_10_PV,,,SV,0,,,,
