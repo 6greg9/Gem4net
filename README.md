@@ -5,27 +5,9 @@
     - S9系列
   - SQLite + EF Core + Dapper
 
-## 預計開發功能
-- Equipment Processing States	
-- Host Initiated S1=F13/F14 Scenario	
-- Event Notification	
-- On-Line Identification	
-- Error Messages	
-- Control (Operator Initiated)	
-- Establish Communication Additional Capabilities	
-- Dynamic Event Report Configuration	
-- Variable Data Collection	
-- Trace Data Collection
-- Status Data Collection	
-- Alarm Management	
-- Remote Control	
-- Equipment Constants	
-- Process Program Management	
-- Equipment Terminal Services Material Movement	
-- Clock	
-- Limits Monitoring	
-- Spooling	
-- Control (Host-Initiated)
+## 測試資料
+### Variables
+
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
