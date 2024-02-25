@@ -24,6 +24,8 @@ public partial class GemRepository
     /// </summary>
     private GemDbContext _context;
     public string DbFilePath { get; private set; }
+    int ClockVID = 10;
+    int ClockFormatCode = 1;
     public GemRepository(string dbFilePath)
     {
         DbFilePath = dbFilePath;
@@ -74,8 +76,10 @@ public partial class GemRepository
     }
     Item? SubGetVarByVID(int vid)
     {
-        //在這特別處理CLOCK...
-        //但是還是每秒更新1次CLOCK?
+        // Clock, 是要用Name還是Vid找
+        if (vid == ClockVID)
+            return SubGetClock(ClockFormatCode);
+
         var Variable = _context.Variables
             //.Where(v=>v.VarType=="SV")
             .Where(v => v.VID == vid).FirstOrDefault();
@@ -95,6 +99,16 @@ public partial class GemRepository
             return A(); // ?
 
         return GemVariableToSecsItem(Variable);
+    }
+    Item? SubGetClock(int timeFormatcode)
+    {
+        if( timeFormatcode == 0 ) 
+            return A(DateTime.Now.ToString("yyMMddhhmmss"));
+        if (timeFormatcode == 1)
+            return A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+        if (timeFormatcode == 2)
+            return A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+        return A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
     }
     Item? GemVariableToSecsItem(GemVariable variable)
     {
