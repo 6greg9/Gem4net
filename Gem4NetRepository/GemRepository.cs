@@ -52,46 +52,67 @@ public partial class GemRepository
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
-        return Item.L(vidList.Select(vid => SubGetVarByVID(vid)).ToArray());
+        return Item.L(vidList.Select(vid => SubGetSvByVID(vid)).ToArray());
     }
     public Item? GetSv(int vid)
     {
-        //Item? rtn = null;
-        //_context.GetSingleton(() =>
-        //{
-        //    rtn = SubGetVarByVID(vid);
-        //});
-        //return null;
         using (_context = new GemDbContext(DbFilePath))
         {
-            return SubGetVarByVID(vid);
+            return SubGetSvByVID(vid);
         }
     }
-    public Item? GetSv(string name)
+    public Item? GetEcList(IEnumerable<int> vidList)
     {
         using (_context = new GemDbContext(DbFilePath))
         {
-            return SubGetVarByName(name);
+            return SubGetEcListByVidList(vidList);
         }
     }
-    Item? SubGetVarByVID(int vid)
+    Item? SubGetEcListByVidList(IEnumerable<int> vidList)
+    {
+        return Item.L(vidList.Select(vid => SubGetEcByVID(vid)).ToArray());
+    }
+    Item? SubGetSvByVID(int vid)
     {
         // Clock, 是要用Name還是Vid找
         if (vid == ClockVID)
             return SubGetClock(ClockFormatCode);
 
         var Variable = _context.Variables
-            //.Where(v=>v.VarType=="SV")
+            .Where(v=>v.VarType=="SV")
             .Where(v => v.VID == vid).FirstOrDefault();
         if (Variable == null)//找不到
             return A(); // ?
 
         return GemVariableToSecsItem(Variable);
     }
+    public Item? GetEC(int vid)
+    {
+        using (_context = new GemDbContext(DbFilePath))
+        {
+            return SubGetEcByVID(vid);
+        }
+    }
+    Item? SubGetEcByVID(int vid)
+    {
+
+        var Variable = _context.Variables
+            .Where(v=>v.VarType=="EC")
+            .Where(v => v.VID == vid).FirstOrDefault();
+        if (Variable == null)//找不到
+            return A(); // ?
+
+        return GemVariableToSecsItem(Variable);
+    }
+    public Item? GetVariable(string name)
+    {
+        using (_context = new GemDbContext(DbFilePath))
+        {
+            return SubGetVarByName(name);
+        }
+    }
     Item? SubGetVarByName(string name)
     {
-        //在這特別處理CLOCK...
-        //但是還是每秒更新1次CLOCK?
         var Variable = _context.Variables
             //.Where(v=>v.VarType=="SV")
             .Where(v => v.Name == name).FirstOrDefault();

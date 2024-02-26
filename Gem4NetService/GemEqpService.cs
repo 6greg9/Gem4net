@@ -51,12 +51,8 @@ public partial class GemEqpService
         _GemRepo = gemReposiroty;
 
         // ef core 第一次使用會花費很長時間
-        var mdln = _GemRepo.GetSv("MDLN");
-        if (mdln != null)
-            MDLN = mdln.GetString();
-        var softrev = _GemRepo.GetSv("SOFTREV");
-        if (softrev != null)
-            SOFTREV = softrev.GetString();
+        MDLN = "MDLN";
+        SOFTREV = "SOFTREV";
 
         Enable();
 
@@ -64,7 +60,7 @@ public partial class GemEqpService
         {
             var token = SecsMsgHandlerTaskCTS.Token;
             while (token.IsCancellationRequested != true)
-                HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage); 
+                HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage);
 
         });
         //_communicatinoState = CommunicationState.DISABLED;
@@ -223,10 +219,10 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 6):
                 HandleStream6(primaryMsgWrapper);
                 break;
-            case SecsMessage msg when (msg.S == 7 ):
+            case SecsMessage msg when (msg.S == 7):
                 HandleStream7(primaryMsgWrapper);
                 break;
-            case SecsMessage msg when (msg.S == 10 ):
+            case SecsMessage msg when (msg.S == 10):
                 HandleStream10(primaryMsgWrapper);
                 break;
             default:
@@ -251,7 +247,7 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 1 && msg.F == 3):
                 var vids = msg.SecsItem.Items.Select(item => item.FirstValue<int>());
                 Item? svList;
-                if (vids is null || vids.Count()==0)
+                if (vids is null || vids.Count() == 0)
                 {
                     svList = _GemRepo.GetSvAll();
                 }
@@ -259,7 +255,7 @@ public partial class GemEqpService
                 {
                     svList = _GemRepo.GetSvList(vids);
                 }
-                    
+
                 using (var rtnS2F4 = new SecsMessage(1, 4)
                 {
                     SecsItem = svList
@@ -322,7 +318,8 @@ public partial class GemEqpService
                 })
                     primaryMsgWrapper?.TryReplyAsync(rtnMsg);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
     async void HandleStream2(PrimaryMessageWrapper? primaryMsgWrapper)
@@ -396,7 +393,7 @@ public partial class GemEqpService
                     SecsItem = Clock
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F18);
-               
+
                 break;
             //S2F25 Loopback Diagnostic Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 25):
@@ -475,7 +472,8 @@ public partial class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F42);
                 break;
-                default : break;
+            default:
+                break;
         }
     }
     async void HandleStream5(PrimaryMessageWrapper? primaryMsgWrapper)
@@ -500,13 +498,13 @@ public partial class GemEqpService
                 var alarmIdVector = new List<uint>();
 
                 IEnumerable<GemAlarm> alrmLst;
-                if(alarmIdVector.Count == 0)
+                if (alarmIdVector.Count == 0)
                 {
                     alrmLst = _GemRepo.GetAlarmAll();
                 }
                 else
                 {
-                    alrmLst =_GemRepo.GetAlarm(alarmIdVector.Select(uint16=>(int)uint16) ); 
+                    alrmLst = _GemRepo.GetAlarm(alarmIdVector.Select(uint16 => (int)uint16));
                 }
                 var secsAlrmLst = alrmLst.Select(alrm=>
                 {
@@ -516,7 +514,7 @@ public partial class GemEqpService
                     var alid = Convert.ToUInt32(alrm.ALID);
                     var altx = alrm.ALTX;
                     return L(B((byte)alcd), U4(alid),A(altx));
-                    
+
                 }).ToArray();
 
                 using (var rtnS5F6 = new SecsMessage(5, 6)
@@ -528,7 +526,7 @@ public partial class GemEqpService
             //S5F7 Enable Alarm Send
             case SecsMessage msg when (msg.S == 5 && msg.F == 7):
 
-                
+
                 var secsEnabledAlrmLst = _GemRepo.GetAlarmAll()
                     .Where(alrm=>alrm.ALED==true).Select(alrm =>
                 {
@@ -570,7 +568,7 @@ public partial class GemEqpService
                     ),
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS6F16);
-                
+
                 break;
             //S6F19 Individual Report Request
             case SecsMessage msg when (msg.S == 6 && msg.F == 19):
@@ -603,7 +601,7 @@ public partial class GemEqpService
                     var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
                     ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
                 }
-                    _GemRepo.DeleteProcessProgramAll();
+                _GemRepo.DeleteProcessProgramAll();
                 using (var rtnS7F18 = new SecsMessage(7, 18)
                 {
                     SecsItem = B((byte)ackc7)
