@@ -24,7 +24,7 @@ public partial class GemEqpService
     public string MDLN { get; private set; } = "MDLN";//機台型號
     public string SOFTREV { get; private set; } = "SOFTREV";//軟體版本
     public bool IsCommHostInit { get; private set; }
-    public int ClockFormatCode { get; private set; }
+    public int ClockFormatCode { get; private set; } = 1;
 
     private readonly ISecsGemLogger _logger;
     private readonly Channel<PrimaryMessageWrapper> RecvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(

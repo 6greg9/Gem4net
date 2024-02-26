@@ -54,6 +54,12 @@ public static class SecsItemSchemaValidator
                 return IsS6F15(Msg.SecsItem);
             case (6, 19):
                 return IsS6F19(Msg.SecsItem);
+            case (7, 1):
+                return IsS7F1(Msg.SecsItem);
+            case (7, 3):
+                return IsS7F3(Msg.SecsItem);
+            case (7, 5):
+                return IsS7F5(Msg.SecsItem);
             case (7, 17):
                 return IsS7F17(Msg.SecsItem);
             case (7, 19):
@@ -391,6 +397,33 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 7
+    static Func<Item?, bool> IsS7F1 = (item) =>
+    {
+        if (item.Format != SecsFormat.List)
+            return false;
+        if(item.Items.Length != 2)
+            return false;
+        if(item[0].Format != SecsFormat.ASCII || item[1].Format != SecsFormat.U4)
+            return false;
+        return true;
+    };
+    static Func<Item?, bool> IsS7F3 = (item) =>
+    {
+        if (item.Format != SecsFormat.List)
+            return false;
+        if(item.Items.Length != 2) 
+            return false;
+        if(item[0].Format != SecsFormat.ASCII )
+            return false;
+        return true;
+    };
+    static Func<Item?, bool> IsS7F5 = (item) =>
+    {
+        if (item.Format != SecsFormat.ASCII)
+            return false;
+
+        return true;
+    };
     static Func<Item?, bool> IsS7F17 = (item) =>
     {
         if (item == null || item.Format != SecsFormat.List)

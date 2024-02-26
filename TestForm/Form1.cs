@@ -18,19 +18,17 @@ namespace TestForm;
 public partial class Form1 : Form
 {
     GemRepository _gemRepo;
-    GemEqpService service;
+    GemEqpService GemEquipment;
     public Form1()
     {
 
         InitializeComponent();
 
-
-
         _gemRepo = new GemRepository("GemVariablesDb.sqlite");
 
         ISecsGemLogger logger = new SecsLogger(this);
 
-        service = new GemEqpService(logger, _gemRepo, new SecsGemOptions
+        GemEquipment = new GemEqpService(logger, _gemRepo, new SecsGemOptions
         {
             IsActive = true,
             IpAddress = "127.0.0.1",
@@ -42,20 +40,20 @@ public partial class Form1 : Form
             T6 = 5000
         }); // 建構式就啟動惹..
 
-        service.OnConnectStatusChanged += (status) =>
+        GemEquipment.OnConnectStatusChanged += (status) =>
         {
             this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
         };
-        service.OnCommStateChanged += (cur, pre) =>
+        GemEquipment.OnCommStateChanged += (cur, pre) =>
         {
             this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{pre} --> {cur}\n"); ; }));
         };
-        service.OnControlStateChanged += (current, previous) =>
+        GemEquipment.OnControlStateChanged += (current, previous) =>
         {
             this.Invoke(new Action(() => { rtbx_Ctrl.AppendText($"{previous} --> {current}\n"); ; }));
         };
 
-        service.OnTerminalMessageReceived += (msg) =>
+        GemEquipment.OnTerminalMessageReceived += (msg) =>
         {
             this.Invoke(new Action(() =>
             {
@@ -63,7 +61,7 @@ public partial class Form1 : Form
             }));
             return 0;
         };
-        service.OnRemoteCommandReceived += (remoteCmd) =>
+        GemEquipment.OnRemoteCommandReceived += (remoteCmd) =>
         {
             var rtn = remoteCmd;
             rtn.HCACK = 0;
@@ -73,11 +71,11 @@ public partial class Form1 : Form
             });
             return rtn;
         };
-        service.OnEcRecieved += (ecLst) =>
+        GemEquipment.OnEcRecieved += (ecLst) =>
         {
             return 0; // OK
         };
-        service.OnFormattedProcessProgramReceived += (formatedPP) =>
+        GemEquipment.OnFormattedProcessProgramReceived += (formatedPP) =>
         {
             return 0; // 要自行依照process program 結構來處理
             var pp = new FormattedProcessProgram();
@@ -96,16 +94,16 @@ public partial class Form1 : Form
             }
             var rtn = _gemRepo.CreateProcessProgram(pp);
         };
-        service.OnFormattedProcessProgramReq += (ppid) => // 好像可以自動處理?
+        GemEquipment.OnFormattedProcessProgramReq += (ppid) => // 好像可以自動處理?
         {
             var fpp = _gemRepo.GetProcessProgramFormatted(ppid).ToList();
             return _gemRepo.FormattedProcessProgramToSecsItem(fpp.First());
         };
-        service.OnProcessProgramDeleteAllReq += () =>
+        GemEquipment.OnProcessProgramDeleteAllReq += () =>
         {
             return _gemRepo.DeleteProcessProgramAll();
         };
-        service.OnProcessProgramDeleteReq += (ppLst) =>
+        GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {
             return _gemRepo.DeleteProcessProgram(ppLst);
         };
@@ -293,7 +291,7 @@ public partial class Form1 : Form
 
     private void button2_Click(object sender, EventArgs e)
     {
-        service.Enable();
+        GemEquipment.Enable();
     }
 
     private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -309,7 +307,7 @@ public partial class Form1 : Form
     /// <param name="e"></param>
     private async void button3_Click(object sender, EventArgs e)
     {
-        var secs = service.GetSecsWrapper;
+        var secs = GemEquipment.GetSecsWrapper;
         var S1F1 = new SecsMessage(1, 1);
         var S1F2 = await secs.SendAsync(S1F1);
         MessageBox.Show(S1F2.ToSml());
@@ -317,22 +315,22 @@ public partial class Form1 : Form
 
     private void Btn_GoOffLine_Click(object sender, EventArgs e)
     {
-        service.GoOffline();
+        GemEquipment.GoOffline();
     }
 
     private void Btn_GoOnLine_Click(object sender, EventArgs e)
     {
-        service.RequestOnline();
+        GemEquipment.RequestOnline();
     }
 
     private void Btn_GoLocal_Click(object sender, EventArgs e)
     {
-        service.GoOnlineLocal();
+        GemEquipment.GoOnlineLocal();
     }
 
     private void Btn_GoRemote_Click(object sender, EventArgs e)
     {
-        service.GoOnlineRemote();
+        GemEquipment.GoOnlineRemote();
     }
 
 
@@ -393,12 +391,12 @@ public partial class Form1 : Form
     private void Btn_TestSendS6F11_Click(object sender, EventArgs e)
     {
         var inputId = Convert.ToInt32(Tbx_InputECID.Text.Trim());
-        service.SendEventReport(inputId);
+        GemEquipment.SendEventReport(inputId);
     }
 
     private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)
     {
-        service.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87);
+        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87);
     }
 
     private void Btn_InsertPP_Click(object sender, EventArgs e)
@@ -439,7 +437,7 @@ public partial class Form1 : Form
 
     private void Btn_SendAlarm_Click(object sender, EventArgs e)
     {
-        service.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value);
+        GemEquipment.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value);
     }
 
     
