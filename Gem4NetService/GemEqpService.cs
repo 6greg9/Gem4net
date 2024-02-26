@@ -24,6 +24,7 @@ public partial class GemEqpService
     public string MDLN { get; private set; } = "MDLN";//機台型號
     public string SOFTREV { get; private set; } = "SOFTREV";//軟體版本
     public bool IsCommHostInit { get; private set; }
+    public int ClockFormatCode { get; private set; }
 
     private readonly ISecsGemLogger _logger;
     private readonly Channel<PrimaryMessageWrapper> RecvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
@@ -379,6 +380,23 @@ public partial class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F16);
                 // 還要發個事件 ?
+                break;
+            //S2F17 Date and Time Request
+            case SecsMessage msg when (msg.S == 2 && msg.F == 17):
+                Item Clock;
+                if (ClockFormatCode == 0)
+                    Clock = A(DateTime.Now.ToString("yyMMddhhmmss"));
+                else if (ClockFormatCode == 1)
+                    Clock = A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+                else
+                    Clock = A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+
+                using (var rtnS2F18 = new SecsMessage(2, 18)
+                {
+                    SecsItem = Clock
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F18);
+               
                 break;
             //S2F25 Loopback Diagnostic Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 25):
