@@ -124,12 +124,12 @@ public partial class GemRepository
     Item? SubGetClock(int timeFormatcode)
     {
         if( timeFormatcode == 0 ) 
-            return A(DateTime.Now.ToString("yyMMddhhmmss"));
+            return A(DateTime.Now.ToString("yyMMddHHmmss"));
         if (timeFormatcode == 1)
-            return A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+            return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
         if (timeFormatcode == 2)
-            return A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
-        return A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+            return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+        return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
     }
     Item? GemVariableToSecsItem(GemVariable variable)
     {

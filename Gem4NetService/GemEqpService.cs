@@ -248,10 +248,15 @@ public partial class GemEqpService
         }
         catch (Exception ex)
         {
-
+            _commStateManager.EnterCommunicationState(); //重新來過
+            // S9 ?
             this._logger.Error(ex.ToString());
         }
     }
+    /// <summary>
+    /// 前面validate 會先擋住
+    /// </summary>
+    /// <param name="primaryMsgWrapper"></param>
     void HandlePrimaryMessage(PrimaryMessageWrapper primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
@@ -333,48 +338,6 @@ public partial class GemEqpService
                         await primaryMsgWrapper.TryReplyAsync(rtnS1F12);
                 }
                 break;
-            //S1F13 EstablishCommunicationsRequest, 要看是Host/Eqp Init
-            case SecsMessage msg when (msg.S == 1 && msg.F == 13):
-                // 這裡引入外部狀態惹...
-                //int commAck =0;
-                //if(_commStateManager.CurrentState == CommunicationState.WAIT_CR_FROM_HOST)
-                //{
-                //    commAck = await _commStateManager.HandleHostInitCommReq(msg.SecsItem);
-
-                //}
-                //using (var rtnS1F14 = new SecsMessage(1, 14)
-                //{
-                //    SecsItem = L(
-                //        B(0),
-                //        L(
-                //            A("MDLN"),
-                //            A("SOFTREV")
-                //            ))
-                //})
-                //{
-                //    var rtn = await primaryMsgWrapper.TryReplyAsync(rtnS1F14);
-                //}
-
-
-                break;
-            //S1F15 Request OFF-LINE
-            //case SecsMessage msg when (msg.S == 1 && msg.F == 15):
-            //    var result = _ctrlStateManager.HandleS1F15();
-            //    using (var rtnMsg = new SecsMessage(1, 16)
-            //    {
-            //        SecsItem = B((byte)result)
-            //    })
-            //        primaryMsgWrapper.TryReplyAsync(rtnMsg);
-            //    break;
-            ////S1F17 Request ON-LINE
-            //case SecsMessage msg when (msg.S == 1 && msg.F == 17):
-            //    result = _ctrlStateManager.HandleS1F17();
-            //    using (var rtnMsg = new SecsMessage(1, 18)
-            //    {
-            //        SecsItem = B((byte)result)
-            //    })
-            //        primaryMsgWrapper?.TryReplyAsync(rtnMsg);
-            //    break;
             default:
                 break;
         }
@@ -439,11 +402,11 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 2 && msg.F == 17):
                 Item Clock;
                 if (ClockFormatCode == 0)
-                    Clock = A(DateTime.Now.ToString("yyMMddhhmmss"));
+                    Clock = A(DateTime.Now.ToString("yyMMddHHmmss"));
                 else if (ClockFormatCode == 1)
-                    Clock = A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+                    Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
                 else
-                    Clock = A(DateTime.Now.ToString("yyyyMMddhhmmssff"));
+                    Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
 
                 using (var rtnS2F18 = new SecsMessage(2, 18)
                 {
