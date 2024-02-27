@@ -111,7 +111,7 @@ internal class CommStateManager
                         }
                         break;
 
-                    default: break;
+                    default: break; //WAIT_CRA_FROM_HOST 之類的
                 }
 
                 await Task.Delay(50);
@@ -142,7 +142,21 @@ internal class CommStateManager
 
     #region Action
 
-    public Task<int> HandleHostInitCommReq(Item secsItem)
+    /// <summary>
+    /// return commAck
+    /// </summary>
+    /// <param name="secsItem"></param>
+    /// <returns></returns>
+    public Task<int> HandleS1F13(Item secsItem)
+    {
+        if(CurrentState== CommunicationState.WAIT_CR_FROM_HOST)
+        {
+            CurrentState = CommunicationState.COMMUNICATING;
+            return Task.FromResult(0);
+        }
+        return HandleHostInitCommReq(secsItem);
+    }
+    Task<int> HandleHostInitCommReq(Item secsItem)
     {
         return Task.Run(() =>
         {

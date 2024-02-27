@@ -80,7 +80,7 @@ public static class SecsItemSchemaValidator
 
     #region Stream 1
 
-    static Func<Item?, bool> IsS1F1 = (item) =>
+    public static Func<Item?, bool> IsS1F1 = (item) =>
     {
         if (item != null)
             return false;
@@ -88,7 +88,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F2 = (item) =>
+    public static Func<Item?, bool> IsS1F2 = (item) =>
     {
         if (item == null)
             return false;
@@ -104,7 +104,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F3 = (item) =>
+    public static Func<Item?, bool> IsS1F3 = (item) =>
     {
         if (item == null)
             return false;
@@ -117,7 +117,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F4 = (item) =>
+    public static Func<Item?, bool> IsS1F4 = (item) =>
     {
         if (item == null)
             return false;
@@ -127,7 +127,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F11 = (item) =>
+    public static Func<Item?, bool> IsS1F11 = (item) =>
     {
         if (item == null)
             return false;
@@ -143,7 +143,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F12 = (item) =>
+    public static Func<Item?, bool> IsS1F12 = (item) =>
     {
         if (item == null
         || item.Format != SecsFormat.List)
@@ -169,7 +169,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F13 = (item) =>
+    public static Func<Item?, bool> IsS1F13 = (item) =>
     {
         if (item == null)
             return false;
@@ -186,7 +186,7 @@ public static class SecsItemSchemaValidator
         return true;
     };
 
-    static Func<Item?, bool> IsS1F15 = (item) =>
+    public static Func<Item?, bool> IsS1F15 = (item) =>
     {
         if (item == null)
             return true;
@@ -194,7 +194,7 @@ public static class SecsItemSchemaValidator
         return false;
     };
 
-    static Func<Item?, bool> IsS1F17 = (item) =>
+    public static Func<Item?, bool> IsS1F17 = (item) =>
     {
         if (item == null)
             return true;
@@ -205,7 +205,7 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 2
-    static Func<Item?, bool> IsS2F13 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F13 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -217,7 +217,7 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F15 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F15 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -237,14 +237,14 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F17 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F17 = (itemRoot) =>
     {
         if (itemRoot is not null)
             return false;
         return true;
 
     };
-    static Func<Item?, bool> IsS2F25 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F25 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -253,7 +253,7 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F29 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F29 = (itemRoot) =>
     {
         if (itemRoot is null)
             return false;
@@ -267,7 +267,7 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F33 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F33 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -294,7 +294,7 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F35 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F35 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -321,7 +321,7 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F37 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F37 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -341,7 +341,7 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
-    static Func<Item?, bool> IsS2F41 = (itemRoot) =>
+    public static Func<Item?, bool> IsS2F41 = (itemRoot) =>
     {
         if (itemRoot == null)
             return false;
@@ -366,7 +366,7 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 5
-    static Func<Item?, bool> IsS5F3 = (item) =>
+    public static Func<Item?, bool> IsS5F3 = (item) =>
     {
         if (item is null) return false;
         if (item.Format != SecsFormat.List || item.Items.Length !=2)
@@ -375,7 +375,7 @@ public static class SecsItemSchemaValidator
             return false;
         return true;
     };
-    static Func<Item?, bool> IsS5F5 = (item) =>
+    public static Func<Item?, bool> IsS5F5 = (item) =>
     {
         if (item is null) return false;
         if (item.Format is not SecsFormat.U4 )
@@ -388,7 +388,7 @@ public static class SecsItemSchemaValidator
 
         return true;
     };
-    static Func<Item?, bool> IsS5F7 = (item) =>
+    public static Func<Item?, bool> IsS5F7 = (item) =>
     {
         if (item is not null) return false;
         return true;
@@ -396,14 +396,14 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 6
-    static Func<Item?, bool> IsS6F15 = (item) =>
+    public static Func<Item?, bool> IsS6F15 = (item) =>
     {
         if (item.Format != SecsFormat.U4)
             return false;
 
         return true;
     };
-    static Func<Item?, bool> IsS6F19 = (item) =>
+    public static Func<Item?, bool> IsS6F19 = (item) =>
     {
         if (item.Format != SecsFormat.U4)
             return false;
@@ -413,7 +413,7 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region Stream 7
-    static Func<Item?, bool> IsS7F1 = (item) =>
+    public static Func<Item?, bool> IsS7F1 = (item) =>
     {
         if (item.Format != SecsFormat.List)
             return false;
@@ -423,7 +423,7 @@ public static class SecsItemSchemaValidator
             return false;
         return true;
     };
-    static Func<Item?, bool> IsS7F3 = (item) =>
+    public static Func<Item?, bool> IsS7F3 = (item) =>
     {
         if (item.Format != SecsFormat.List)
             return false;
@@ -433,14 +433,14 @@ public static class SecsItemSchemaValidator
             return false;
         return true;
     };
-    static Func<Item?, bool> IsS7F5 = (item) =>
+    public static Func<Item?, bool> IsS7F5 = (item) =>
     {
         if (item.Format != SecsFormat.ASCII)
             return false;
 
         return true;
     };
-    static Func<Item?, bool> IsS7F17 = (item) =>
+    public static Func<Item?, bool> IsS7F17 = (item) =>
     {
         if (item == null || item.Format != SecsFormat.List)
             return false;
@@ -450,14 +450,14 @@ public static class SecsItemSchemaValidator
         }
         return true;
     };
-    static Func<Item?, bool> IsS7F19 = (item) =>
+    public static Func<Item?, bool> IsS7F19 = (item) =>
     {
         if (item != null)
             return false;
 
         return true;
     };
-    static Func<Item?, bool> IsS7F23 = (item) =>
+    public static Func<Item?, bool> IsS7F23 = (item) =>
     {
         if (item == null)
             return false;
@@ -480,7 +480,7 @@ public static class SecsItemSchemaValidator
         }
         return true;
     };
-    static Func<Item?, bool> IsS7F25 = (item) =>
+    public static Func<Item?, bool> IsS7F25 = (item) =>
     {
         if (item.Format != SecsFormat.ASCII)
             return false;
@@ -490,7 +490,7 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region　Stream 10
-    static Func<Item?, bool> IsS10F3 = (item) =>
+    public static Func<Item?, bool> IsS10F3 = (item) =>
     {
         if (item == null)
             return false;

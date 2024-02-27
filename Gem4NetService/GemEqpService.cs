@@ -166,6 +166,29 @@ public partial class GemEqpService
             //Disable時什麼都不回應
             //NotCommunicatig時,由Manager處理S1F13流程
             //如果任何通訊發生失敗，應回到Not Communicating
+            var (s, f) = (ReceiveSecsMsg.PrimaryMessage.S, ReceiveSecsMsg.PrimaryMessage.F);
+
+            //S1F13 Establish Communications Request
+            if (s == 1 && f == 13)
+            {
+                int commAck = await _commStateManager.HandleS1F13(ReceiveSecsMsg.PrimaryMessage.SecsItem);
+                using (var rtnS1F14 = new SecsMessage(1, 14)
+                {
+                    SecsItem = L(
+                        B(0),
+                        L(
+                            A("MDLN"),
+                            A("SOFTREV")
+                            ))
+                })
+                {
+                    var rtn = await ReceiveSecsMsg.TryReplyAsync(rtnS1F14);
+                }
+                return;
+
+            }
+
+            // Check Comm State
             if (_commStateManager.CurrentState is CommunicationState.DISABLED)
                 return;
             if (_commStateManager.CurrentState is not CommunicationState.COMMUNICATING)
@@ -173,7 +196,6 @@ public partial class GemEqpService
                 var msg = ReceiveSecsMsg.PrimaryMessage;
                 if (msg.S != 1 || msg.F != 13) //白名單方式
                     return;
-
             }
             //Check Ctrl State
             if (_ctrlStateManager.IsOnLine == false)
@@ -184,8 +206,10 @@ public partial class GemEqpService
                     //sNf0
                     using var rtnSNF0 = new SecsMessage(msg.S, 0);
                     await ReceiveSecsMsg.TryReplyAsync(rtnSNF0);
+                    return;
                 }
             }
+
             //Format Validation, S9F7
             if (SecsItemSchemaValidator.IsValid(ReceiveSecsMsg.PrimaryMessage) == false)
             {
@@ -194,12 +218,37 @@ public partial class GemEqpService
                                                    //continue;
                 return;
             }
+
+            //S1F15 Request OFF-LINE
+            if (s == 1 && f == 15)
+            {
+                var result = _ctrlStateManager.HandleS1F15();
+                using (var rtnMsg = new SecsMessage(1, 16)
+                {
+                    SecsItem = B((byte)result)
+                })
+                    ReceiveSecsMsg.TryReplyAsync(rtnMsg);
+                return;
+            }
+
+            //S1F17 Request ON-LINE
+            if (s == 1 && f == 17)
+            {
+                var result = _ctrlStateManager.HandleS1F17();
+                using (var rtnMsg = new SecsMessage(1, 18)
+                {
+                    SecsItem = B((byte)result)
+                })
+                    ReceiveSecsMsg.TryReplyAsync(rtnMsg);
+                return;
+            }
             //Handle PrimaryMessage
             handlePrimaryMessage(ReceiveSecsMsg);  //就在這裡一大包
 
         }
         catch (Exception ex)
         {
+
             this._logger.Error(ex.ToString());
         }
     }
@@ -286,38 +335,46 @@ public partial class GemEqpService
                 break;
             //S1F13 EstablishCommunicationsRequest, 要看是Host/Eqp Init
             case SecsMessage msg when (msg.S == 1 && msg.F == 13):
-                //var rtn = await _commStateManager.HandleHostInitCommReq(msg.SecsItem);
-                using (var rtnS1F14 = new SecsMessage(1, 14)
-                {
-                    SecsItem = L(
-                        B(0),
-                        L(
-                            A("MDLN"),
-                            A("SOFTREV")
-                            ))
-                })
-                {
-                    var rtn = await primaryMsgWrapper.TryReplyAsync(rtnS1F14);
-                }
+                // 這裡引入外部狀態惹...
+                //int commAck =0;
+                //if(_commStateManager.CurrentState == CommunicationState.WAIT_CR_FROM_HOST)
+                //{
+                //    commAck = await _commStateManager.HandleHostInitCommReq(msg.SecsItem);
+
+                //}
+                //using (var rtnS1F14 = new SecsMessage(1, 14)
+                //{
+                //    SecsItem = L(
+                //        B(0),
+                //        L(
+                //            A("MDLN"),
+                //            A("SOFTREV")
+                //            ))
+                //})
+                //{
+                //    var rtn = await primaryMsgWrapper.TryReplyAsync(rtnS1F14);
+                //}
+
+
                 break;
             //S1F15 Request OFF-LINE
-            case SecsMessage msg when (msg.S == 1 && msg.F == 15):
-                var result = _ctrlStateManager.HandleS1F15();
-                using (var rtnMsg = new SecsMessage(1, 16)
-                {
-                    SecsItem = B((byte)result)
-                })
-                    primaryMsgWrapper.TryReplyAsync(rtnMsg);
-                break;
-            //S1F17 Request ON-LINE
-            case SecsMessage msg when (msg.S == 1 && msg.F == 17):
-                result = _ctrlStateManager.HandleS1F17();
-                using (var rtnMsg = new SecsMessage(1, 18)
-                {
-                    SecsItem = B((byte)result)
-                })
-                    primaryMsgWrapper?.TryReplyAsync(rtnMsg);
-                break;
+            //case SecsMessage msg when (msg.S == 1 && msg.F == 15):
+            //    var result = _ctrlStateManager.HandleS1F15();
+            //    using (var rtnMsg = new SecsMessage(1, 16)
+            //    {
+            //        SecsItem = B((byte)result)
+            //    })
+            //        primaryMsgWrapper.TryReplyAsync(rtnMsg);
+            //    break;
+            ////S1F17 Request ON-LINE
+            //case SecsMessage msg when (msg.S == 1 && msg.F == 17):
+            //    result = _ctrlStateManager.HandleS1F17();
+            //    using (var rtnMsg = new SecsMessage(1, 18)
+            //    {
+            //        SecsItem = B((byte)result)
+            //    })
+            //        primaryMsgWrapper?.TryReplyAsync(rtnMsg);
+            //    break;
             default:
                 break;
         }

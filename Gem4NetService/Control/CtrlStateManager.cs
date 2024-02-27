@@ -1,4 +1,5 @@
-﻿using Secs4Net;
+﻿using Gem4Net.Communication;
+using Secs4Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,7 +97,7 @@ public class CtrlStateManager
 
     #region Action
 
-
+    
 
     #endregion
 
