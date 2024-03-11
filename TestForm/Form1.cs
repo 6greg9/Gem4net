@@ -24,7 +24,7 @@ public partial class Form1 : Form
 
         InitializeComponent();
 
-        _gemRepo = new GemRepository("GemVariablesDb.sqlite");
+        _gemRepo = new GemRepository("GemVariablesDb.sqlite"); //帶入的參數是ConnectionStr的Key
 
         ISecsGemLogger logger = new SecsLogger(this);
 

@@ -36,6 +36,8 @@ public static class SecsItemSchemaValidator
                 return IsS2F15(Msg.SecsItem);
             case (2, 17):
                 return IsS2F17(Msg.SecsItem);
+            case (2, 23):
+                return IsS2F23(Msg.SecsItem);
             case (2, 25):
                 return IsS2F25(Msg.SecsItem);
             case (2, 29):
@@ -241,6 +243,24 @@ public static class SecsItemSchemaValidator
     {
         if (itemRoot is not null)
             return false;
+        return true;
+
+    };
+    public static Func<Item?, bool> IsS2F23 = (itemRoot) =>
+    {
+        if (itemRoot == null)
+            return false;
+        if (itemRoot.Format != SecsFormat.List)
+            return false;
+        if (itemRoot.Items.Count() != 5)
+            return false;
+        if(itemRoot.Items[0].Format != SecsFormat.ASCII||
+        itemRoot.Items[1].Format != SecsFormat.ASCII ||
+        itemRoot.Items[2].Format != SecsFormat.U4||
+        itemRoot.Items[3].Format != SecsFormat.U4||
+        itemRoot.Items[4].Format != SecsFormat.List)
+            return false;
+
         return true;
 
     };
