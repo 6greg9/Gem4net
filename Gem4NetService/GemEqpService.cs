@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Gem4Net.Communication;
 using Gem4Net.Control;
 using Gem4NetRepository.Model;
+using Gem4Net.TraceData;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Gem4Net;
 public partial class GemEqpService
@@ -37,6 +39,8 @@ public partial class GemEqpService
 
     private CommStateManager _commStateManager;
     private CtrlStateManager _ctrlStateManager;
+
+    private TraceDataManager _traceDataManager;
 
     private Task RecieveMessageHandlerTask;
     CancellationTokenSource SecsMsgHandlerTaskCTS = new();
@@ -119,6 +123,9 @@ public partial class GemEqpService
 
             OnConnectStatusChanged?.Invoke(connectState.ToString());
         };
+        //Trace
+        _traceDataManager = new TraceDataManager(_secsGem, this, _GemRepo);
+
 
         _connector.LinkTestEnabled = false;//想解決莫名斷線
         _ = _connector.StartAsync(_hsmsCancellationTokenSource.Token); // HSMS, 啟動
@@ -303,7 +310,7 @@ public partial class GemEqpService
                 Item? svList;
                 if (vids is null || vids.Count() == 0)
                 {
-                    svList = _GemRepo.GetSvAll();
+                    svList = _GemRepo.GetVariableAll();
                 }
                 else
                 {
@@ -413,6 +420,31 @@ public partial class GemEqpService
                     SecsItem = Clock
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F18);
+
+                break;
+            //S2F23 Trace Initialize Send
+            case SecsMessage msg when (msg.S == 2 && msg.F == 23):
+                var trid = msg.SecsItem.Items[0].GetString();
+                //A:8 hhmmsscc
+                var dsperStr = msg.SecsItem.Items[1].GetString();
+                if(dsperStr.Length != 6)
+                {
+                    await primaryMsgWrapper.TryReplyAsync();
+                    break;
+                }
+                var dsper = TimeSpan.FromHours(Convert.ToDouble(dsperStr.Substring(0, 2))) +
+                            TimeSpan.FromMinutes(Convert.ToDouble(dsperStr.Substring(2, 2))) +
+                            TimeSpan.FromSeconds(Convert.ToDouble(dsperStr.Substring(4, 2))) +
+                            TimeSpan.FromMilliseconds(Convert.ToDouble(dsperStr.Substring(6, 2) ) * 100) ;
+                var totsmp = msg.SecsItem.Items[2].FirstValue<int>();
+                var repgsz = msg.SecsItem.Items[3].FirstValue<int>();
+                var lstSv = msg.SecsItem.Items[4].Items.ToArray().Select(item=> item.FirstValue<int>()).ToList();
+                var tiaack = _traceDataManager.HandleTraceInitialize((dsperStr, dsper, totsmp, repgsz, lstSv) );
+                using (var rtnS2F24 = new SecsMessage(2, 24)
+                {
+                    SecsItem = B((byte)tiaack)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F24);
 
                 break;
             //S2F25 Loopback Diagnostic Request

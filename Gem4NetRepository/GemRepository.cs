@@ -203,14 +203,18 @@ public partial class GemRepository
                 return Item.J(); // !?
         }
     }
-    public Item? GetSvAll()
+    /// <summary>
+    /// SVID, SVNAMES, UNITS
+    /// </summary>
+    /// <returns></returns>
+    public Item? GetVariableAll()
     {
         using (_context = new GemDbContext(DbFilePath))
         {
-            return SubGetSvAll();
+            return SubGetVariableAll();
         }
     }
-    public Item? SubGetSvAll()
+    public Item? SubGetVariableAll()
     {
         var VarLst = _context.Variables.ToList().Select(v => GemVariableToSecsItem(v)).ToArray();
         return Item.L(VarLst);
