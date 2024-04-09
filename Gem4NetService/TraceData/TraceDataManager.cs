@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -39,7 +40,7 @@ public class TraceDataManager
         {
             return 3;
         }
-        var variableLst = _repo.GetVariableAll().Items.ToList();
+        var variableLst = _repo.GetSvNameListAll().Items.ToList();
         foreach (var vid in traceInit.sampleVIDs) // 檢查不存在VID
         {
             if (variableLst.Where(item => item.Items[0].FirstValue<int>() == vid).Any() == false)
@@ -50,15 +51,16 @@ public class TraceDataManager
 
         var newTrace = new DataTracer(traceInit.trid, traceInit.dataSamplePeriod, traceInit.totalSampleAmount,
             traceInit.reportGroupSize, traceInit.sampleVIDs);
-        newTrace.OnSample += HandleSample;
+        newTrace.OnSample += HandleSampleForTracer;
         newTrace.OnTraceEventSend += HandleTraceEventSend;
+        _tracerList.Add(newTrace);
         return 0;
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
-    List<Item?> HandleSample(List<int> lstVid)
+    List<Item?> HandleSampleForTracer(List<int> lstVid)
     {
 
         return _repo.GetSvList(lstVid).Items.ToList();
@@ -95,6 +97,15 @@ public class TraceDataManager
             SecsItem = s6f1Item,
         };
         _secsGem.SendAsync(secsMsg);
+        if( sender.TotalSampleAmount== sender.TotalSampleCounter) // 清理廢棄物
+        {
+            _= Task.Run(async () => { 
+                await Task.Delay(1000*5);
+                _tracerList.RemoveAt(_tracerList.FindIndex(tr=>tr.TRID==sender.TRID));
+            });
+            
+        }
+
     }
 }
 

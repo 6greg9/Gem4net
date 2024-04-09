@@ -424,18 +424,20 @@ public partial class GemEqpService
                 break;
             //S2F23 Trace Initialize Send
             case SecsMessage msg when (msg.S == 2 && msg.F == 23):
-                var trid = msg.SecsItem.Items[0].GetString();
+                var trid = msg.SecsItem.Items[0].Format == SecsFormat.ASCII ?
+                    msg.SecsItem.Items[0].ToString() : Convert.ToString(msg.SecsItem.Items[0].FirstValue<int>());
                 //A:8 hhmmsscc
                 var dsperStr = msg.SecsItem.Items[1].GetString();
-                if(dsperStr.Length != 6)
+                if(dsperStr.Length is not 8 and not 6)
                 {
                     await primaryMsgWrapper.TryReplyAsync();
                     break;
                 }
                 var dsper = TimeSpan.FromHours(Convert.ToDouble(dsperStr.Substring(0, 2))) +
                             TimeSpan.FromMinutes(Convert.ToDouble(dsperStr.Substring(2, 2))) +
-                            TimeSpan.FromSeconds(Convert.ToDouble(dsperStr.Substring(4, 2))) +
-                            TimeSpan.FromMilliseconds(Convert.ToDouble(dsperStr.Substring(6, 2) ) * 100) ;
+                            TimeSpan.FromSeconds(Convert.ToDouble(dsperStr.Substring(4, 2))); 
+                 if(dsperStr.Length is  8)
+                    dsper +=TimeSpan.FromMilliseconds(Convert.ToDouble(dsperStr.Substring(6, 2) ) * 100) ;
                 var totsmp = msg.SecsItem.Items[2].FirstValue<int>();
                 var repgsz = msg.SecsItem.Items[3].FirstValue<int>();
                 var lstSv = msg.SecsItem.Items[4].Items.ToArray().Select(item=> item.FirstValue<int>()).ToList();

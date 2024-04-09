@@ -254,11 +254,11 @@ public static class SecsItemSchemaValidator
             return false;
         if (itemRoot.Items.Count() != 5)
             return false;
-        if(itemRoot.Items[0].Format != SecsFormat.ASCII||
-        itemRoot.Items[1].Format != SecsFormat.ASCII ||
-        itemRoot.Items[2].Format != SecsFormat.U4||
-        itemRoot.Items[3].Format != SecsFormat.U4||
-        itemRoot.Items[4].Format != SecsFormat.List)
+        if((itemRoot.Items[0].Format != SecsFormat.ASCII && itemRoot.Items[0].Format != SecsFormat.U4 && itemRoot.Items[0].Format != SecsFormat.U2)
+        ||itemRoot.Items[1].Format != SecsFormat.ASCII 
+        ||itemRoot.Items[2].Format != SecsFormat.U4
+        ||itemRoot.Items[3].Format != SecsFormat.U4
+        ||itemRoot.Items[4].Format != SecsFormat.List)
             return false;
 
         return true;

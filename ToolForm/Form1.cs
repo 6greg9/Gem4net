@@ -18,7 +18,7 @@ public partial class Form1 : Form
     static string cnStr = "data source=" + dbPath;
     private void Btn_InsertVariableTable_Click(object sender, EventArgs e)
     {
-        OpenFileDialog dialog = new OpenFileDialog();
+        OpenFileDialog dialog = new ();
         var result = dialog.ShowDialog();
         if (result == DialogResult.OK)
         {

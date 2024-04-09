@@ -63,11 +63,11 @@ public class DataTracer
             }
             else
             {
-                SampleTimer?.Change(DataSamplePeriod, TimeSpan.MaxValue); //do once after SamplePeriod
+                SampleTimer?.Change(DataSamplePeriod, DataSamplePeriod*2); //do once after SamplePeriod
             }
             
         },
-            null, TimeSpan.FromMilliseconds(1), TimeSpan.MaxValue); // do once once imediately
+            null, 0, 0 ); // do once once imediately
 
     }
     void TraceDataSend()

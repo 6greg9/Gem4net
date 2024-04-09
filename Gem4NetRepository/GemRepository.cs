@@ -31,9 +31,9 @@ public partial class GemRepository
         DbFilePath = dbFilePath;
         using (_context = new GemDbContext(DbFilePath))
         {
-            _ = _context.Variables.ToListAsync();
-            _ = _context.Events.ToListAsync();
-            _ = _context.Alarms.ToListAsync();
+            _ = _context.Variables.ToList();
+            _ = _context.Events.ToList();
+            _ = _context.Alarms.ToList();
             //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
 
@@ -45,10 +45,14 @@ public partial class GemRepository
     /// <returns></returns>
     public Item? GetSvList(IEnumerable<int> vidList)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (_context)
         {
-            return SubGetSvListByVidList(vidList);
+            using (_context = new GemDbContext(DbFilePath))
+            {
+                return SubGetSvListByVidList(vidList);
+            }
         }
+        
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
@@ -56,10 +60,14 @@ public partial class GemRepository
     }
     public Item? GetSv(int vid)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock( _context)
         {
-            return SubGetSvByVID(vid);
+            using (_context = new GemDbContext(DbFilePath))
+            {
+                return SubGetSvByVID(vid);
+            }
         }
+        
     }
     public Item? GetEcList(IEnumerable<int> vidList)
     {
@@ -243,6 +251,10 @@ public partial class GemRepository
             return Item.L(svNameList.ToArray());
         }
     }
+    /// <summary>
+    /// For S1F11
+    /// </summary>
+    /// <returns></returns>
     public Item? GetSvNameListAll()
     {
         using (_context = new GemDbContext(DbFilePath))
@@ -527,33 +539,37 @@ public partial class GemRepository
 
     public Item? GetReportsByCeid(int ceid)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (_context)
         {
-            List<(int, Item)> rtnRptItems = new();
-            var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
-                .Select(link => link.Report);
-            var reportVars = reports
-                .Join(_context.ReportVariableLinks,
-                rpt => rpt.RPTID,
-                link => link.RPTID,
-                (rpt, link) =>
-                new
-                {
-                    RptId = rpt.RPTID,
-                    Variable = _context.Variables.Where(v => v.VID == link.VID).First()
-                }).ToList(); //.GroupBy( v=>v.RptId ).Select(v=> v.)
-            //.Select(pair=> {RptId = pair.Key, Datas =  pair} );
-            var rtnReports = reportVars
-                .GroupBy(d => d.RptId)
-                .Select(pair => (pair.Key, pair.ToList())).ToList();
-            foreach (var groupData in rtnReports)
+            using (_context = new GemDbContext(DbFilePath))
             {
-                var vids = groupData.Item2.Select(v => v.Variable.VID);
-                var datas = SubGetSvListByVidList(vids);
-                rtnRptItems.Add((groupData.Item1, datas));
+                List<(int, Item)> rtnRptItems = new();
+                var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
+                    .Select(link => link.Report);
+                var reportVars = reports
+                    .Join(_context.ReportVariableLinks,
+                    rpt => rpt.RPTID,
+                    link => link.RPTID,
+                    (rpt, link) =>
+                    new
+                    {
+                        RptId = rpt.RPTID,
+                        Variable = _context.Variables.Where(v => v.VID == link.VID).First()
+                    }).ToList(); //.GroupBy( v=>v.RptId ).Select(v=> v.)
+                                 //.Select(pair=> {RptId = pair.Key, Datas =  pair} );
+                var rtnReports = reportVars
+                    .GroupBy(d => d.RptId)
+                    .Select(pair => (pair.Key, pair.ToList())).ToList();
+                foreach (var groupData in rtnReports)
+                {
+                    var vids = groupData.Item2.Select(v => v.Variable.VID);
+                    var datas = SubGetSvListByVidList(vids);
+                    rtnRptItems.Add((groupData.Item1, datas));
+                }
+                return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
             }
-            return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
         }
+        
     }
     public Item? GetReportByRpid(int rpid)
     {
