@@ -28,7 +28,7 @@ public class TraceDataManager
     /// 4 - unknown SVID, 5 - bad REPGSZ
     /// </summary>
     /// <returns></returns>
-    public int HandleTraceInitialize((string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
+    public int TraceInitialize((string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
         int reportGroupSize, List<int> sampleVIDs) traceInit)
     {
         if (_tracerList.Where(tr => tr.TRID == traceInit.trid).Any() == true)
@@ -54,6 +54,17 @@ public class TraceDataManager
         newTrace.OnSample += HandleSampleForTracer;
         newTrace.OnTraceEventSend += HandleTraceEventSend;
         _tracerList.Add(newTrace);
+        return 0;
+    }
+
+    public int TraceTerminate(string trid)
+    {
+        if (_tracerList.Where(tr => tr.TRID == trid).Any() == true)
+        {
+            _tracerList.Remove(_tracerList.Where(tr => tr.TRID == trid).First());
+            return 0;
+        }
+        //已有TRID不存在
         return 0;
     }
     /// <summary>

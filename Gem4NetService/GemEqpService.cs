@@ -441,7 +441,15 @@ public partial class GemEqpService
                 var totsmp = msg.SecsItem.Items[2].FirstValue<int>();
                 var repgsz = msg.SecsItem.Items[3].FirstValue<int>();
                 var lstSv = msg.SecsItem.Items[4].Items.ToArray().Select(item=> item.FirstValue<int>()).ToList();
-                var tiaack = _traceDataManager.HandleTraceInitialize((dsperStr, dsper, totsmp, repgsz, lstSv) );
+                int tiaack = 0;
+                if (lstSv.Count() == 0)
+                {
+                    tiaack = _traceDataManager.TraceTerminate(trid);
+                }
+                else
+                {
+                    tiaack = _traceDataManager.TraceInitialize((dsperStr, dsper, totsmp, repgsz, lstSv));
+                }
                 using (var rtnS2F24 = new SecsMessage(2, 24)
                 {
                     SecsItem = B((byte)tiaack)
