@@ -11,6 +11,7 @@
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
+- [ ] S1F5  Formatted Status Request (FSR)
 - [x] S1F11 Status Variable Namelist Request
 - [X] S1F13 Establish Communications Request
 - [X] S1F15 Request OFF-LINE
@@ -19,7 +20,8 @@
 - [X] S2F13 Equipment Constant Request
 - [X] S2F15 New Equipment Constant Send
 - [ ] S2F17 Date and Time Request
-- [ ] S2F23 Trace Initialize Send
+- [ ] S2F21 Remote Command Send (RCS)
+- [x] S2F23 Trace Initialize Send
 - [X] S2F25 Loopback Diagnostic Request
 - [ ] S2F29 Equipment Constant Namelist Request
 - [ ] S2F31 Date and Time Set Request
@@ -27,19 +29,26 @@
 - [X] S2F35 Link Event Report
 - [X] S2F37 Enable/Disable Event Report
 - [X] S2F41 Host Command Send
-- [ ] S6F1  Trace Data Send
+- [X] S5F1 Alarm Report Send
+- [x] S5F3 Enable/disable Alarm Send
+- [x] S5F5 List Alarms Request
+- [x] S5F7 List Enable Alarm Request
+- [x] S6F1  Trace Data Send
 - [X] S6F11 Event Report Send
 - [ ] S6F13 Annotated Event Report Send
 - [X] S6F15 Event Report Request
 - [ ] S6F17 Annotated Event Report Request
 - [x] S6F19 Individual Report Request
-- [X] S5
+- [ ] S7F1 Process Program Load Inquire
+- [ ] S7F3 Process Program Send
+- [ ] S7F5 Process Program Reques
 - [X] S7F17 Delete Process Program Send
 - [X] S7F19 Current Process Program Dir Request
 - [X] S7F23 Formatted Process Program Send
 - [X] S7F25 Formatted Process Program Request
 - [X] S10F1 Terminal Request
 - [X] S10F3 Terminal Display, Single
+- [ ] S10F5 Terminal Display, Multi-Block (VTN)
 ### Variable Item Dictionary in SEMI E5 (8.4)
 ### GEM-Defined Collection Events (9.3)
 ### App Configs
