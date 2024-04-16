@@ -30,6 +30,8 @@ public static class SecsItemSchemaValidator
                 return IsS1F15(Msg.SecsItem);
             case (1, 17):
                 return IsS1F17(Msg.SecsItem);
+            case (1, 21):
+                return IsS1F21(Msg.SecsItem);
             case (2, 13):
                 return IsS2F13(Msg.SecsItem);
             case (2, 15):
@@ -113,7 +115,7 @@ public static class SecsItemSchemaValidator
         if (item.Format != SecsFormat.List)
             return false;
 
-        if (item.Items.Where(item => item.Format != SecsFormat.U4).Count() > 0)
+        if (item.Items.Where(item => item.Format is not SecsFormat.U4 ).Count() > 0)
             return false;
 
         return true;
@@ -204,6 +206,23 @@ public static class SecsItemSchemaValidator
         return false;
     };
 
+    public static Func<Item?, bool> IsS1F21 = (item) =>
+    {
+        if (item is null)
+            return false;
+        if (item.Format != SecsFormat.List)
+            return false;
+        var vids = item.Items;
+        foreach( var v in vids)
+        {
+            if (v.Format != SecsFormat.ASCII || v.Format != SecsFormat.U1
+            || v.Format != SecsFormat.U2 || v.Format != SecsFormat.U4 || v.Format != SecsFormat.U8)
+            {
+                return false;
+            }
+        }
+        return true;
+    };
     #endregion
 
     #region Stream 2
