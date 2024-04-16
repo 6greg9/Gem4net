@@ -12,28 +12,37 @@ public partial class GemRepository
     // S5系列
     public GemAlarm? GetAlarm(int alarmId)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (lockObject)
         {
-            return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
+            using (_context = new GemDbContext(DbFilePath))
+            {
+                return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
+            }
         }
     }
     public IEnumerable<GemAlarm?> GetAlarm(IEnumerable<int> alarmIds)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (lockObject)
         {
-            var tempAlarm = new List<GemAlarm?>();
-            foreach (var alid in alarmIds)
+            using (_context = new GemDbContext(DbFilePath))
             {
-                tempAlarm.Add(_context.Alarms.Where(alrm => alrm.ALID == alid).FirstOrDefault());
+                var tempAlarm = new List<GemAlarm?>();
+                foreach (var alid in alarmIds)
+                {
+                    tempAlarm.Add(_context.Alarms.Where(alrm => alrm.ALID == alid).FirstOrDefault());
+                }
+                return tempAlarm;
             }
-            return tempAlarm;
         }
     }
     public IEnumerable<GemAlarm> GetAlarmAll()
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (lockObject)
         {
-            return _context.Alarms.ToList();
+            using (_context = new GemDbContext(DbFilePath))
+            {
+                return _context.Alarms.ToList();
+            }
         }
     }
     /// <summary>
@@ -43,36 +52,42 @@ public partial class GemRepository
     /// <returns></returns>
     public int SetAlarmCode(int alid, bool alcd)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (lockObject)
         {
-            var targetAlarm = _context.Alarms
-                .Where(alrm => alrm.ALID == alid).Take(1);
-            if (!targetAlarm.Any())
-                return 1;
-            foreach (var item in targetAlarm)//應該只有1個...
+            using (_context = new GemDbContext(DbFilePath))
             {
-                item.ALCD = alcd;
-            }
+                var targetAlarm = _context.Alarms
+                    .Where(alrm => alrm.ALID == alid).Take(1);
+                if (!targetAlarm.Any())
+                    return 1;
+                foreach (var item in targetAlarm)//應該只有1個...
+                {
+                    item.ALCD = alcd;
+                }
 
-            _context.SaveChanges();
-            return 0;
+                _context.SaveChanges();
+                return 0;
+            }
         }
     }
     public int EnableAlarm(int alid, bool enable)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        lock (lockObject)
         {
-            var targetAlarm = _context.Alarms
-                .Where(alrm => alrm.ALID == alid).Take(1);
-            if (!targetAlarm.Any())
-                return 1;
-            foreach (var item in targetAlarm)//應該只有1個...
+            using (_context = new GemDbContext(DbFilePath))
             {
-                item.ALED = enable;
-            }
+                var targetAlarm = _context.Alarms
+                    .Where(alrm => alrm.ALID == alid).Take(1);
+                if (!targetAlarm.Any())
+                    return 1;
+                foreach (var item in targetAlarm)//應該只有1個...
+                {
+                    item.ALED = enable;
+                }
 
-            _context.SaveChanges();
-            return 0;
+                _context.SaveChanges();
+                return 0;
+            }
         }
     }
 }
