@@ -45,8 +45,16 @@ public partial class GemEqpService
     /// ACKC7: 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow, 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
     /// </summary>
     public event Func<Item, int> OnFormattedProcessProgramReceived;//還是應該自行解析處理, 只串接SF
-    public event Func<string, Item> OnFormattedProcessProgramReq;
+    
+    /// <summary>
+    /// 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow
+    /// 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
+    /// </summary>
     public event Func<List<string>, int> OnProcessProgramDeleteReq;
+    /// <summary>
+    /// 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow
+    /// 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
+    /// </summary>
     public event Func<int> OnProcessProgramDeleteAllReq;
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;

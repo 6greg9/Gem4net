@@ -64,7 +64,17 @@ public partial class GemEqpService
         {
             var token = SecsMsgHandlerTaskCTS.Token;
             while (token.IsCancellationRequested != true)
-                HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage);
+            {
+                try
+                {
+                    HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error("RecieveMessageHandler", ex);
+                }
+            }
+                
 
         });
         //_communicatinoState = CommunicationState.DISABLED;
@@ -139,7 +149,7 @@ public partial class GemEqpService
         }
         catch (Exception ex)
         {
-            _logger.Debug(ex.ToString());
+            _logger.Error("GetPrimaryMessageAsync",ex);
         }
     }
     public async void Disable() // 各種cancel, dispose
@@ -471,7 +481,7 @@ public partial class GemEqpService
                 {
                     var rptId = secsItem[0].FirstValue<int>();
                     var vids = secsItem[1].Items.Select(i => i.FirstValue<int>()).ToArray();
-                    return ((rptId, vids));
+                    return (rptId, vids);
                 }).ToList();
                 var DRACK = _GemRepo.DefineReport(reportDefines);
                 using (var rtnS2F34 = new SecsMessage(2, 34)
@@ -656,14 +666,18 @@ public partial class GemEqpService
                 if (msg.SecsItem.Count == 0)
                 {
                     var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
-                    ackc7 = OnProcessProgramDeleteAllReq.Invoke();
+                    ackc7 = OnProcessProgramDeleteAllReq.Invoke();// 委派給外部使用GemRepo
+                    if (ackc7 == 0)
+                        _GemRepo.DeleteProcessProgramAll();
                 }
                 else
                 {
                     var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
                     ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
+                    if (ackc7 == 0)
+                        _GemRepo.DeleteProcessProgram(ppids);
                 }
-                _GemRepo.DeleteProcessProgramAll();
+               
                 using (var rtnS7F18 = new SecsMessage(7, 18)
                 {
                     SecsItem = B((byte)ackc7)
@@ -691,7 +705,10 @@ public partial class GemEqpService
                 break;
             //S7F25 Formatted Process Program Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 25):
-                var pp = OnFormattedProcessProgramReq.Invoke(msg.SecsItem.GetString());
+
+                var fpp = _GemRepo.GetProcessProgramFormatted(msg.SecsItem.GetString()).ToList();
+               
+                var pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First());
                 using (var rtnS7F26 = new SecsMessage(7, 26)
                 {
                     SecsItem = pp

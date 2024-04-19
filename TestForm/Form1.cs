@@ -94,18 +94,14 @@ public partial class Form1 : Form
             }
             var rtn = _gemRepo.CreateProcessProgram(pp);
         };
-        GemEquipment.OnFormattedProcessProgramReq += (ppid) => // 好像可以自動處理?
-        {
-            var fpp = _gemRepo.GetProcessProgramFormatted(ppid).ToList();
-            return _gemRepo.FormattedProcessProgramToSecsItem(fpp.First());
-        };
+       
         GemEquipment.OnProcessProgramDeleteAllReq += () =>
         {
-            return _gemRepo.DeleteProcessProgramAll();
+            return 0;
         };
         GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {
-            return _gemRepo.DeleteProcessProgram(ppLst);
+            return 0;
         };
 
         UpdateVariables();
