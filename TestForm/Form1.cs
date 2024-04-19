@@ -75,6 +75,7 @@ public partial class Form1 : Form
         {
             return 0; // OK
         };
+
         GemEquipment.OnFormattedProcessProgramReceived += (formatedPP) =>
         {
             return 0; // 要自行依照process program 結構來處理
@@ -94,18 +95,22 @@ public partial class Form1 : Form
             }
             var rtn = _gemRepo.CreateProcessProgram(pp);
         };
-       
-        GemEquipment.OnProcessProgramDeleteAllReq += () =>
-        {
-            return 0;
-        };
         GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {
             return 0;
+            if (ppLst.Count == 0)
+            {
+                _gemRepo.DeleteProcessProgramAll();
+            }
+            else
+            {
+                _gemRepo.DeleteProcessProgram(ppLst);
+            }
+
         };
 
         UpdateVariables();
-        
+
     }
     int cnt = 0;
     public void UpdateVariables()
@@ -119,13 +124,13 @@ public partial class Form1 : Form
                 sw.Start();
                 try
                 {
-                    
+
                     using (IDbConnection cn = new SQLiteConnection(cnStr))
                     {
                         //var tran = cn.BeginTransaction();
                         //string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
                         //刪除多筆參數
-                        var datas = new []{
+                        var datas = new[]{
                           new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
                         , new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
                         , new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
@@ -140,16 +145,16 @@ public partial class Form1 : Form
                         var inStr = "";
                         foreach (var data in datas)
                         {
-                            var caseStr =" WHEN "+ data.vid.ToString()+" THEN '"+data.value.ToString()+"'";
+                            var caseStr = " WHEN " + data.vid.ToString() + " THEN '" + data.value.ToString() + "'";
                             sql += caseStr;
-                            inStr += " ,"+data.vid.ToString() ;
+                            inStr += " ," + data.vid.ToString();
                         }
-                        sql += "ELSE Value END  WHERE VID IN ( "+inStr.Substring(2)+")";//土炮
-                        
+                        sql += "ELSE Value END  WHERE VID IN ( " + inStr.Substring(2) + ")";//土炮
+
                         cn.Execute(sql);
                         //tran.Commit();
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -163,10 +168,10 @@ public partial class Form1 : Form
             //交易
             //using (var tranScope = new TransactionScope())
             //{
-            
+
 
             //}
-            
+
         });
     }
     private sealed class SecsLogger : ISecsGemLogger
@@ -436,5 +441,5 @@ public partial class Form1 : Form
         GemEquipment.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value);
     }
 
-    
+
 }

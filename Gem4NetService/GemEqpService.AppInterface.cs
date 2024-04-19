@@ -51,11 +51,7 @@ public partial class GemEqpService
     /// 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
     /// </summary>
     public event Func<List<string>, int> OnProcessProgramDeleteReq;
-    /// <summary>
-    /// 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow
-    /// 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
-    /// </summary>
-    public event Func<int> OnProcessProgramDeleteAllReq;
+    
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;
 
