@@ -368,7 +368,7 @@ public partial class GemEqpService
                 var idCnt = msg.SecsItem?.Items.Length;
                 if (idCnt is null or 0)
                 {
-                    var allEC = _GemRepo?.GetEcNameListAll();
+                    var allEC = _GemRepo?.GetEcValueListAll();
                     using (var rtnMsg = new SecsMessage(2, 14)
                     {
                         SecsItem = allEC
@@ -379,7 +379,7 @@ public partial class GemEqpService
                 // 查EC
                 var ecids = msg.SecsItem?.Items
                         .Select(item => item.FirstValue<int>());
-                var ecs = _GemRepo?.GetEcNameList(ecids);
+                var ecs = _GemRepo?.GetEcValueList(ecids);
                 // 如果一個查不到就要回空L
                 if (ecs.Items.Where(item => item.Format == SecsFormat.ASCII && item.GetString() == "").Count() > 0)
                 {
@@ -474,6 +474,14 @@ public partial class GemEqpService
                     SecsItem = msg.SecsItem
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F26);
+                break;
+            //S2F29 Loopback Diagnostic Request
+            case SecsMessage msg when (msg.S == 2 && msg.F == 29):
+                using (var rtnS2F29 = new SecsMessage(2, 30)
+                {
+                    SecsItem = msg.SecsItem
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F29);
                 break;
             //S2F33 Define Report
             case SecsMessage msg when (msg.S == 2 && msg.F == 33):

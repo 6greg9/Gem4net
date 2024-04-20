@@ -70,6 +70,20 @@ public partial class GemRepository
         }
         
     }
+    Item? SubGetSvByVID(int vid)
+    {
+        // Clock, 是要用Name還是Vid找
+        if (vid == ClockVID)
+            return SubGetClock(ClockFormatCode);
+
+        var Variable = _context.Variables
+            .Where(v => v.VarType == "SV")
+            .Where(v => v.VID == vid).FirstOrDefault();
+        if (Variable == null)//找不到
+            return A(); // ?
+
+        return GemVariableToSecsItem(Variable);
+    }
     public Item? GetEcList(IEnumerable<int> vidList)
     {
         lock (lockObject)
@@ -84,20 +98,6 @@ public partial class GemRepository
     Item? SubGetEcListByVidList(IEnumerable<int> vidList)
     {
         return Item.L(vidList.Select(vid => SubGetEcByVID(vid)).ToArray());
-    }
-    Item? SubGetSvByVID(int vid)
-    {
-        // Clock, 是要用Name還是Vid找
-        if (vid == ClockVID)
-            return SubGetClock(ClockFormatCode);
-
-        var Variable = _context.Variables
-            .Where(v=>v.VarType=="SV")
-            .Where(v => v.VID == vid).FirstOrDefault();
-        if (Variable == null)//找不到
-            return A(); // ?
-
-        return GemVariableToSecsItem(Variable);
     }
     public Item? GetEC(int vid)
     {
@@ -130,6 +130,13 @@ public partial class GemRepository
             return SubGetVarByName(name);
         }
     }
+    public Item? GetVariable(int vid)
+    {
+        using (_context = new GemDbContext(DbFilePath))
+        {
+            return SubGetVarByVid(vid);
+        }
+    }
     Item? SubGetVarByName(string name)
     {
         var Variable = _context.Variables
@@ -138,6 +145,15 @@ public partial class GemRepository
         if (Variable == null)//找不到
             return A(); // ?
 
+        return GemVariableToSecsItem(Variable);
+    }
+    Item? SubGetVarByVid(int vid)
+    {
+        var Variable = _context.Variables
+            //.Where(v=>v.VarType=="SV")
+            .Where(v => v.VID == vid).FirstOrDefault();
+        if (Variable == null)//找不到
+            return A(); // ?
         return GemVariableToSecsItem(Variable);
     }
     Item? SubGetClock(int timeFormatcode)
@@ -175,7 +191,7 @@ public partial class GemRepository
             return null;
         }
     }
-    Item VarStringToItem(string dataType, string varStr)
+    public Item VarStringToItem(string dataType, string varStr)
     {
         switch (dataType)
         {
@@ -291,7 +307,7 @@ public partial class GemRepository
     /// for s2f14
     /// </summary>
     /// <returns></returns>
-    public Item? GetEcNameList(IEnumerable<int> vidList)
+    public Item? GetEcValueList(IEnumerable<int> vidList)
     {
         lock (lockObject)
         {
@@ -325,7 +341,7 @@ public partial class GemRepository
         }
         
     }
-    public Item? GetEcNameListAll()
+    public Item? GetEcValueListAll()
     {
         lock (lockObject)
         {
@@ -338,6 +354,46 @@ public partial class GemRepository
             }
         }
        
+    }
+
+    /// <summary>
+    /// for S2F29,( ECID, ECNAME, ECMIN, ECMAX, ECDEF, UNITS)
+    /// </summary>
+    /// <param name="vidList"></param>
+    /// <returns></returns>
+    public Item? GetEcNameListt(IEnumerable<int> vidList)
+    {
+        lock (lockObject)
+        {
+            using (_context = new GemDbContext(DbFilePath))
+            {
+                //IQueryable<GemVariable?> rtnGemVar = null;
+                List<GemVariable?> rtnGemVar = new();
+                foreach (var vid in vidList)
+                {
+                    var rtnEc = _context.Variables.Where(v => v.VarType == "EC").Where(v => v.VID == vid).FirstOrDefault();
+                    //rtnGemVar = rtnGemVar == null ? rtnEc : rtnGemVar.Concat(rtnEc);
+                    //rtnGemVar =  rtnGemVar.Concat(rtnEc);
+                    rtnGemVar.Add(rtnEc); // 這樣很違反EF的原則..., 有空改成raw sql
+                }
+                //var svNameList = vidList.Select(vid =>
+                //{
+                //    return _context.Variables.Where(v => v.VarType == "EC")
+                //   .Where(v => v.VID == vid).FirstOrDefault();
+                //}); //EF 查詢到此為止
+                var rtnGemVarLst = rtnGemVar.ToList();
+                var itemLst = rtnGemVarLst.Select(v =>
+                {
+                    if (v is null)
+                    {
+                        return A();// ?
+                    }
+                    return GemVariableToSecsItem(v);
+                });
+                return Item.L(itemLst);
+            }
+        }
+
     }
 
     /// <summary>
