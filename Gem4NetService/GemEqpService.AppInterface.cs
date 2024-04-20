@@ -138,7 +138,7 @@ public partial class GemEqpService
     /// <param name="alrmId"></param>
     /// <param name="alrmText"></param>
     /// <returns></returns>
-    public Task<int> SendAlarmReport(bool alrmSet, int alrmId,string alrmText ) {
+    public Task<int> SendAlarmReport(int alrmSet, int alrmId,string alrmText ) {
 
         return Task.Run(() =>
         {
@@ -148,7 +148,7 @@ public partial class GemEqpService
             if (alrm.ALCD != alrmSet)
                 _GemRepo.SetAlarmCode(alrmId, alrmSet);
             if(alrm.ALED!= true) return 2;
-            var secsAlrmCode = alrmSet ? 128 : 0;
+            var secsAlrmCode = alrmSet;//? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
             using var s5f1 = new SecsMessage(5, 1)
             {
@@ -163,7 +163,7 @@ public partial class GemEqpService
         });
         
     }
-    public Task<int> SendAlarmReport(bool alrmSet, int alrmId)
+    public Task<int> SendAlarmReport(int alrmSet, int alrmId)
     {
         return Task.Run(() =>
         {
@@ -173,7 +173,7 @@ public partial class GemEqpService
             if (alrm.ALED != true) return 2;
             if (alrm.ALCD != alrmSet)
                 _GemRepo.SetAlarmCode(alrmId, alrmSet);
-            var secsAlrmCode = alrmSet ? 128 : 0;
+            var secsAlrmCode = alrmSet;//? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
             using var s5f1 = new SecsMessage(5, 1)
             {

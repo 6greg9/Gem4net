@@ -582,7 +582,7 @@ public partial class GemEqpService
                 {
                     if (alrm is null)
                         return L();
-                    var alcd = alrm.ALCD ? 128 : 0;
+                    var alcd = alrm.ALCD;//? 128 : 0;
                     var alid = Convert.ToUInt32(alrm.ALID);
                     var altx = alrm.ALTX;
                     return L(B((byte)alcd), U4(alid), A(altx));
@@ -604,7 +604,7 @@ public partial class GemEqpService
                 {
                     if (alrm is null)
                         return L();
-                    var alcd = alrm.ALCD ? 128 : 0;
+                    var alcd = alrm.ALCD;// ? 128 : 0;
                     var alid = Convert.ToUInt32(alrm.ALID);
                     var altx = alrm.ALTX;
                     return L(B((byte)alcd), U4(alid), A(altx));

@@ -9,8 +9,8 @@ public class GemAlarm
 {
     /// <summary> 警報ID </summary>
     public int ALID { get; set; } 
-    /// <summary> 警報狀態 </summary>
-    public bool ALCD { get; set; }
+    /// <summary> 警報狀態 0~255, 128為分界 </summary>
+    public int ALCD { get; set; }
     public int? AlarmStateVid { get; set; }
     public bool DefaultAlarmState { get; set; }
     /// <summary> 警報啟用 </summary>

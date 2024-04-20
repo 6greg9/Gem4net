@@ -50,7 +50,7 @@ public partial class GemRepository
     /// </summary>
     /// <param name="alarm"></param>
     /// <returns></returns>
-    public int SetAlarmCode(int alid, bool alcd)
+    public int SetAlarmCode(int alid, int alcd)
     {
         lock (lockObject)
         {

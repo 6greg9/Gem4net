@@ -438,7 +438,7 @@ public partial class Form1 : Form
 
     private void Btn_SendAlarm_Click(object sender, EventArgs e)
     {
-        GemEquipment.SendAlarmReport((bool)Cbx_SetAlarm.Checked, (int)Num_AlarmId.Value);
+        GemEquipment.SendAlarmReport(Cbx_SetAlarm.Checked ? 128 : 0, (int)Num_AlarmId.Value);
     }
 
 
