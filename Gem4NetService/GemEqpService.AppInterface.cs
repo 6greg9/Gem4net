@@ -38,13 +38,13 @@ public partial class GemEqpService
     /// <summary> for S2F41  Input : ( RCMD, L( CPNAME, CPVAL ) ) , Output : ( HACK, L( CPNAME, CPVAL ) ) 
     /// HACK : 0 - ok, completed , 1 - invalid command , 2 - cannot do now , 3 - parameter error , 4 - initiated for asynchronous completion , 5 - rejected, already in desired condition , 6 - invalid object
     /// </summary>
-    public event Func<RemoteCommand, RemoteCommand> OnRemoteCommandReceived;
+    public event Func<RemoteCommand, RemoteCommand>? OnRemoteCommandReceived;
     //public event Func<FormattedProcessProgram, int> OnFormattedProcessProgramReceived;
 
     /// <summary>
     /// ACKC7: 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow, 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
     /// </summary>
-    public event Func<Item, int> OnFormattedProcessProgramReceived;//還是應該自行解析處理, 只串接SF
+    public event Func<Item, int>? OnFormattedProcessProgramReceived;//還是應該自行解析處理, 只串接SF
     
     /// <summary>
     /// 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow
@@ -91,12 +91,12 @@ public partial class GemEqpService
     /// <param name="terminalMessage"></param>
     /// <param name="terminalId"></param>
     /// <returns></returns>
-    public async Task<int> SendTerminalMessageAsync(string terminalMessage, int terminalId)
+    public async Task<int> SendTerminalMessageAsync(string terminalMessage, int terminalId, bool useWbit)
     {
         int ack10 = -1;
         try
         {
-            using (var s10f1 = new SecsMessage(10, 1)
+            using (var s10f1 = new SecsMessage(10, 1, useWbit)
             {
                 SecsItem = L(
                 B((byte)terminalId),
@@ -116,12 +116,12 @@ public partial class GemEqpService
         return ack10;
 
     }
-    public void SendEventReport(int eventId)
+    public void SendEventReport(int eventId, bool useWbit)
     {
         var reports = _GemRepo.GetReportsByCeid(eventId);
         Random random = new Random();
         var dataId = random.Next();
-        using var s6f11 = new SecsMessage(6, 11)
+        using var s6f11 = new SecsMessage(6, 11, useWbit)
         {
             SecsItem = L(
             U4((uint)dataId), //DATAID
@@ -138,7 +138,7 @@ public partial class GemEqpService
     /// <param name="alrmId"></param>
     /// <param name="alrmText"></param>
     /// <returns></returns>
-    public Task<int> SendAlarmReport(int alrmSet, int alrmId,string alrmText ) {
+    public Task<int> SendAlarmReport(int alrmSet, int alrmId,string alrmText, bool useWbit ) {
 
         return Task.Run(() =>
         {
@@ -150,7 +150,7 @@ public partial class GemEqpService
             if(alrm.ALED!= true) return 2;
             var secsAlrmCode = alrmSet;//? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
-            using var s5f1 = new SecsMessage(5, 1)
+            using var s5f1 = new SecsMessage(5, 1, useWbit)
             {
                 SecsItem = L(
                 B((byte)secsAlrmCode),
