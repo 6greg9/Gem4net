@@ -23,6 +23,7 @@ public partial class GemEqpService
     private CancellationTokenSource _hsmsCancellationTokenSource = new();
     public SecsGemOptions GemOptions { get; private set; }
 
+    //之後要加GemServiceOptions
     public string MDLN { get; private set; } = "MDLN";//機台型號
     public string SOFTREV { get; private set; } = "SOFTREV";//軟體版本
     public bool IsCommHostInit { get; private set; }
@@ -97,7 +98,7 @@ public partial class GemEqpService
         var options = Options.Create(GemOptions);
         //var options = secsGemOptions;
         _connector = new HsmsConnection(options, _logger);
-        _connector.LinkTestEnabled = false; //想解決莫名斷線
+        //_connector.LinkTestEnabled = false; 
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
