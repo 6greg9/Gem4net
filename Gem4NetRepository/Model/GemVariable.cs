@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Secs4Net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,8 @@ public class GemVariable
     /// LIST , BOOL , ASCII , UINT_1 , UINT_2 , UINT_4 , UINT_8
     /// INT_1 , INT_2 , INT_4 , INT_8 , FLOAT_4 , FLOAT_8
     /// </summary>
-    public string  DataType { get; set; }
+    
+    public string  DataType { get; set; } 
     public int?     Length { get; set; }
     public string?  Unit { get; set; }
     public string  Value { get; set; }

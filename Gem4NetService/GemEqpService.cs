@@ -476,11 +476,14 @@ public partial class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F26);
                 break;
-            //S2F29 Loopback Diagnostic Request
+            //S2F29 Equipment Constant Namelist Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 29):
+                var vidLst = msg.SecsItem.Items.Select( i=> i.FirstValue<int>()).ToList();  
+
+                var s2F30 = _GemRepo.GetEcDetailList(vidLst);
                 using (var rtnS2F29 = new SecsMessage(2, 30)
                 {
-                    SecsItem = msg.SecsItem
+                    SecsItem = s2F30
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F29);
                 break;

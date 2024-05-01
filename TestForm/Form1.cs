@@ -392,12 +392,12 @@ public partial class Form1 : Form
     private void Btn_TestSendS6F11_Click(object sender, EventArgs e)
     {
         var inputId = Convert.ToInt32(Tbx_InputECID.Text.Trim());
-        GemEquipment.SendEventReport(inputId);
+        GemEquipment.SendEventReport(inputId,false);
     }
 
     private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)
     {
-        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87);
+        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87,false);
     }
 
     private void Btn_InsertPP_Click(object sender, EventArgs e)

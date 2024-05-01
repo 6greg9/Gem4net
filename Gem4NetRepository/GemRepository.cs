@@ -3,6 +3,7 @@ using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Secs4Net;
+using Secs4Net.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ public partial class GemRepository
                 return SubGetSvListByVidList(vidList);
             }
         }
-        
+
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
@@ -61,14 +62,14 @@ public partial class GemRepository
     }
     public Item? GetSv(int vid)
     {
-        lock( lockObject)
+        lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
             {
                 return SubGetSvByVID(vid);
             }
         }
-        
+
     }
     Item? SubGetSvByVID(int vid)
     {
@@ -93,7 +94,7 @@ public partial class GemRepository
                 return SubGetEcListByVidList(vidList);
             }
         }
-        
+
     }
     Item? SubGetEcListByVidList(IEnumerable<int> vidList)
     {
@@ -101,7 +102,7 @@ public partial class GemRepository
     }
     public Item? GetEC(int vid)
     {
-        lock ( lockObject)
+        lock (lockObject)
         {
             lock (lockObject)
             {
@@ -116,7 +117,7 @@ public partial class GemRepository
     {
 
         var Variable = _context.Variables
-            .Where(v=>v.VarType=="EC")
+            .Where(v => v.VarType == "EC")
             .Where(v => v.VID == vid).FirstOrDefault();
         if (Variable == null)//找不到
             return A(); // ?
@@ -158,7 +159,7 @@ public partial class GemRepository
     }
     Item? SubGetClock(int timeFormatcode)
     {
-        if( timeFormatcode == 0 ) 
+        if (timeFormatcode == 0)
             return A(DateTime.Now.ToString("yyMMddHHmmss"));
         if (timeFormatcode == 1)
             return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
@@ -172,6 +173,7 @@ public partial class GemRepository
         {
             if (variable.DataType != "LIST")
             {
+
                 return VarStringToItem(variable.DataType, variable.Value);
 
             }
@@ -264,7 +266,7 @@ public partial class GemRepository
     /// <returns></returns>
     public Item? GetSvNameList(IEnumerable<int> vidList)
     {
-        lock(lockObject)
+        lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
             {
@@ -283,7 +285,7 @@ public partial class GemRepository
                 return Item.L(svNameList.ToArray());
             }
         }
-        
+
     }
     /// <summary>
     /// For S1F11
@@ -300,8 +302,9 @@ public partial class GemRepository
                 return Item.L(itemList.ToArray());
             }
         }
-        
+
     }
+
 
     /// <summary>
     /// for s2f14
@@ -309,6 +312,10 @@ public partial class GemRepository
     /// <returns></returns>
     public Item? GetEcValueList(IEnumerable<int> vidList)
     {
+        if (vidList.Count() == 0)
+        {
+            return GetEcValueListAll();
+        }
         lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
@@ -339,7 +346,7 @@ public partial class GemRepository
                 return Item.L(itemLst);
             }
         }
-        
+
     }
     public Item? GetEcValueListAll()
     {
@@ -353,49 +360,72 @@ public partial class GemRepository
                 return Item.L(itemArry);
             }
         }
-       
+
     }
 
     /// <summary>
-    /// for S2F29,( ECID, ECNAME, ECMIN, ECMAX, ECDEF, UNITS)
+    /// for S2F29,( ECID, ECNAME, ECMIN, ECMAX, ECDEF, UNITS), 沒有value
     /// </summary>
     /// <param name="vidList"></param>
     /// <returns></returns>
-    public Item? GetEcNameListt(IEnumerable<int> vidList)
+    public Item? GetEcDetailList(IEnumerable<int> vidList)
+    {
+        if (vidList.Count() == 0)
+        {
+            return GetEcDetailListAll();
+        }
+        lock (lockObject)
+        {
+
+            using (_context = new GemDbContext(DbFilePath))
+            {
+                var ecDetailLst = _context.Variables.Where(v=> vidList.Contains(v.VID) )
+                    //.Where(v => v.VarType == "EC") //我決定不管都給,頂多是空的
+                    .ToList().Select(v => GemEcDetailToSecsItem(v)); 
+                return L(ecDetailLst.ToArray());
+            }
+        }
+
+    }
+    public Item? GetEcDetailListAll()
     {
         lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
             {
-                //IQueryable<GemVariable?> rtnGemVar = null;
-                List<GemVariable?> rtnGemVar = new();
-                foreach (var vid in vidList)
-                {
-                    var rtnEc = _context.Variables.Where(v => v.VarType == "EC").Where(v => v.VID == vid).FirstOrDefault();
-                    //rtnGemVar = rtnGemVar == null ? rtnEc : rtnGemVar.Concat(rtnEc);
-                    //rtnGemVar =  rtnGemVar.Concat(rtnEc);
-                    rtnGemVar.Add(rtnEc); // 這樣很違反EF的原則..., 有空改成raw sql
-                }
-                //var svNameList = vidList.Select(vid =>
-                //{
-                //    return _context.Variables.Where(v => v.VarType == "EC")
-                //   .Where(v => v.VID == vid).FirstOrDefault();
-                //}); //EF 查詢到此為止
-                var rtnGemVarLst = rtnGemVar.ToList();
-                var itemLst = rtnGemVarLst.Select(v =>
-                {
-                    if (v is null)
-                    {
-                        return A();// ?
-                    }
-                    return GemVariableToSecsItem(v);
-                });
-                return Item.L(itemLst);
+                var ecLst = _context.Variables.Where(v => v.VarType == "EC");
+                var itemList = ecLst.ToList().Select(v => GemEcDetailToSecsItem(v)); // 這裡有EF的坑
+                var itemArry = itemList.ToArray();
+                return Item.L(itemArry);
             }
         }
 
     }
+    /// <summary>
+    /// 假定進來的都已經確定是EC
+    /// </summary>
+    /// <param name="variable"></param>
+    /// <returns></returns>
+    Item? GemEcDetailToSecsItem(GemVariable variable)
+    {
+        try
+        {
+            var ecid = U4( Convert.ToUInt32(variable.VID) );
+            var ecname = A(variable.Name );
+            var ecmin = A(variable.MinValue );
+            var ecmax = A(variable.MaxValue );
+            var ecdef = A(variable.Definition);
+            var ecunit = A(variable.Unit);
+            var ecDetail = L(ecid,ecname,ecmin,ecmax,ecdef,ecunit);
+            return ecDetail;
 
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.ToString());
+            return null;
+        }
+    }
     /// <summary>
     /// for app update var,  return: 1 - not found, 2 - also EC
     /// </summary>
@@ -482,7 +512,7 @@ public partial class GemRepository
                 return 3;//ListSV ?!
             }
         }
-        
+
     }
 
     #region for s2f15
@@ -516,7 +546,7 @@ public partial class GemRepository
                 return 0; //all success
             }
         }
-       
+
     }
     int SubSetVarById(GemVariable variable, (int, Item) idVal)
     {
@@ -524,10 +554,14 @@ public partial class GemRepository
         {
             if (variable.DataType != "LIST")
             {
+
                 switch (variable.DataType)
                 {
-                    //case "BINARY":
-                    //    return Item.B
+                    case "BINARY"://應該只會有1個byte?
+                        //Memory<byte> bytes = idVal.Item2.GetMemory<byte>();
+                        var BINARY = idVal.Item2.FirstValue<byte>();
+                        variable.Value = Convert.ToString((int)BINARY);
+                        break;
                     case "BOOL":
                         var BOOL = idVal.Item2.FirstValue<bool>;
                         variable.Value = BOOL.ToString();
@@ -663,7 +697,7 @@ public partial class GemRepository
                 return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
             }
         }
-        
+
     }
     public Item? GetReportByRpid(int rpid)
     {
@@ -687,7 +721,7 @@ public partial class GemRepository
 
             }
         }
-        
+
     }
     #region DynamicEventReport
     /// <summary>
@@ -740,7 +774,7 @@ public partial class GemRepository
                 return 0;
             }
         }
-        
+
     }
 
     /// <summary>
@@ -792,7 +826,7 @@ public partial class GemRepository
                 return 0;
             }
         }
-        
+
     }
     /// <summary>
     /// 0 - ok, 1 - denied
@@ -836,7 +870,7 @@ public partial class GemRepository
                 return 0;
             }
         }
-        
+
     }
     #endregion
 
