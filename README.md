@@ -19,14 +19,13 @@
 - [X] S1F13 Establish Communications Request
 - [X] S1F15 Request OFF-LINE
 - [X] S1F17 Request ON-LINE
-- [ ] S1F21 Data Variable Namelist Request
 - [X] S2F13 Equipment Constant Request
 - [X] S2F15 New Equipment Constant Send
 - [ ] S2F17 Date and Time Request
 - [ ] S2F21 Remote Command Send (RCS)
 - [x] S2F23 Trace Initialize Send
 - [X] S2F25 Loopback Diagnostic Request
-- [ ] S2F29 Equipment Constant Namelist Request
+- [X] S2F29 Equipment Constant Namelist Request
 - [ ] S2F31 Date and Time Set Request
 - [X] S2F33 Define Report
 - [X] S2F35 Link Event Report
@@ -38,9 +37,7 @@
 - [x] S5F7 List Enable Alarm Request
 - [x] S6F1  Trace Data Send
 - [X] S6F11 Event Report Send
-- [ ] S6F13 Annotated Event Report Send
 - [X] S6F15 Event Report Request
-- [ ] S6F17 Annotated Event Report Request
 - [x] S6F19 Individual Report Request
 - [ ] S7F1 Process Program Load Inquire
 - [ ] S7F3 Process Program Send
