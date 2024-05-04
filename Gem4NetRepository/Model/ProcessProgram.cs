@@ -29,7 +29,7 @@ public class ProcessProgram
     public string? EquipmentModelType { get; set; }
 }
 
-public class ProcessProgramLog
+public class ProcessProgramLog:ProcessProgram
 {
     public Guid LogId { get; set; }
     /// <summary>

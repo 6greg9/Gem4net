@@ -29,13 +29,13 @@ public class GemDbContext : DbContext
         var path = Environment.GetFolderPath(folder);
 
         //參數方式
-        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-        var configuration = builder.Build();
-        DbPath = configuration.GetConnectionString(dbFile)
-            ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+        //var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+        //var configuration = builder.Build();
+        //DbPath = configuration.GetConnectionString(dbFile)
+        //    ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
 
         //migration用的
-        //DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
+        DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
 
     }
 
@@ -50,8 +50,10 @@ public class GemDbContext : DbContext
         modelBuilder.Entity<GemReport>().HasKey(sc => sc.RPTID);
         modelBuilder.Entity<GemVariable>().HasKey(sc => sc.VID);
         modelBuilder.Entity<GemAlarm>().HasKey(sc => sc.ALID);
-        modelBuilder.Entity<ProcessProgram>().HasKey(sc => sc.PPID);
-        modelBuilder.Entity<FormattedProcessProgram>().HasKey(sc =>  sc.PPID );
+        modelBuilder.Entity<ProcessProgram>().UseTpcMappingStrategy().HasKey(sc => sc.PPID);
+        modelBuilder.Entity<ProcessProgramLog>().UseTpcMappingStrategy().ToTable("ProcessProgramLogs"); 
+        modelBuilder.Entity<FormattedProcessProgram>().UseTpcMappingStrategy().HasKey(sc =>  sc.PPID );
+        modelBuilder.Entity<FormattedProcessProgramLog>().UseTpcMappingStrategy().ToTable("FormattedProcessProgramLogs");
 
         modelBuilder.Entity<EventReportLink>().HasKey(sc => new { sc.ECID, sc.RPTID });
 

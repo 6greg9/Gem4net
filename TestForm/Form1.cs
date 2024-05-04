@@ -406,7 +406,7 @@ public partial class Form1 : Form
         pp.ID = Guid.NewGuid();
         pp.PPID = "test" + DateTime.Now.ToString("YYYYMMddhhmmss");
         pp.UpdateTime = DateTime.Now;
-        pp.Status = 1;
+        
         pp.Editor = "87";
         pp.ApprovalLevel = "-1";
         pp.Description = "sss";

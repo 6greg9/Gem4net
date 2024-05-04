@@ -3,6 +3,7 @@ using System;
 using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gem4NetRepository.Migrations
 {
     [DbContext(typeof(GemDbContext))]
-    partial class GemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240504173344_ProcessProgramLogWithNewTable")]
+    partial class ProcessProgramLogWithNewTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
@@ -66,7 +69,7 @@ namespace Gem4NetRepository.Migrations
 
                     b.ToTable("FormattedProcessPrograms");
 
-                    b.UseTpcMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.GemAlarm", b =>
@@ -240,7 +243,7 @@ namespace Gem4NetRepository.Migrations
 
                     b.ToTable("ProcessPrograms");
 
-                    b.UseTpcMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.ReportVariableLink", b =>
@@ -320,6 +323,24 @@ namespace Gem4NetRepository.Migrations
                     b.Navigation("Report");
 
                     b.Navigation("Variable");
+                });
+
+            modelBuilder.Entity("Gem4NetRepository.Model.FormattedProcessProgramLog", b =>
+                {
+                    b.HasOne("Gem4NetRepository.Model.FormattedProcessProgram", null)
+                        .WithOne()
+                        .HasForeignKey("Gem4NetRepository.Model.FormattedProcessProgramLog", "PPID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Gem4NetRepository.Model.ProcessProgramLog", b =>
+                {
+                    b.HasOne("Gem4NetRepository.Model.ProcessProgram", null)
+                        .WithOne()
+                        .HasForeignKey("Gem4NetRepository.Model.ProcessProgramLog", "PPID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.GemEvent", b =>

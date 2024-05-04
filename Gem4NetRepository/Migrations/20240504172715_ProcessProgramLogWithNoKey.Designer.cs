@@ -3,6 +3,7 @@ using System;
 using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gem4NetRepository.Migrations
 {
     [DbContext(typeof(GemDbContext))]
-    partial class GemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240504172715_ProcessProgramLogWithNoKey")]
+    partial class ProcessProgramLogWithNoKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
@@ -43,6 +46,10 @@ namespace Gem4NetRepository.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Editor")
                         .HasColumnType("TEXT");
 
@@ -66,7 +73,9 @@ namespace Gem4NetRepository.Migrations
 
                     b.ToTable("FormattedProcessPrograms");
 
-                    b.UseTpcMappingStrategy();
+                    b.HasDiscriminator<string>("Discriminator").HasValue("FormattedProcessProgram");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.GemAlarm", b =>
@@ -217,6 +226,10 @@ namespace Gem4NetRepository.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Editor")
                         .HasColumnType("TEXT");
 
@@ -240,7 +253,9 @@ namespace Gem4NetRepository.Migrations
 
                     b.ToTable("ProcessPrograms");
 
-                    b.UseTpcMappingStrategy();
+                    b.HasDiscriminator<string>("Discriminator").HasValue("ProcessProgram");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.ReportVariableLink", b =>
@@ -268,7 +283,7 @@ namespace Gem4NetRepository.Migrations
                     b.Property<int>("PPChangeStatus")
                         .HasColumnType("INTEGER");
 
-                    b.ToTable("FormattedProcessProgramLogs", (string)null);
+                    b.HasDiscriminator().HasValue("FormattedProcessProgramLog");
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.ProcessProgramLog", b =>
@@ -281,7 +296,7 @@ namespace Gem4NetRepository.Migrations
                     b.Property<int>("PPChangeStatus")
                         .HasColumnType("INTEGER");
 
-                    b.ToTable("ProcessProgramLogs", (string)null);
+                    b.HasDiscriminator().HasValue("ProcessProgramLog");
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.EventReportLink", b =>
