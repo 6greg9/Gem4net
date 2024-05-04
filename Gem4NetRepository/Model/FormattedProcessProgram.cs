@@ -19,10 +19,7 @@ public class FormattedProcessProgram
     //更多資訊, Recipe Specifier
 
     public DateTime UpdateTime { get; set; }
-    /// <summary>
-    /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
-    /// </summary>
-    public int Status { get; set; }
+    
     /// <summary>
     /// JSON !!!
     /// </summary>
@@ -33,6 +30,8 @@ public class FormattedProcessProgram
     public string? ApprovalLevel { get; set; }
     public string? SoftwareRevision { get; set; }
     public string? EquipmentModelType { get; set; }
+
+    
 }
 //public class PPBody
 //{
@@ -66,4 +65,13 @@ public class PPBodyHandler : SqlMapper.TypeHandler<List<ProcessCommand>>
     {
         parameter.Value = JsonSerializer.Serialize(value);
     }
+}
+
+public class FormattedProcessProgramLog: FormattedProcessProgram
+{
+    public Guid LogId { get; set; }
+    /// <summary>
+    /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
+    /// </summary>
+    public int PPChangeStatus { get; set; }
 }

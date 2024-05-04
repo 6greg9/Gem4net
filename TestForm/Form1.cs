@@ -93,18 +93,18 @@ public partial class Form1 : Form
                     p.Value = para.GetString();
                 }
             }
-            var rtn = _gemRepo.CreateProcessProgram(pp);
+            var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
         };
         GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {
             return 0;
             if (ppLst.Count == 0)
             {
-                _gemRepo.DeleteProcessProgramAll();
+                _gemRepo.DeleteFormattedPPAll();
             }
             else
             {
-                _gemRepo.DeleteProcessProgram(ppLst);
+                _gemRepo.DeleteFormattedProcessProgram(ppLst);
             }
 
         };
@@ -428,7 +428,7 @@ public partial class Form1 : Form
             });
         ppBody.Add(temperatureCmd);
         pp.PPBody = JsonSerializer.Serialize(ppBody);
-        _gemRepo.CreateProcessProgram(pp);
+        _gemRepo.CreateFormattedProcessProgram(pp);
     }
 
     private void Btn_SelectAllPP_Click(object sender, EventArgs e)

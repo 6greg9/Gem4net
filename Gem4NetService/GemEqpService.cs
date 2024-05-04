@@ -708,7 +708,7 @@ public partial class GemEqpService
             //S7F25 Formatted Process Program Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 25):
 
-                var fpp = _GemRepo.GetProcessProgramFormatted(msg.SecsItem.GetString()).ToList();
+                var fpp = _GemRepo.GetFormattedProcessProgram(msg.SecsItem.GetString()).ToList();
 
                 var pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First());
                 using (var rtnS7F26 = new SecsMessage(7, 26)

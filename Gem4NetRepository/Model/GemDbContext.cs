@@ -17,7 +17,9 @@ public class GemDbContext : DbContext
     public DbSet<EventReportLink> EventReportLinks { get; set; }
     public DbSet<ReportVariableLink> ReportVariableLinks { get; set; }
     public DbSet<ProcessProgram> ProcessPrograms { get; set; }
+    public DbSet<ProcessProgramLog> ProcessProgramLogs { get; set; }
     public DbSet<FormattedProcessProgram> FormattedProcessPrograms { get; set; }
+    public DbSet<FormattedProcessProgramLog> FormattedProcessProgramLogs { get; set; }
     public DbSet<GemAlarm> Alarms { get; set; }
     public string DbPath { get; private set; }
     //IConfiguration configuration { get; set; }
