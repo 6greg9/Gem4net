@@ -64,6 +64,8 @@ partial class Form1
         Tbx_TerminalInput = new RichTextBox();
         Tbx_Terminal = new RichTextBox();
         Page_ProcessProgram = new TabPage();
+        richTextBox2 = new RichTextBox();
+        Btn_DeletePP = new Button();
         Btn_InsertPP = new Button();
         Btn_SelectAllPP = new Button();
         Page_Alarm = new TabPage();
@@ -296,10 +298,10 @@ partial class Form1
         Tab_Variables.Controls.Add(Tbx_InputVid);
         Tab_Variables.Controls.Add(Lbl_VID);
         Tab_Variables.Controls.Add(Btn_UpdateEC);
-        Tab_Variables.Location = new Point(4, 45);
+        Tab_Variables.Location = new Point(4, 32);
         Tab_Variables.Margin = new Padding(5);
         Tab_Variables.Name = "Tab_Variables";
-        Tab_Variables.Size = new Size(2083, 630);
+        Tab_Variables.Size = new Size(2083, 643);
         Tab_Variables.TabIndex = 2;
         Tab_Variables.Text = "Variables";
         Tab_Variables.UseVisualStyleBackColor = true;
@@ -457,19 +459,39 @@ partial class Form1
         // 
         // Page_ProcessProgram
         // 
+        Page_ProcessProgram.Controls.Add(richTextBox2);
+        Page_ProcessProgram.Controls.Add(Btn_DeletePP);
         Page_ProcessProgram.Controls.Add(Btn_InsertPP);
         Page_ProcessProgram.Controls.Add(Btn_SelectAllPP);
-        Page_ProcessProgram.Location = new Point(4, 32);
+        Page_ProcessProgram.Location = new Point(4, 45);
         Page_ProcessProgram.Margin = new Padding(5);
         Page_ProcessProgram.Name = "Page_ProcessProgram";
-        Page_ProcessProgram.Size = new Size(2083, 643);
+        Page_ProcessProgram.Size = new Size(2083, 630);
         Page_ProcessProgram.TabIndex = 5;
         Page_ProcessProgram.Text = "ProcessProgram";
         Page_ProcessProgram.UseVisualStyleBackColor = true;
         // 
+        // richTextBox2
+        // 
+        richTextBox2.Location = new Point(224, 345);
+        richTextBox2.Name = "richTextBox2";
+        richTextBox2.Size = new Size(348, 144);
+        richTextBox2.TabIndex = 3;
+        richTextBox2.Text = "";
+        // 
+        // Btn_DeletePP
+        // 
+        Btn_DeletePP.Location = new Point(876, 419);
+        Btn_DeletePP.Name = "Btn_DeletePP";
+        Btn_DeletePP.Size = new Size(252, 65);
+        Btn_DeletePP.TabIndex = 2;
+        Btn_DeletePP.Text = "DeletePP";
+        Btn_DeletePP.UseVisualStyleBackColor = true;
+        Btn_DeletePP.Click += Btn_DeletePP_Click;
+        // 
         // Btn_InsertPP
         // 
-        Btn_InsertPP.Location = new Point(926, 275);
+        Btn_InsertPP.Location = new Point(888, 308);
         Btn_InsertPP.Margin = new Padding(5);
         Btn_InsertPP.Name = "Btn_InsertPP";
         Btn_InsertPP.Size = new Size(227, 72);
@@ -480,7 +502,7 @@ partial class Form1
         // 
         // Btn_SelectAllPP
         // 
-        Btn_SelectAllPP.Location = new Point(530, 193);
+        Btn_SelectAllPP.Location = new Point(876, 167);
         Btn_SelectAllPP.Margin = new Padding(5);
         Btn_SelectAllPP.Name = "Btn_SelectAllPP";
         Btn_SelectAllPP.Size = new Size(227, 72);
@@ -541,15 +563,11 @@ partial class Form1
         Btn_SendAlarm.UseVisualStyleBackColor = true;
         Btn_SendAlarm.Click += Btn_SendAlarm_Click;
         // 
-        // timer1
-        // 
-        
-        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(17F, 36F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(1986, 1014);
+        ClientSize = new Size(1924, 1014);
         Controls.Add(Tab_Events);
         Font = new Font("Microsoft JhengHei UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
         Margin = new Padding(5);
@@ -617,4 +635,6 @@ partial class Form1
     private TextBox Tbx_AlarmText;
     private NumericUpDown Num_AlarmId;
     private System.Windows.Forms.Timer timer1;
+    private RichTextBox richTextBox2;
+    private Button Btn_DeletePP;
 }

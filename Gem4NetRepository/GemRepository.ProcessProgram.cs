@@ -80,7 +80,7 @@ public partial class GemRepository
     {
         var ppid = A(pp.PPID);
         var ppbody = A(pp.PPBody);
-        var ppSecs = L(ppid,ppbody);
+        var ppSecs = L(ppid, ppbody);
         return ppSecs;
     }
     #endregion
@@ -95,7 +95,7 @@ public partial class GemRepository
             {
                 var cn = _context.Database.GetDbConnection();
                 var pps = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram")
-                    .Where(pp=>pp.PPID==PPID ).ToList();
+                    .Where(pp => pp.PPID == PPID).ToList();
                 return pps;
             }
         }
@@ -107,55 +107,58 @@ public partial class GemRepository
             using (_context = new GemDbContext(DbFilePath))
             {
                 var cn = _context.Database.GetDbConnection();
-                var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram")
+                var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessPrograms")
                     .ToList();
                 return PPs;
             }
         }
     }
-    public int CreateFormattedProcessProgram(FormattedProcessProgram pp)
+    public int CreateFormattedProcessProgram(FormattedProcessProgram fpp)
     {
         lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
             {
-                var cn = _context.Database.GetDbConnection();
-                
-                var row= cn.Execute("INSERT INTO FormattedProcessPrograms(ID, PPID, UpdateTime,  PPBody," +
-                    " Editor, Description, ApprovalLevel, SoftwareRevision, EquipmentModelType) " +
-                     "VALUES(@ID, @PPID, @UpdateTime, @PPBody," +
-                     " @Editor, @Description, @ApprovalLevel, @SoftwareRevision, @EquipmentModelType)", pp);
-                if (row == 1)
-                {
-                    //Create Log
-                    var fppLog = pp as FormattedProcessProgramLog;
-                    fppLog.LogId = Guid.NewGuid();
-                    fppLog.PPChangeStatus = 1;
-                   _context.FormattedProcessProgramLogs.Add(fppLog);
-                }
+                //var cn = _context.Database.GetDbConnection();
 
-                return 1;
+                //var row= cn.Execute("INSERT INTO FormattedProcessPrograms(ID, PPID, UpdateTime,  PPBody," +
+                //    " Editor, Description, ApprovalLevel, SoftwareRevision, EquipmentModelType) " +
+                //     "VALUES(@ID, @PPID, @UpdateTime, @PPBody," +
+                //     " @Editor, @Description, @ApprovalLevel, @SoftwareRevision, @EquipmentModelType)", fpp);
+                //Create Log, 要先Log再更新正在使用的表
+                var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
+                fppLog.LogId = Guid.NewGuid();
+                fppLog.PPChangeStatus = 1;
+                _context.FormattedProcessProgramLogs.Add(fppLog);
+
+                _context.FormattedProcessPrograms.Add(fpp);
+
+                _context.SaveChanges();
+                return 0;
+
             }
         }
     }
-    public int UpdateFormattedProcessProgram(FormattedProcessProgram fpp) {
+    public int UpdateFormattedProcessProgram(FormattedProcessProgram fpp)
+    {
         lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
             {
-                var id = fpp.ID;
+                var ppid = fpp.PPID;
                 var cn = _context.Database.GetDbConnection();
+                fpp.LogId = Guid.NewGuid();
                 fpp.UpdateTime = DateTime.Now;
-                var rowCount = cn.Execute("UPDATE FormattedProcessPrograms SET ID=@ID, PPID=@PPID,"+
+                var rowCount = cn.Execute("UPDATE FormattedProcessPrograms SET LogId=@LogId, PPID=@PPID," +
                     " UpdateTime=@UpdateTime, PPBody=@PPBody," +
                     " Editor=@Editor, Description=@Description, ApprovalLevel=@ApprovalLevel, SoftwareRevision=@SoftwareRevision, EquipmentModelType=@EquipmentModel"
-                     +$"WHERE ID = {id}", fpp);
+                     + $"WHERE PPID = {ppid}", fpp);
 
                 if (rowCount > 0)
                 {
                     // Edited Log
-                    var fppLog = fpp as FormattedProcessProgramLog;
-                    fppLog.UpdateTime = DateTime.Now;
+                    //var fppLog = fpp as FormattedProcessProgramLog;
+                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
                     fppLog.PPChangeStatus = 2;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
                     _context.SaveChanges();
@@ -170,20 +173,24 @@ public partial class GemRepository
     /// </summary>
     /// <param name="ppids"></param>
     /// <returns></returns>
-    public int DeleteFormattedProcessProgram(List<string> ppids) {
+    public int DeleteFormattedProcessProgram(List<string> ppids)
+    {
         lock (lockObject)
         {
             using (_context = new GemDbContext(DbFilePath))
             {
 
                 ///var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms where PPID IN @ppids", new { ppids = ppids });
-                var fpps = _context.FormattedProcessPrograms.Where(pp => ppids.Contains(pp.PPID));
+                var fpps = _context.FormattedProcessPrograms.Where(sc=>sc.GetType() != typeof(FormattedProcessProgramLog))
+                    .Where(pp => ppids.Contains(pp.PPID));
+                var test = fpps.ToList();
                 foreach (var fpp in fpps)
                 {
                     _context.FormattedProcessPrograms.Remove(fpp);
 
                     //Delete Log
-                    var fppLog = fpp as FormattedProcessProgramLog;
+                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
+                    fppLog.LogId = Guid.NewGuid();
                     fppLog.UpdateTime = DateTime.Now;
                     fppLog.PPChangeStatus = 3;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
@@ -204,19 +211,19 @@ public partial class GemRepository
                     _context.FormattedProcessPrograms.Remove(fpp);
 
                     //Delete Log
-                    var fppLog = fpp as FormattedProcessProgramLog;
+                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
                     fppLog.UpdateTime = DateTime.Now;
                     fppLog.PPChangeStatus = 3;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
                 });
-                
+
                 _context.SaveChanges();
                 return 0;
             }
         }
     }
 
-    public Item FormattedProcessProgramToSecsItem (FormattedProcessProgram fpp)
+    public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp)
     {
         var secsFpp = Item.L();
         secsFpp.Items.Append(A(fpp.PPID));
@@ -233,7 +240,7 @@ public partial class GemRepository
             {
                 var secsPara = VarStringToItem(para.DataType, para.Value);
                 return secsPara;
-                
+
             }
             secsPPcmd.Items.Append(secsParaLst);
             secsPPbody.Items.Append(secsPPcmd);

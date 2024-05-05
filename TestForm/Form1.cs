@@ -12,6 +12,7 @@ using System.Text.Json;
 using Dapper;
 using System.Data.SQLite;
 using System.Data;
+using System.Collections.Generic;
 
 namespace TestForm;
 
@@ -392,21 +393,21 @@ public partial class Form1 : Form
     private void Btn_TestSendS6F11_Click(object sender, EventArgs e)
     {
         var inputId = Convert.ToInt32(Tbx_InputECID.Text.Trim());
-        GemEquipment.SendEventReport(inputId,false);
+        GemEquipment.SendEventReport(inputId, false);
     }
 
     private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)
     {
-        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87,false);
+        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87, false);
     }
 
     private void Btn_InsertPP_Click(object sender, EventArgs e)
     {
         var pp = new FormattedProcessProgram();
-        pp.ID = Guid.NewGuid();
+        pp.LogId = Guid.NewGuid();
         pp.PPID = "test" + DateTime.Now.ToString("YYYYMMddhhmmss");
         pp.UpdateTime = DateTime.Now;
-        
+
         pp.Editor = "87";
         pp.ApprovalLevel = "-1";
         pp.Description = "sss";
@@ -429,17 +430,39 @@ public partial class Form1 : Form
         ppBody.Add(temperatureCmd);
         pp.PPBody = JsonSerializer.Serialize(ppBody);
         _gemRepo.CreateFormattedProcessProgram(pp);
+        richTextBox2.Text = pp.PPID;
     }
 
     private void Btn_SelectAllPP_Click(object sender, EventArgs e)
     {
-
+        var pps = _gemRepo.GetFormattedPPAll().Select(pp => pp).ToList();
+        var ppBody = pps.FirstOrDefault().PPBody;
+        var p = JsonSerializer.Deserialize<List<ProcessCommand>>(ppBody);
     }
+    // 父 as 子 是沒用的...
+    public class FormattedPP : FormattedProcessProgram
+    {
+        public List<ProcessCommand>? Commands { get; private set; }
+        public FormattedPP()
+        {
+            try
+            {
+                Commands = JsonSerializer.Deserialize<List<ProcessCommand>>(this.PPBody);
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.ToString());
+            }
 
+        }
+    }
     private void Btn_SendAlarm_Click(object sender, EventArgs e)
     {
         GemEquipment.SendAlarmReport(Cbx_SetAlarm.Checked ? 128 : 0, (int)Num_AlarmId.Value);
     }
 
-
+    private void Btn_DeletePP_Click(object sender, EventArgs e)
+    {
+        _gemRepo.DeleteFormattedProcessProgram(new List<string> { richTextBox2.Text });
+    }
 }

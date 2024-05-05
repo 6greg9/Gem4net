@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Linq;
@@ -28,6 +30,9 @@ public partial class GemRepository
     public string DbFilePath { get; private set; }
     int ClockVID = 10;
     int ClockFormatCode = 1;
+
+    IMapper Mapper;
+
     public GemRepository(string dbFilePath)
     {
         DbFilePath = dbFilePath;
@@ -39,8 +44,34 @@ public partial class GemRepository
             //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
 
-        //EFcore加Dapper做成撒尿牛肉丸
+        //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
         SqlMapper.AddTypeHandler(new PPBodyHandler());
+        SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
+
+        //AutoMapper
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<FormattedProcessProgram, FormattedProcessProgramLog>();
+            cfg.CreateMap<ProcessProgram, ProcessProgramLog>(); 
+        }
+        ); // 註冊Model間的對映
+        Mapper = config.CreateMapper();
+    }
+    public class SqliteGuidTypeHandler : SqlMapper.TypeHandler<Guid>
+    {
+        public override void SetValue(IDbDataParameter parameter, Guid guid)
+        {
+            parameter.Value = guid.ToString();
+        }
+
+        public override Guid Parse(object value)
+        {
+            // Dapper may pass a Guid instead of a string
+            if (value is Guid)
+                return (Guid)value;
+
+            return new Guid((string)value);
+        }
     }
     /// <summary>for s1f3,s1f4</summary>
     /// <param name="vidList"></param>

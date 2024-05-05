@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Gem4NetRepository.Model;
 public class FormattedProcessProgram
 {
-    public Guid ID { get; set; }
+    public Guid LogId { get; set; }
     /// <summary>
     /// or PPNAME ?
     /// </summary>
@@ -69,7 +69,6 @@ public class PPBodyHandler : SqlMapper.TypeHandler<List<ProcessCommand>>
 
 public class FormattedProcessProgramLog: FormattedProcessProgram
 {
-    public Guid LogId { get; set; }
     /// <summary>
     /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
     /// </summary>
