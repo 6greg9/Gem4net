@@ -3,7 +3,7 @@
   - [secs4net](https://github.com/mkjeff/secs4net)
     - HSMS, Tx TimeOut
     - S9系列
-  - SQLite + EF Core + Dapper
+  - SQLite/Postgres + EF Core + Dapper 
 
 ## 測試資料
 ### Variables
