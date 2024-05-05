@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
+using Microsoft.Extensions.Hosting;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 namespace Gem4NetRepository.Model;
 public class GemDbContext : DbContext
 {
@@ -42,7 +43,8 @@ public class GemDbContext : DbContext
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");//EF8才支持sqlite
+        => options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
+        //=> options.UseSqlite($"Data Source={DbPath}");//EF8才支持sqlite
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,9 +52,13 @@ public class GemDbContext : DbContext
         modelBuilder.Entity<GemReport>().HasKey(sc => sc.RPTID);
         modelBuilder.Entity<GemVariable>().HasKey(sc => sc.VID);
         modelBuilder.Entity<GemAlarm>().HasKey(sc => sc.ALID);
-        modelBuilder.Entity<ProcessProgram>().UseTpcMappingStrategy().HasKey(sc => sc.LogId);
-        modelBuilder.Entity<ProcessProgramLog>(); 
-        modelBuilder.Entity<FormattedProcessProgram>().UseTpcMappingStrategy().HasKey(sc =>  sc.LogId );
+        modelBuilder.Entity<ProcessProgram>().UseTpcMappingStrategy()//.HasNoKey();
+            .HasKey(sc => sc.LogId);
+            
+       
+        modelBuilder.Entity<ProcessProgramLog>();
+        modelBuilder.Entity<FormattedProcessProgram>().UseTpcMappingStrategy()//.HasNoKey();
+            .HasKey(sc =>  sc.LogId );
         modelBuilder.Entity<FormattedProcessProgramLog>();
 
         modelBuilder.Entity<EventReportLink>().HasKey(sc => new { sc.ECID, sc.RPTID });
