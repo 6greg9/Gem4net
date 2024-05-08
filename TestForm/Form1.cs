@@ -79,22 +79,14 @@ public partial class Form1 : Form
 
         GemEquipment.OnFormattedProcessProgramReceived += (formatedPP) =>
         {
-            return 0; // 要自行依照process program 結構來處理
+            //return 0; // 要自行依照process program 結構來處理
             var pp = new FormattedProcessProgram();
-            pp.PPID = formatedPP.Items[0].GetString();
-            pp.EquipmentModelType = formatedPP.Items[1].GetString();
-            pp.SoftwareRevision = formatedPP.Items[2].GetString();
-            foreach (var processCmd in formatedPP.Items[3].Items)
-            {
-                var pCmd = new ProcessCommand { CommandCode = processCmd.Items[0].GetString() };
-                var paras = processCmd.Items[1];
-                foreach (var para in paras.Items) // 這個要很注意客製
-                {
-                    var p = new ProcessParameter();
-                    p.Value = para.GetString();
-                }
-            }
+            var result=_gemRepo.PharseSecsItemToFormattedPP(formatedPP, out pp);
+            var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
+            var paraA = ppCmds.FirstOrDefault()
+                        .ProcessParameters.FirstOrDefault();
             var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
+            return rtn;
         };
         GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {

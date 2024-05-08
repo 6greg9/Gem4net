@@ -248,5 +248,31 @@ public partial class GemRepository
         secsFpp.Items.Append(secsPPbody);
         return secsFpp;
     }
+
+    public int PharseSecsItemToFormattedPP(Item secsFpp, out FormattedProcessProgram fpp)
+    {
+        fpp = new FormattedProcessProgram();
+        try
+        {
+            fpp.PPID = secsFpp.Items[0].GetString();
+            fpp.EquipmentModelType = secsFpp.Items[1].GetString();
+            fpp.SoftwareRevision = secsFpp.Items[2].GetString();
+            foreach (var processCmd in secsFpp.Items[3].Items)
+            {
+                var pCmd = new ProcessCommand { CommandCode = processCmd.Items[0].GetString() };
+                var paras = processCmd.Items[1];
+                foreach (var para in paras.Items) // 這個要很注意客製
+                {
+                    var p = new ProcessParameter();
+                    p.Value = para.GetString();
+                }
+            }
+            return 0;
+        }catch (Exception ex)
+        {
+            return 1;
+        }
+        
+    }
     #endregion
 }
