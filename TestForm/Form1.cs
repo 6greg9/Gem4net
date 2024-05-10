@@ -77,14 +77,13 @@ public partial class Form1 : Form
             return 0; // OK
         };
 
-        GemEquipment.OnFormattedProcessProgramReceived += (formatedPP) =>
+        GemEquipment.OnFormattedProcessProgramReceived += (fppSecs) =>
         {
             //return 0; // 要自行依照process program 結構來處理
             var pp = new FormattedProcessProgram();
-            var result=_gemRepo.PharseSecsItemToFormattedPP(formatedPP, out pp);
+            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs, out pp);
             var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
-            var paraA = ppCmds.FirstOrDefault()
-                        .ProcessParameters.FirstOrDefault();
+            var paraA = ppCmds.FirstOrDefault().ProcessParameters.FirstOrDefault();
             var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
             return rtn;
         };
@@ -456,5 +455,10 @@ public partial class Form1 : Form
     private void Btn_DeletePP_Click(object sender, EventArgs e)
     {
         _gemRepo.DeleteFormattedProcessProgram(new List<string> { richTextBox2.Text });
+    }
+
+    private void timer1_Tick(object sender, EventArgs e)
+    {
+
     }
 }

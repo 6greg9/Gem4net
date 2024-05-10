@@ -23,12 +23,13 @@ public class GemDbContext : DbContext
     public DbSet<FormattedProcessProgramLog> FormattedProcessProgramLogs { get; set; }
     public DbSet<GemAlarm> Alarms { get; set; }
     public string DbPath { get; private set; }
-    //IConfiguration configuration { get; set; }
-    public GemDbContext(string dbFile = "GemSqliteDb")
+    IConfiguration configuration { get; set; }
+
+    public GemDbContext(string dbFile = "GemSqliteDb", IConfiguration configuration = null)
     {
         var folder = Environment.SpecialFolder.MyDocuments;
         var path = Environment.GetFolderPath(folder);
-
+        var repoSetting = configuration?.GetSection("Folders").Get<RepositorySetting>();
         //參數方式
         //var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
         //var configuration = builder.Build();
@@ -37,7 +38,7 @@ public class GemDbContext : DbContext
 
         //migration用的
         DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
-
+        this.configuration = configuration;
     }
 
     // The following configures EF to create a Sqlite database file in the

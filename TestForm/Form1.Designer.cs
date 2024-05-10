@@ -463,10 +463,10 @@ partial class Form1
         Page_ProcessProgram.Controls.Add(Btn_DeletePP);
         Page_ProcessProgram.Controls.Add(Btn_InsertPP);
         Page_ProcessProgram.Controls.Add(Btn_SelectAllPP);
-        Page_ProcessProgram.Location = new Point(4, 45);
+        Page_ProcessProgram.Location = new Point(4, 32);
         Page_ProcessProgram.Margin = new Padding(5);
         Page_ProcessProgram.Name = "Page_ProcessProgram";
-        Page_ProcessProgram.Size = new Size(2083, 630);
+        Page_ProcessProgram.Size = new Size(2083, 643);
         Page_ProcessProgram.TabIndex = 5;
         Page_ProcessProgram.Text = "ProcessProgram";
         Page_ProcessProgram.UseVisualStyleBackColor = true;
@@ -562,6 +562,10 @@ partial class Form1
         Btn_SendAlarm.Text = "SendAlarm";
         Btn_SendAlarm.UseVisualStyleBackColor = true;
         Btn_SendAlarm.Click += Btn_SendAlarm_Click;
+        // 
+        // timer1
+        // 
+        timer1.Tick += timer1_Tick;
         // 
         // Form1
         // 
