@@ -14,7 +14,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
             }
@@ -24,7 +24,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var tempAlarm = new List<GemAlarm?>();
                 foreach (var alid in alarmIds)
@@ -39,7 +39,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 return _context.Alarms.ToList();
             }
@@ -54,7 +54,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var targetAlarm = _context.Alarms
                     .Where(alrm => alrm.ALID == alid).Take(1);
@@ -74,7 +74,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var targetAlarm = _context.Alarms
                     .Where(alrm => alrm.ALID == alid).Take(1);

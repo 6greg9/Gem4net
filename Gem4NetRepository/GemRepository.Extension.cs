@@ -19,7 +19,7 @@ public static class UseGemDbcontextExtensions
     private static SemaphoreSlim semaphore = new SemaphoreSlim(1);
     public static void GetSingleton(this GemDbContext resource, Action action)
     {
-        //using (resource = new(DbFilePath))
+        //using (resource = new(_config))
         //{
         //    semaphore.Wait(); // 嘗試進入，如果有其他執行緒已經進入，則會等待
 

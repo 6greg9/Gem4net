@@ -27,21 +27,22 @@ public partial class GemRepository
     /// </summary>
     private GemDbContext _context;
     private static object lockObject = new object();
-    public string DbFilePath { get; private set; }
+    
     int ClockVID = 10;
     int ClockFormatCode = 1;
 
     IMapper Mapper;
-
-    public GemRepository(string dbFilePath)
+    IConfiguration? _config;
+    public GemRepository(IConfiguration configaration)
     {
-        DbFilePath = dbFilePath;
-        using (_context = new GemDbContext(DbFilePath))
+        
+        _config = configaration;
+        using (_context = new GemDbContext(_config))
         {
             _ = _context.Variables.ToList();
             _ = _context.Events.ToList();
             _ = _context.Alarms.ToList();
-            //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
+            _ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
 
         //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
@@ -49,13 +50,13 @@ public partial class GemRepository
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
 
         //AutoMapper
-        var config = new MapperConfiguration(cfg =>
+        var mapperConfig = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<FormattedProcessProgram, FormattedProcessProgramLog>();
             cfg.CreateMap<ProcessProgram, ProcessProgramLog>(); 
         }
         ); // 註冊Model間的對映
-        Mapper = config.CreateMapper();
+        Mapper = mapperConfig.CreateMapper();
     }
     public class SqliteGuidTypeHandler : SqlMapper.TypeHandler<Guid>
     {
@@ -80,7 +81,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 return SubGetSvListByVidList(vidList);
             }
@@ -95,7 +96,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 return SubGetSvByVID(vid);
             }
@@ -120,7 +121,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 return SubGetEcListByVidList(vidList);
             }
@@ -137,7 +138,7 @@ public partial class GemRepository
         {
             lock (lockObject)
             {
-                using (_context = new GemDbContext(DbFilePath))
+                using (_context = new GemDbContext(_config))
                 {
                     return SubGetEcByVID(vid);
                 }
@@ -157,14 +158,14 @@ public partial class GemRepository
     }
     public Item? GetVariable(string name)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        using (_context = new GemDbContext(_config))
         {
             return SubGetVarByName(name);
         }
     }
     public Item? GetVariable(int vid)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        using (_context = new GemDbContext(_config))
         {
             return SubGetVarByVid(vid);
         }
@@ -279,7 +280,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 return SubGetVariableAll();
             }
@@ -299,7 +300,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var svNameList = vidList.Select(vid =>
                 {   //這種寫法有一天要改
@@ -326,7 +327,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var itemList = _context.Variables.Where(v => v.VarType == "SV")
                 .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
@@ -349,7 +350,7 @@ public partial class GemRepository
         }
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 //IQueryable<GemVariable?> rtnGemVar = null;
                 List<GemVariable?> rtnGemVar = new();
@@ -383,7 +384,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var ecLst = _context.Variables.Where(v => v.VarType == "EC");
                 var itemList = ecLst.ToList().Select(v => GemVariableToSecsItem(v)); // 這裡有EF的坑
@@ -408,7 +409,7 @@ public partial class GemRepository
         lock (lockObject)
         {
 
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var ecDetailLst = _context.Variables.Where(v=> vidList.Contains(v.VID) )
                     //.Where(v => v.VarType == "EC") //我決定不管都給,頂多是空的
@@ -422,7 +423,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var ecLst = _context.Variables.Where(v => v.VarType == "EC");
                 var itemList = ecLst.ToList().Select(v => GemEcDetailToSecsItem(v)); // 這裡有EF的坑
@@ -467,7 +468,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var variable = _context.Variables.FirstOrDefault(v => v.VID == vid);
                 if (variable is null)
@@ -558,7 +559,7 @@ public partial class GemRepository
         var idLst = idValLst.Select(pair => pair.Item1).ToList();
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var ECs = _context.Variables.Where(v => v.VarType == "EC");
                 if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idLst.Count)
@@ -700,7 +701,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 List<(int, Item)> rtnRptItems = new();
                 var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
@@ -734,7 +735,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var rptVarLink = _context.ReportVariableLinks.Where(rpt => rpt.RPTID == rpid);
                 if (!rptVarLink.Any())
@@ -763,7 +764,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 if (rptLst.Count() == 0)//清光, 也許應該寫在其他地方...
                 {
@@ -817,7 +818,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 if (evntRptLinks.Count() == 0)//清光, 也許應該寫在其他地方...
                 {
@@ -869,7 +870,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 if (_context.Events.Where(evnt => ecids.Contains(evnt.ECID)).Count() != ecids.Count()) //ECID有不存在
                     return 1;

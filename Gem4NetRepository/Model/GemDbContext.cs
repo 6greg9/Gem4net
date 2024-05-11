@@ -23,13 +23,13 @@ public class GemDbContext : DbContext
     public DbSet<FormattedProcessProgramLog> FormattedProcessProgramLogs { get; set; }
     public DbSet<GemAlarm> Alarms { get; set; }
     public string DbPath { get; private set; }
-    IConfiguration configuration { get; set; }
+    IConfiguration? configuration { get; set; }
 
-    public GemDbContext(string dbFile = "GemSqliteDb", IConfiguration configuration = null)
+    public GemDbContext(IConfiguration configuration = null)
     {
         var folder = Environment.SpecialFolder.MyDocuments;
         var path = Environment.GetFolderPath(folder);
-        var repoSetting = configuration?.GetSection("Folders").Get<RepositorySetting>();
+        
         //參數方式
         //var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
         //var configuration = builder.Build();
@@ -44,8 +44,29 @@ public class GemDbContext : DbContext
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
-        //=> options.UseSqlite($"Data Source={DbPath}");//EF8才支持sqlite
+    {
+        //options.UseSqlite($"Data Source = C:\\Users\\User\\Documents\\GemVariablesDb.sqlite");
+        ////options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
+        //return;
+        
+        var repoSetting = configuration?.GetSection("RepositoryOption").Get<RepositoryOption>();
+        if (repoSetting.DatabaseName == "Sqlite")
+        {
+            //options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
+            options.UseSqlite(repoSetting.ConnectionString);
+            return;
+        }
+        if (repoSetting.DatabaseName == "Postgres")
+        {
+            //options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
+            options.UseNpgsql(repoSetting.ConnectionString);
+            return;
+        }
+
+    }
+    //=> options.UseSqlite($"Data Source={DbPath}");//EF8才支持sqlite
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,11 +76,11 @@ public class GemDbContext : DbContext
         modelBuilder.Entity<GemAlarm>().HasKey(sc => sc.ALID);
         modelBuilder.Entity<ProcessProgram>().UseTpcMappingStrategy()//.HasNoKey();
             .HasKey(sc => sc.LogId);
-            
-       
+
+
         modelBuilder.Entity<ProcessProgramLog>();
         modelBuilder.Entity<FormattedProcessProgram>().UseTpcMappingStrategy()//.HasNoKey();
-            .HasKey(sc =>  sc.LogId );
+            .HasKey(sc => sc.LogId);
         modelBuilder.Entity<FormattedProcessProgramLog>();
 
         modelBuilder.Entity<EventReportLink>().HasKey(sc => new { sc.ECID, sc.RPTID });
@@ -87,7 +108,7 @@ public class GemDbContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
-        
+
         //modelBuilder.Entity<ProcessParameter>()
         //    .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });
         //modelBuilder.Entity<ProcessParameter>()
@@ -95,8 +116,8 @@ public class GemDbContext : DbContext
         //    .WithMany(sc => sc.ProcessParameters)
         //    .HasForeignKey(sc => sc.ProcessProgramId);
 
-        
-        
+
+
         //modelBuilder.Entity<FormattedProcessProgram>()
         //    .HasKey(sc => new { sc.PPID });//內部加上ComplexType標籤
     }

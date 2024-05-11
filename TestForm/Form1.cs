@@ -13,6 +13,7 @@ using Dapper;
 using System.Data.SQLite;
 using System.Data;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 namespace TestForm;
 
@@ -24,8 +25,11 @@ public partial class Form1 : Form
     {
 
         InitializeComponent();
-
-        _gemRepo = new GemRepository("GemVariablesDb.sqlite"); //盿把计琌ConnectionStrKey
+        IConfiguration configuration = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appSettings.json", false)
+        .Build();
+        _gemRepo = new GemRepository(configuration); //盿把计琌ConnectionStrKey
 
         ISecsGemLogger logger = new SecsLogger(this);
 

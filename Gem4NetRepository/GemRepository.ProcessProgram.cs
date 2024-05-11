@@ -19,7 +19,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var cn = _context.Database.GetDbConnection();
                 var pps = cn.Query<ProcessProgram>("SELECT * FROM ProcessPrograms")
@@ -30,7 +30,7 @@ public partial class GemRepository
     }
     public IEnumerable<ProcessProgram> GetProcessProgramAll()
     {
-        using (_context = new GemDbContext(DbFilePath))
+        using (_context = new GemDbContext(_config))
         {
             var cn = _context.Database.GetDbConnection();
             var PPs = cn.Query<ProcessProgram>("SELECT * FROM ProcessPrograms")
@@ -40,7 +40,7 @@ public partial class GemRepository
     }
     public int CreateProcessProgram(ProcessProgram pp)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        using (_context = new GemDbContext(_config))
         {
             var cn = _context.Database.GetDbConnection();
             cn.Execute("INSERT INTO ProcessPrograms(ID, PPID, UpdateTime, Status, PPBody," +
@@ -55,7 +55,7 @@ public partial class GemRepository
 
     public int DeleteProcessProgram(List<string> ppids)
     {
-        using (_context = new GemDbContext(DbFilePath))
+        using (_context = new GemDbContext(_config))
         {
             var cn = _context.Database.GetDbConnection();
             var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
@@ -68,7 +68,7 @@ public partial class GemRepository
     }
     public int DeletedProcessProgramAll()
     {
-        using (_context = new GemDbContext(DbFilePath))
+        using (_context = new GemDbContext(_config))
         {
             var cn = _context.Database.GetDbConnection();
             var rows = cn.Execute($"DELETE FROM ProcessPrograms ");
@@ -91,7 +91,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var cn = _context.Database.GetDbConnection();
                 var pps = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram")
@@ -104,7 +104,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var cn = _context.Database.GetDbConnection();
                 var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessPrograms")
@@ -117,7 +117,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 //var cn = _context.Database.GetDbConnection();
 
@@ -143,7 +143,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 var ppid = fpp.PPID;
                 var cn = _context.Database.GetDbConnection();
@@ -177,7 +177,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
 
                 ///var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms where PPID IN @ppids", new { ppids = ppids });
@@ -204,7 +204,7 @@ public partial class GemRepository
     {
         lock (lockObject)
         {
-            using (_context = new GemDbContext(DbFilePath))
+            using (_context = new GemDbContext(_config))
             {
                 _context.FormattedProcessPrograms.ForEachAsync(fpp =>
                 {
