@@ -32,79 +32,7 @@ public partial class Form1 : Form
         .Build();
         _gemRepo = new GemRepository(configuration); //帶入的參數是ConnectionStr的Key
 
-        ISecsGemLogger logger = new SecsLogger(this);
-
-        GemEquipment = new GemEqpService(logger, _gemRepo, new SecsGemOptions
-        {
-            IsActive = true,
-            IpAddress = "127.0.0.1",
-            Port = 5000,
-            //SocketReceiveBufferSize = 8096,
-            SocketReceiveBufferSize = 1024,
-            DeviceId = 0,
-            LinkTestInterval = 1000 * 60,
-            T6 = 5000
-        }); // 建構式就啟動惹..
-
-        GemEquipment.OnConnectStatusChanged += (status) =>
-        {
-            this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
-        };
-        GemEquipment.OnCommStateChanged += (cur, pre) =>
-        {
-            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{pre} --> {cur}\n"); ; }));
-        };
-        GemEquipment.OnControlStateChanged += (current, previous) =>
-        {
-            this.Invoke(new Action(() => { rtbx_Ctrl.AppendText($"{previous} --> {current}\n"); ; }));
-        };
-
-        GemEquipment.OnTerminalMessageReceived += (msg) =>
-        {
-            this.Invoke(new Action(() =>
-            {
-                Tbx_Terminal.AppendText(msg + "\n");
-            }));
-            return 0;
-        };
-        GemEquipment.OnRemoteCommandReceived += (remoteCmd) =>
-        {
-            var rtn = remoteCmd;
-            rtn.HCACK = 0;
-            rtn.Parameters.ForEach(p =>
-            {
-                p.CPACK = 0;
-            });
-            return rtn;
-        };
-        GemEquipment.OnEcRecieved += (ecLst) =>
-        {
-            return 0; // OK
-        };
-
-        GemEquipment.OnFormattedProcessProgramReceived += (fppSecs) =>
-        {
-            //return 0; // 要自行依照process program 結構來處理
-            var pp = new FormattedProcessProgram();
-            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs, out pp);
-            var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
-            var paraA = ppCmds.FirstOrDefault().ProcessParameters.FirstOrDefault();
-            var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
-            return rtn;
-        };
-        GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
-        {
-            return 0;
-            if (ppLst.Count == 0)
-            {
-                _gemRepo.DeleteFormattedPPAll();
-            }
-            else
-            {
-                _gemRepo.DeleteFormattedProcessProgram(ppLst);
-            }
-
-        };
+        
 
         UpdateVariables();
 
@@ -161,7 +89,11 @@ public partial class Form1 : Form
                 }
                 cnt += 1;
                 //await Task.Delay(20);
+                //Thread.Sleep(20);
+
+                SpinWait.SpinUntil(() => false, 20);
                 sw.Stop();
+                //Debug.WriteLine(sw.ElapsedMilliseconds + " ms");
                 Debug.WriteLine($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
             }
             //交易
@@ -467,5 +399,82 @@ public partial class Form1 : Form
     private void timer1_Tick(object sender, EventArgs e)
     {
 
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+        ISecsGemLogger logger = new SecsLogger(this);
+
+        GemEquipment = new GemEqpService(logger, _gemRepo, new SecsGemOptions
+        {
+            IsActive = true,
+            IpAddress = "127.0.0.1",
+            Port = 5000,
+            //SocketReceiveBufferSize = 8096,
+            SocketReceiveBufferSize = 1024,
+            DeviceId = 0,
+            LinkTestInterval = 1000 * 60,
+            T6 = 5000
+        }); // 建構式就啟動惹..
+
+        GemEquipment.OnConnectStatusChanged += (status) =>
+        {
+            this.Invoke(new Action(() => { rtbx_HSMS.AppendText($"{status}\n"); ; }));
+        };
+        GemEquipment.OnCommStateChanged += (cur, pre) =>
+        {
+            this.Invoke(new Action(() => { rtbx_Comm.AppendText($"{pre} --> {cur}\n"); ; }));
+        };
+        GemEquipment.OnControlStateChanged += (current, previous) =>
+        {
+            this.Invoke(new Action(() => { rtbx_Ctrl.AppendText($"{previous} --> {current}\n"); ; }));
+        };
+
+        GemEquipment.OnTerminalMessageReceived += (msg) =>
+        {
+            this.Invoke(new Action(() =>
+            {
+                Tbx_Terminal.AppendText(msg + "\n");
+            }));
+            return 0;
+        };
+        GemEquipment.OnRemoteCommandReceived += (remoteCmd) =>
+        {
+            var rtn = remoteCmd;
+            rtn.HCACK = 0;
+            rtn.Parameters.ForEach(p =>
+            {
+                p.CPACK = 0;
+            });
+            return rtn;
+        };
+        GemEquipment.OnEcRecieved += (ecLst) =>
+        {
+            return 0; // OK
+        };
+
+        GemEquipment.OnFormattedProcessProgramReceived += (fppSecs) =>
+        {
+            //return 0; // 要自行依照process program 結構來處理
+            var pp = new FormattedProcessProgram();
+            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs, out pp);
+            var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
+            var paraA = ppCmds.FirstOrDefault().ProcessParameters.FirstOrDefault();
+            var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
+            return rtn;
+        };
+        GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
+        {
+            return 0;
+            if (ppLst.Count == 0)
+            {
+                _gemRepo.DeleteFormattedPPAll();
+            }
+            else
+            {
+                _gemRepo.DeleteFormattedProcessProgram(ppLst);
+            }
+
+        };
     }
 }
