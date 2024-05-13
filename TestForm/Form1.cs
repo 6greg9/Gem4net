@@ -112,7 +112,7 @@ public partial class Form1 : Form
     int cnt = 0;
     public void UpdateVariables()
     {
-        //var cnStr = " Data Source= C:\\Users\\guicheng.zhang\\Documents\\GemVariablesDb.sqlite";
+        //var cnStr = " Data Source= C:\\Users\\User\\Documents\\GemVariablesDb.sqlite";
         var cnStr = $"Host=127.0.0.1:5432; Database=GemEqpDb; Username=postgres; Password=greg4253058;";
         Task.Run(async () =>
         {
@@ -140,7 +140,7 @@ public partial class Form1 : Form
                         , new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
                         , new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
                         , new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
-                        var sql = "UPDATE Variables SET Value =  CASE VID";
+                        var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
                         var inStr = "";
                         foreach (var data in datas)
                         {
@@ -148,7 +148,7 @@ public partial class Form1 : Form
                             sql += caseStr;
                             inStr += " ," + data.vid.ToString();
                         }
-                        sql += "ELSE Value END  WHERE VID IN ( " + inStr.Substring(2) + ")";//土炮
+                        sql += "ELSE \"Value\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
 
                         cn.Execute(sql);
                         //tran.Commit();

@@ -42,7 +42,7 @@ public partial class GemRepository
             _ = _context.Variables.ToList();
             _ = _context.Events.ToList();
             _ = _context.Alarms.ToList();
-            _ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
+            //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
 
         //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
