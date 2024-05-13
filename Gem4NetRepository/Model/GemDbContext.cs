@@ -27,17 +27,6 @@ public class GemDbContext : DbContext
 
     public GemDbContext(IConfiguration configuration = null)
     {
-        var folder = Environment.SpecialFolder.MyDocuments;
-        var path = Environment.GetFolderPath(folder);
-        
-        //參數方式
-        //var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-        //var configuration = builder.Build();
-        //DbPath = configuration.GetConnectionString(dbFile)
-        //    ?? System.IO.Path.Join(path, "GemVariablesDb.sqlite");
-
-        //migration用的
-        DbPath = System.IO.Path.Join(path, "GemVariablesDb.sqlite");
         this.configuration = configuration;
     }
 
@@ -49,14 +38,15 @@ public class GemDbContext : DbContext
         ////options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
         //return;
         
-        var repoSetting = configuration?.GetSection("RepositoryOption").Get<RepositoryOption>();
-        if (repoSetting.DatabaseName == "Sqlite")
+        var repoSetting = configuration?.GetSection("RepositoryOption")
+            .Get<RepositoryOption>();
+        if (repoSetting.DatabaseName.Trim().ToLower() == "sqlite")
         {
             //options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
             options.UseSqlite(repoSetting.ConnectionString);
             return;
         }
-        if (repoSetting.DatabaseName == "Postgres")
+        if (repoSetting.DatabaseName.Trim().ToLower() == "postgres")
         {
             //options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
             options.UseNpgsql(repoSetting.ConnectionString);
@@ -64,9 +54,6 @@ public class GemDbContext : DbContext
         }
 
     }
-    //=> options.UseSqlite($"Data Source={DbPath}");//EF8才支持sqlite
-
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -14,6 +14,7 @@ using System.Data.SQLite;
 using System.Data;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace TestForm;
 
@@ -111,7 +112,8 @@ public partial class Form1 : Form
     int cnt = 0;
     public void UpdateVariables()
     {
-        var cnStr = " Data Source= C:\\Users\\guicheng.zhang\\Documents\\GemVariablesDb.sqlite";
+        //var cnStr = " Data Source= C:\\Users\\guicheng.zhang\\Documents\\GemVariablesDb.sqlite";
+        var cnStr = $"Host=127.0.0.1:5432; Database=GemEqpDb; Username=postgres; Password=greg4253058;";
         Task.Run(async () =>
         {
             while (true)
@@ -121,7 +123,8 @@ public partial class Form1 : Form
                 try
                 {
 
-                    using (IDbConnection cn = new SQLiteConnection(cnStr))
+                    //using (IDbConnection cn = new SQLiteConnection(cnStr))
+                    using (IDbConnection cn = new NpgsqlConnection(cnStr))
                     {
                         //var tran = cn.BeginTransaction();
                         //string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
