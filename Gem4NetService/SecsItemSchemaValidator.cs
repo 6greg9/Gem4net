@@ -306,6 +306,25 @@ public static class SecsItemSchemaValidator
         return true;
 
     };
+    public static Func<Item?, bool> IsS2F31 = (itemRoot) =>
+    {
+    //    ECV TimeFormat controls format,
+    //    0 = A:12 YYMMDDHHMMSS,
+    //    1 = A:16 YYYYMMDDHHMMSScc,
+    //    2 = YYYY - MM - DDTHH:MM: SS.s[s] *{ Z | +hh:mm | -hh:mm}
+    //      Example: "A:16 2008121708371902"
+        if (itemRoot is null)
+            return false;
+        if (itemRoot.Format != SecsFormat.List)
+            return false;
+        foreach (var it in itemRoot.Items)
+        {
+            if (it.Format != SecsFormat.U4)
+                return false;
+        }
+        return true;
+
+    };
     public static Func<Item?, bool> IsS2F33 = (itemRoot) =>
     {
         if (itemRoot == null)

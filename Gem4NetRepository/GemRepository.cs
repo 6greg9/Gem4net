@@ -479,6 +479,7 @@ public partial class GemRepository
                     {
                         switch (variable.DataType)
                         {
+                            
                             case "BINARY":
                                 var HexString = Convert.ToHexString((byte[])updateValue);
                                 variable.Value = HexString;
@@ -593,6 +594,7 @@ public partial class GemRepository
                         //Memory<byte> bytes = idVal.Item2.GetMemory<byte>();
                         var BINARY = idVal.Item2.FirstValue<byte>();
                         variable.Value = Convert.ToString((int)BINARY);
+                        
                         break;
                     case "BOOL":
                         var BOOL = idVal.Item2.FirstValue<bool>;
