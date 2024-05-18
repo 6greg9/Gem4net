@@ -52,7 +52,12 @@
 ### Variable Item Dictionary in SEMI E5 (8.4)
 ### GEM-Defined Collection Events (9.3)
 ### App Configs
+- DefaultCommunicationState: Enable, Disable
 - CommHostEqpTrigger
+- DefaultControlState: ON_LINE, OFF_LINE
+- DefaultOffLineSubstate: EQP_OFF_LINE, ATTEMPT_ON_LINE, HOST_OFF_LINE
+- DefaultOnLineFailSubstate: EQP_OFF_LINE, HOST_OFF_LINE
+- DefaultOnLineSubState: Remote, Local
 ## ITRI-like Interface
 - [ ] Initialize: 建構式加callback?
 - [ ] Close: 外部可 Enable, Disable
