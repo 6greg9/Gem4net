@@ -1,6 +1,7 @@
 ﻿using Secs4Net;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -317,14 +318,34 @@ public static class SecsItemSchemaValidator
     //      Example: "A:16 2008121708371902"
         if (itemRoot is null)
             return false;
-        if (itemRoot.Format != SecsFormat.List)
+        if (itemRoot.Format != SecsFormat.ASCII)
             return false;
-        foreach (var it in itemRoot.Items)
+        var timeStr = itemRoot.Items[0].ToString();
+        DateTime dateTime;
+        bool isParsed = false;
+        if (timeStr.Length == 12)
         {
-            if (it.Format != SecsFormat.U4)
-                return false;
+            isParsed = DateTime.TryParseExact(timeStr, "yyMMddHHmmss",
+                                               CultureInfo.InvariantCulture,
+                                               DateTimeStyles.None,
+                                               out dateTime);
+        }else if(timeStr.Length == 14)
+        {
+            isParsed = DateTime.TryParseExact(timeStr, "yyyyMMddHHmmss",
+                                               CultureInfo.InvariantCulture,
+                                               DateTimeStyles.None,
+                                               out dateTime);
+        }else if(timeStr.Length >= 15)//YYYY-MM-DDTHH:MM:SS.s[s]*{Z|+hh:mm|-hh:mm}
+        {
+            DateTimeOffset dateTimeOffset;
+            isParsed = DateTimeOffset.TryParseExact(timeStr,
+                                                     "yyyy-MM-ddTHH:mm:ss.fffK",
+                                                     CultureInfo.InvariantCulture,
+                                                     DateTimeStyles.AssumeUniversal,
+                                                     out dateTimeOffset);
         }
-        return true;
+        
+        return isParsed;
 
     };
     public static Func<Item?, bool> IsS2F33 = (itemRoot) =>
