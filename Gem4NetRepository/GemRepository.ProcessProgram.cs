@@ -83,6 +83,24 @@ public partial class GemRepository
         var ppSecs = L(ppid, ppbody);
         return ppSecs;
     }
+
+    public int PharseSecsItemToPP(Item secsFpp, out ProcessProgram pp)
+    {
+        pp = new ProcessProgram();
+        try
+        {
+            pp.PPID = secsFpp.Items[0].GetString();
+            pp.PPBody = secsFpp.Items[1].GetString();
+            
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            return 1;
+        }
+
+    }
+
     #endregion
 
     #region Formatted
