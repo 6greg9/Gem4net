@@ -44,6 +44,8 @@ public static class SecsItemSchemaValidator
                 return IsS2F25(Msg.SecsItem);
             case (2, 29):
                 return IsS2F29(Msg.SecsItem);
+            case (2, 21):
+                return IsS2F31(Msg.SecsItem);
             case (2, 33):
                 return IsS2F33(Msg.SecsItem);
             case (2, 35):

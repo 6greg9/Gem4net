@@ -672,7 +672,32 @@ public partial class GemEqpService
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
-            //S7F17 Delete Process Program Send
+            //S7F1 Process Program Load Inquire (這是啥)
+            case SecsMessage msg when (msg.S == 7 && msg.F == 1):
+                
+                break;
+            //S7F3 Process Program Send
+            case SecsMessage msg when (msg.S == 7 && msg.F == 3):
+                var Ackc7 = OnProcessProgramReceived.Invoke(msg.SecsItem); //已經存在是要蓋過去?
+                using (var rtnS7F4 = new SecsMessage(7, 4)
+                {
+                    SecsItem = B((byte)Ackc7)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F4);
+                break;
+            //S7F5 Process Program Request
+            case SecsMessage msg when (msg.S == 7 && msg.F == 5):
+                var PPs = _GemRepo.GetProcessProgram(msg.SecsItem.GetString()).ToList();
+
+                var Pp = _GemRepo.ProcessProgramToSecsItem(PPs.First());
+                using (var rtnS7F6 = new SecsMessage(7, 6)
+                {
+                    SecsItem = Pp
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F6);
+                break;
+                
+            //S7F17 Delete Process Program Send, (這裡也要能處理unFormatted
             case SecsMessage msg when (msg.S == 7 && msg.F == 17):
                 int ackc7 = -1;
 
