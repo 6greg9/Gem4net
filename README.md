@@ -10,6 +10,7 @@
 ## Todo
 - 把SecsFormat改為和Secs4Net的enum一樣, 開始處理binary
 - GemService參數整理成Option
+- PP 要有使用中,編輯中..等等狀態, 並考慮實際的設定
 - ProcessProgram 格式還是二維比較好
 ## 已完成SECS語句
 - [x] S1F1  Are You There
