@@ -13,6 +13,7 @@
 - PP 要有使用中,編輯中..等等狀態, 並考慮實際的設定
 - ProcessProgram 格式還是二維比較好
 - 技術選型錯誤...,好像應該用Garnet+redis-om-dotnet
+- PP是應該可以獨立抽出
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
