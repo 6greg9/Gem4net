@@ -14,6 +14,7 @@
 - ProcessProgram 格式還是二維比較好
 - 技術選型錯誤...,好像應該用Garnet+redis-om-dotnet
 - PP是應該可以獨立抽出
+- ListSv還是不能用遞迴查詢，改用json
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
