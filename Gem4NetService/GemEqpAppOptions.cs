@@ -25,11 +25,11 @@ public class GemEqpAppOptions
     /// <summary>
     /// HSMS連上後, Comm是否預設Enabled
     /// </summary>
-    public bool IsCommDefaultEnabled { get; set; }
+    public int IsCommDefaultEnabled { get; set; }
     /// <summary>
     /// HOST-INITIATED(等Host的S1F13) 或 EQPIPMENT-INITIATED(主動定時S1F13)
     /// </summary>
-    public bool IsCommHostInit { get; set; }
+    public int IsCommHostInit { get; set; }
     /// <summary>
     /// EQPIPMENT-INITIATED的時候, S1F13的等待時間, 同等EstablishCommunicationsTimeout, 注意與HSMS的T3秒數大小
     /// </summary>
@@ -37,20 +37,23 @@ public class GemEqpAppOptions
     #endregion
 
     #region Control State
-    public string DefaultInitControlState { get; set; }
-    public string DefaultAfterFailOnline { get; set; }
-    public string DefaultLocalRemote { get; set; }
+    public int DefaultInitControlState { get; set; }
+    public int DefaultAfterFailOnline { get; set; }
+    public int DefaultLocalRemote { get; set; }
 
     #endregion
 
     #region W bit
-    public bool IsS5WbitUsed {  get; set; }
-    public bool IsS6WbitUsed { get; set; }
-    public bool IsS10WbitUsed { get; set; }
+    /// <summary>
+    /// 0: False, 1: True
+    /// </summary>
+    public int IsS5WbitUsed {  get; set; }
+    public int IsS6WbitUsed { get; set; }
+    public int IsS10WbitUsed { get; set; }
     #endregion
 
     #region Spool
-    public bool IsSpoolEnabled {  get; set; }
-    public bool OverWriteSpool { get; set; }
+    public int IsSpoolEnabled {  get; set; }
+    public int OverWriteSpool { get; set; }
     #endregion
 }

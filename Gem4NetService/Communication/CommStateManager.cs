@@ -47,7 +47,7 @@ internal class CommStateManager
     public void EnterCommunicationState()
     {
         //要看IsHostInit給不同Action
-        if (EqpAppOptions.IsCommHostInit == true)
+        if (Convert.ToBoolean(EqpAppOptions.IsCommHostInit) == true)
         {
             CurrentState = CommunicationState.WAIT_CR_FROM_HOST;
             return;
@@ -162,7 +162,7 @@ internal class CommStateManager
     {
         return Task.Run(() =>
         {
-            if (EqpAppOptions.IsCommHostInit == true)
+            if (Convert.ToBoolean(EqpAppOptions.IsCommHostInit) == true)
             {
                 CurrentState = CommunicationState.COMMUNICATING;
                 return 0;

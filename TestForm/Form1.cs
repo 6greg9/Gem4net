@@ -421,11 +421,11 @@ public partial class Form1 : Form
         {
             ModelType ="MDLN",
             SoftwareVersion = "1.2.3.4",
-            IsCommDefaultEnabled = true,
-            IsCommHostInit = false,
-            DefaultInitControlState = ControlState.ATTEMPT_ON_LINE.ToString(),
-            DefaultAfterFailOnline = ControlState.EQUIPMENT_OFF_LINE.ToString(),
-            DefaultLocalRemote = ControlState.LOCAL.ToString(),
+            IsCommDefaultEnabled = 1,
+            IsCommHostInit = 0,
+            DefaultInitControlState = (int)ControlState.ATTEMPT_ON_LINE,
+            DefaultAfterFailOnline = (int) ControlState.EQUIPMENT_OFF_LINE,
+            DefaultLocalRemote = (int) ControlState.LOCAL,
         });
         ;
         GemEquipment = new GemEqpService(logger, _gemRepo, secsGemOptions, gemEqpAppOptions); // 建構式就啟動惹..

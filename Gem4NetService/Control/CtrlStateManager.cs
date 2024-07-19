@@ -35,9 +35,9 @@ public class CtrlStateManager
     CancellationTokenSource CtrlStateCheckTaskCts;
     ISecsGem _secsGem;
     public GemEqpAppOptions EqpAppOptions { get; private set; }
-    public ControlState DefaultInitControlState => (ControlState)Enum.Parse(typeof(ControlState), EqpAppOptions.DefaultInitControlState);
-    public ControlState DefaultAfterFailOnline => (ControlState)Enum.Parse(typeof(ControlState), EqpAppOptions.DefaultAfterFailOnline);
-    public ControlState DefaultLocalRemote => (ControlState)Enum.Parse(typeof(ControlState), EqpAppOptions.DefaultLocalRemote);
+    public ControlState DefaultInitControlState => (ControlState)EqpAppOptions.DefaultInitControlState;
+    public ControlState DefaultAfterFailOnline => (ControlState)EqpAppOptions.DefaultAfterFailOnline;
+    public ControlState DefaultLocalRemote => (ControlState)EqpAppOptions.DefaultLocalRemote;
 
     public CtrlStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions)
     {
@@ -50,7 +50,7 @@ public class CtrlStateManager
     public void EnterControlState()
     {
         
-        CurrentState = (ControlState)Enum.Parse(typeof(ControlState) ,EqpAppOptions.DefaultInitControlState);
+        CurrentState = (ControlState)EqpAppOptions.DefaultInitControlState;
 
         CtrlStateCheckTaskCts = new();
         var token = CtrlStateCheckTaskCts.Token;
