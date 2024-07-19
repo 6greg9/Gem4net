@@ -84,10 +84,10 @@ public class TraceDataManager
     {
         var stime = () =>
         {
-            if(_gemEqpService.ClockFormatCode == 0)
+            if(_gemEqpService.EqpAppOptions.ClockFormatCode == 0)
             {
                 return DateTime.Now.ToString("yyyyMMddHHmmss");
-            }else if(_gemEqpService.ClockFormatCode == 1)
+            }else if(_gemEqpService.EqpAppOptions.ClockFormatCode == 1)
             {
                 return DateTime.Now.ToString("yyyyMMddHHmmssff");
             }

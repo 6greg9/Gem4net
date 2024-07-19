@@ -30,17 +30,19 @@ public class CtrlStateManager
     public bool IsOnLine => CurrentState is ControlState.LOCAL or ControlState.REMOTE;
     #endregion
 
-    public ControlState DefaultInitState = ControlState.EQUIPMENT_OFF_LINE;
    
-    public ControlState DefaultAfterFailOnline = ControlState.HOST_OFF_LINE;
-    public ControlState DefaultLocalRemote = ControlState.LOCAL;
     Task CtrlStateCheckTask = Task.CompletedTask;
     CancellationTokenSource CtrlStateCheckTaskCts;
     ISecsGem _secsGem;
-    public CtrlStateManager(ISecsGem secsGem)
+    public GemEqpAppOptions EqpAppOptions { get; private set; }
+    public ControlState DefaultInitControlState => (ControlState)Enum.Parse(typeof(ControlState), EqpAppOptions.DefaultInitControlState);
+    public ControlState DefaultAfterFailOnline => (ControlState)Enum.Parse(typeof(ControlState), EqpAppOptions.DefaultAfterFailOnline);
+    public ControlState DefaultLocalRemote => (ControlState)Enum.Parse(typeof(ControlState), EqpAppOptions.DefaultLocalRemote);
+
+    public CtrlStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions)
     {
         _secsGem = secsGem;
-
+        EqpAppOptions = eqpAppOptions;
     }
 
     #region StateMachine
@@ -48,7 +50,7 @@ public class CtrlStateManager
     public void EnterControlState()
     {
         
-        CurrentState = DefaultInitState;
+        CurrentState = (ControlState)Enum.Parse(typeof(ControlState) ,EqpAppOptions.DefaultInitControlState);
 
         CtrlStateCheckTaskCts = new();
         var token = CtrlStateCheckTaskCts.Token;
@@ -161,7 +163,7 @@ public class CtrlStateManager
     {
         if (CurrentState == ControlState.HOST_OFF_LINE)
         {
-            CurrentState = DefaultInitState;
+            CurrentState = DefaultInitControlState;
             return 0;
         }
         return 1;

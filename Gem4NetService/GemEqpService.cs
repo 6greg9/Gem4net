@@ -99,7 +99,7 @@ public partial class GemEqpService
 
         //狀態管理
         _commStateManager = new CommStateManager(_secsGem, EqpAppOptions);
-        _ctrlStateManager = new CtrlStateManager(_secsGem);
+        _ctrlStateManager = new CtrlStateManager(_secsGem, EqpAppOptions);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
             if (transition.currentState == CommunicationState.COMMUNICATING)
