@@ -15,6 +15,7 @@ using System.Data;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Gem4Net.Control;
 
 namespace TestForm;
 
@@ -405,7 +406,7 @@ public partial class Form1 : Form
     {
         ISecsGemLogger logger = new SecsLogger(this);
 
-        GemEquipment = new GemEqpService(logger, _gemRepo, new SecsGemOptions
+        var secsGemOptions = Options.Create(new SecsGemOptions
         {
             IsActive = true,
             IpAddress = "127.0.0.1",
@@ -415,7 +416,19 @@ public partial class Form1 : Form
             DeviceId = 0,
             LinkTestInterval = 1000 * 60,
             T6 = 5000
-        }); // 建構式就啟動惹..
+        });
+        var gemEqpAppOptions = Options.Create( new GemEqpAppOptions
+        {
+            ModelType ="MDLN",
+            SoftwareVersion = "1.2.3.4",
+            IsCommDefaultEnabled = true,
+            IsCommHostInit = false,
+            DefaultInitControlState = ControlState.ATTEMPT_ON_LINE.ToString(),
+            DefaultAfterFailOnline = ControlState.EQUIPMENT_OFF_LINE.ToString(),
+            DefaultLocalRemote = ControlState.LOCAL.ToString(),
+        });
+        ;
+        GemEquipment = new GemEqpService(logger, _gemRepo, secsGemOptions, gemEqpAppOptions); // 建構式就啟動惹..
 
         GemEquipment.OnConnectStatusChanged += (status) =>
         {

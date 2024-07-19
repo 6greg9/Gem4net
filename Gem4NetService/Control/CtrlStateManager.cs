@@ -30,9 +30,10 @@ public class CtrlStateManager
     public bool IsOnLine => CurrentState is ControlState.LOCAL or ControlState.REMOTE;
     #endregion
 
-    public ControlState DefaultOnOffLine = ControlState.EQUIPMENT_OFF_LINE;
-    public ControlState DefaultLocalRemote = ControlState.LOCAL;
+    public ControlState DefaultInitState = ControlState.EQUIPMENT_OFF_LINE;
+   
     public ControlState DefaultAfterFailOnline = ControlState.HOST_OFF_LINE;
+    public ControlState DefaultLocalRemote = ControlState.LOCAL;
     Task CtrlStateCheckTask = Task.CompletedTask;
     CancellationTokenSource CtrlStateCheckTaskCts;
     ISecsGem _secsGem;
@@ -46,7 +47,8 @@ public class CtrlStateManager
 
     public void EnterControlState()
     {
-        CurrentState = DefaultLocalRemote;
+        
+        CurrentState = DefaultInitState;
 
         CtrlStateCheckTaskCts = new();
         var token = CtrlStateCheckTaskCts.Token;
@@ -159,7 +161,7 @@ public class CtrlStateManager
     {
         if (CurrentState == ControlState.HOST_OFF_LINE)
         {
-            CurrentState = DefaultOnOffLine;
+            CurrentState = DefaultInitState;
             return 0;
         }
         return 1;

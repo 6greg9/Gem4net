@@ -16,6 +16,7 @@ using System.Security;
 namespace Gem4Net;
 public partial class GemEqpService
 {
+
     #region Events
 
     #region State Changed

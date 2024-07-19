@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 namespace Gem4Net.Communication;
 internal class CommStateManager
 {
-    bool IsHostInitial = false;
-    bool SendS1F13Disable = false;
-    string MDLD = "MDLD";
-    string SOFTREV = "SOFTREV";
-    ISecsGem _secsGem; //可能要給個介面
 
-    public CommStateManager(ISecsGem secsGem, bool isHostInit = false)
+    ISecsGem _secsGem; //可能要給個介面
+    public GemEqpAppOptions EqpAppOptions { get; private set; }
+    public CommStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions)
     {
-        IsHostInitial = isHostInit;
+        EqpAppOptions = eqpAppOptions;
         _secsGem = secsGem;
         CurrentState = CommunicationState.DISABLED;
 
@@ -50,7 +47,7 @@ internal class CommStateManager
     public void EnterCommunicationState()
     {
         //要看IsHostInit給不同Action
-        if (IsHostInitial == true)
+        if (EqpAppOptions.IsCommHostInit == true)
         {
             CurrentState = CommunicationState.WAIT_CR_FROM_HOST;
             return;
@@ -71,9 +68,13 @@ internal class CommStateManager
                 switch (CurrentState)
                 {
                     case CommunicationState.WAIT_CRA:
-                        var S1F14 = await S1F14Waiter;
+                        await Task.WhenAny(S1F14Waiter, 
+                            Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.CommDelaySecond)));
+
+
                         if (S1F14Waiter.IsCompleted)
                         {
+                            var S1F14 = S1F14Waiter.Result;
                             //格式檢查
                             //Root
                             var Root = S1F14.SecsItem;
@@ -105,13 +106,14 @@ internal class CommStateManager
 
                         break;
                     case CommunicationState.WAIT_DELAY:
-                        if (CommDelayTimerTask.IsCompleted == true)
-                        {
-                            GotoWaitCRA();
-                        }
+                        await CommDelayTimerTask;
+
+                        GotoWaitCRA();
+
                         break;
 
-                    default: break; //WAIT_CRA_FROM_HOST 之類的
+                    default:
+                        break; //WAIT_CRA_FROM_HOST 之類的
                 }
 
                 await Task.Delay(50);
@@ -121,7 +123,7 @@ internal class CommStateManager
                 //可能可以改用Func, 就不用注入_secsGem
                 using (var S1F13 = new SecsMessage(1, 13)
                 {
-                    SecsItem = Item.L(Item.A(MDLD), Item.A(SOFTREV))
+                    SecsItem = Item.L(Item.A(EqpAppOptions.ModelType), Item.A(EqpAppOptions.SoftwareVersion))
                 })
                     S1F14Waiter = _secsGem.SendAsync(S1F13); //在while外部
                 CurrentState = CommunicationState.WAIT_CRA;
@@ -129,7 +131,7 @@ internal class CommStateManager
             void GotoWaitDelay()
             {
                 CommStateCheckTaskCts = new CancellationTokenSource();
-                CommDelayTimerTask = Task.Delay(1000, CommStateCheckTaskCts.Token);// Tooxx?
+                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.CommDelaySecond), CommStateCheckTaskCts.Token);// Tooxx?
                 CurrentState = CommunicationState.WAIT_DELAY;
             }
         });
@@ -149,7 +151,7 @@ internal class CommStateManager
     /// <returns></returns>
     public Task<int> HandleS1F13(Item secsItem)
     {
-        if(CurrentState== CommunicationState.WAIT_CR_FROM_HOST)
+        if (CurrentState == CommunicationState.WAIT_CR_FROM_HOST)
         {
             CurrentState = CommunicationState.COMMUNICATING;
             return Task.FromResult(0);
@@ -160,7 +162,7 @@ internal class CommStateManager
     {
         return Task.Run(() =>
         {
-            if (IsHostInitial == true)
+            if (EqpAppOptions.IsCommHostInit == true)
             {
                 CurrentState = CommunicationState.COMMUNICATING;
                 return 0;

@@ -22,13 +22,9 @@ public partial class GemEqpService
     private HsmsConnection? _connector;
     private CancellationTokenSource _hsmsCancellationTokenSource = new();
     public SecsGemOptions GemOptions { get; private set; }
-
+    public GemEqpAppOptions EqpAppOptions { get; private set; }
     //之後要加GemServiceOptions
-    public string MDLN { get; private set; } = "MDLN";//機台型號
-    public string SOFTREV { get; private set; } = "SOFTREV";//軟體版本
-    public bool IsCommHostInit { get; private set; }
-    public int ClockFormatCode { get; private set; } = 1;
-
+    
     private readonly ISecsGemLogger _logger;
     private readonly Channel<PrimaryMessageWrapper> RecvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
         new UnboundedChannelOptions()
@@ -48,16 +44,16 @@ public partial class GemEqpService
 
     private GemRepository _GemRepo;
 
-    public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty, SecsGemOptions secsGemOptions, bool isCommHostInit = false)
+    public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty,
+        IOptions<SecsGemOptions> secsGemOptions, IOptions<GemEqpAppOptions> gemEqpAppOptions)
     {
         _logger = logger;
-        GemOptions = secsGemOptions;
-        IsCommHostInit = isCommHostInit;
+        GemOptions = secsGemOptions.Value;
+        EqpAppOptions = gemEqpAppOptions.Value;
         _GemRepo = gemReposiroty;
 
         // ef core 第一次使用會花費很長時間
-        MDLN = "MDLN";
-        SOFTREV = "SOFTREV";
+        
 
         Enable();
 
@@ -102,7 +98,7 @@ public partial class GemEqpService
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
-        _commStateManager = new CommStateManager(_secsGem, IsCommHostInit);
+        _commStateManager = new CommStateManager(_secsGem, EqpAppOptions);
         _ctrlStateManager = new CtrlStateManager(_secsGem);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
@@ -419,9 +415,9 @@ public partial class GemEqpService
             //S2F17 Date and Time Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 17):
                 Item Clock;
-                if (ClockFormatCode == 0)
+                if (EqpAppOptions.ClockFormatCode == 0)
                     Clock = A(DateTime.Now.ToString("yyMMddHHmmss"));
-                else if (ClockFormatCode == 1)
+                else if (EqpAppOptions.ClockFormatCode == 1)
                     Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
                 else
                     Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
