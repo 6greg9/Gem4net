@@ -18,19 +18,17 @@
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
-- [ ] S1F5  Formatted Status Request (FSR)
 - [x] S1F11 Status Variable Namelist Request
 - [X] S1F13 Establish Communications Request
 - [X] S1F15 Request OFF-LINE
 - [X] S1F17 Request ON-LINE
 - [X] S2F13 Equipment Constant Request
 - [X] S2F15 New Equipment Constant Send
-- [ ] S2F17 Date and Time Request
-- [ ] S2F21 Remote Command Send (RCS)
+- [X] S2F17 Date and Time Request
 - [x] S2F23 Trace Initialize Send
 - [X] S2F25 Loopback Diagnostic Request
 - [X] S2F29 Equipment Constant Namelist Request
-- [ ] S2F31 Date and Time Set Request
+- [X] S2F31 Date and Time Set Request
 - [X] S2F33 Define Report
 - [X] S2F35 Link Event Report
 - [X] S2F37 Enable/Disable Event Report
