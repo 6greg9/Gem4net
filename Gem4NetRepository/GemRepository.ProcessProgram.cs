@@ -2,17 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using static Secs4Net.Item;
-using SQLitePCL;
-using static System.Net.WebRequestMethods;
+
 namespace Gem4NetRepository;
-public partial class GemRepository
+
+public partial class GemRepository // 這部分應該是可以獨立
 {
     #region No Format
     public IEnumerable<ProcessProgram> GetProcessProgram(string PPID)
@@ -241,7 +240,6 @@ public partial class GemRepository
         }
     }
     
-
     public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp)
     {
         var secsFpp = Item.L();

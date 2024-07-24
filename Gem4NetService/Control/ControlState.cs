@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Gem4Net.Control;
 public enum ControlState
 {
-    EQUIPMENT_OFF_LINE,
+    EQUIPMENT_OFF_LINE=1,
     HOST_OFF_LINE,
     ATTEMPT_ON_LINE,
     LOCAL,

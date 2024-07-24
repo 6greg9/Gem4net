@@ -419,6 +419,9 @@ public partial class GemEqpService
                     Clock = A(DateTime.Now.ToString("yyMMddHHmmss"));
                 else if (EqpAppOptions.ClockFormatCode == 1)
                     Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+                else if(EqpAppOptions.ClockFormatCode == 2)//SEMI E148 ?
+                    Clock = A(DateTime.Now.ToString("yyyy-MM-dd")+"T"+ 
+                        DateTime.Now.ToString("HH:mm:ss.ffff"));
                 else
                     Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
 

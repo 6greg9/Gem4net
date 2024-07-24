@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 namespace Gem4NetRepository.Model;
 public class GemDbContext : DbContext
@@ -38,20 +37,10 @@ public class GemDbContext : DbContext
         ////options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
         //return;
         
-        var repoSetting = configuration?.GetSection("RepositoryOption")
-            .Get<RepositoryOption>();
-        if (repoSetting.DatabaseName.Trim().ToLower() == "sqlite")
-        {
-            //options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
-            options.UseSqlite(repoSetting.ConnectionString);
-            return;
-        }
-        if (repoSetting.DatabaseName.Trim().ToLower() == "postgres")
-        {
-            //options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
-            options.UseNpgsql(repoSetting.ConnectionString);
-            return;
-        }
+        var connectStr = configuration?.GetConnectionString("Npgsql") ?? string.Empty;  
+        options.UseNpgsql(connectStr );
+        return;
+
 
     }
 

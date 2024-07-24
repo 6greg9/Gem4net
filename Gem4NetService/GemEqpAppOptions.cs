@@ -20,6 +20,7 @@ public class GemEqpAppOptions
     /// for TIME, ECV TimeFormat controls format, 0=A:12 YYMMDDHHMMSS, 1=A:16 YYYYMMDDHHMMSScc,2=YYYY-MM-DDTHH:MM:SS.s[s]*{Z|+hh:mm|-hh:mm}     
     /// </summary>
     public int ClockFormatCode { get; set; }
+    public int ClockVID { get; set; }
 
     #region Communication State
     /// <summary>

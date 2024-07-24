@@ -30,7 +30,6 @@ public partial class GemRepository
     private GemDbContext _context;
     private static object lockObject = new object();
     
-    int ClockVID = 10;
     int ClockFormatCode = 1;
 
     IMapper Mapper;
@@ -108,8 +107,8 @@ public partial class GemRepository
     Item? SubGetSvByVID(int vid)
     {
         // Clock, 是要用Name還是Vid找
-        if (vid == ClockVID)
-            return SubGetClock(ClockFormatCode);
+        if (vid == Convert.ToInt32(_config["ClockVID"]))
+            return SubGetClock(Convert.ToInt32(_config["ClockFormatCode"]));
 
         var Variable = _context.Variables
             .Where(v => v.VarType == "SV")
@@ -512,28 +511,32 @@ public partial class GemRepository
                                 variable.Value = UINT_8.ToString();
                                 break;
                             case "INT_1":
-                                var INT_1 = Convert.ToSByte(variable.Value);
+                                var INT_1 = Convert.ToSByte(updateValue);
                                 variable.Value = INT_1.ToString();
                                 break;
                             case "INT_2":
-                                var INT_2 = Convert.ToInt16(variable.Value);
+                                var INT_2 = Convert.ToInt16(updateValue);
                                 variable.Value = INT_2.ToString();
                                 break;
                             case "INT_4":
-                                var INT_4 = Convert.ToInt32(variable.Value);
+                                var INT_4 = Convert.ToInt32(updateValue);
                                 variable.Value = INT_4.ToString();
                                 break;
                             case "INT_8":
-                                var INT_8 = Convert.ToInt64(variable.Value);
+                                var INT_8 = Convert.ToInt64(updateValue);
                                 variable.Value = INT_8.ToString();
                                 break;
                             case "FLOAT_4":
-                                var FLOAT_4 = Convert.ToSingle(variable.Value);
+                                var FLOAT_4 = Convert.ToSingle(updateValue);
                                 variable.Value = FLOAT_4.ToString();
                                 break;
                             case "FLOAT_8":
-                                var FLOAT_8 = Convert.ToDouble(variable.Value);
+                                var FLOAT_8 = Convert.ToDouble(updateValue);
                                 variable.Value = FLOAT_8.ToString();
+                                break;
+                            case "LIST":
+                                var LIST = updateValue as Item;
+                                variable.Value = LIST.ToJson();
                                 break;
                             default:
                                 return 2;
