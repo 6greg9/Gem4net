@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Secs4Net" Version="2.2.1" />
-    <PackageReference Include="Secs4Net.Sml" Version="2.2.1" />
+    <PackageReference Include="Secs4Net" Version="2.4.3" />
+    <PackageReference Include="Secs4Net.Json" Version="2.4.2" />
+    <PackageReference Include="Secs4Net.Sml" Version="2.4.3" />
   </ItemGroup>
 
   <ItemGroup>

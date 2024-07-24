@@ -16,8 +16,10 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Secs4Net.Json;
 using static Secs4Net.Item;
 namespace Gem4NetRepository;
 public partial class GemRepository
@@ -203,20 +205,18 @@ public partial class GemRepository
     {
         try
         {
-            if (variable.DataType != "LIST")
-            {
-
-                return VarStringToItem(variable.DataType, variable.Value);
-
-            }
-            else
-            {
-                var subItem = _context.Variables.Where(v => v.VarType == "SV").Where(v => v.ListSVID == variable.VID).ToList();
-                return Item.L(subItem.Select(v =>
-                {
-                    return v.DataType == "LIST" ? GetSv(v.VID) : GemVariableToSecsItem(v);
-                }).ToArray());
-            }
+            return VarStringToItem(variable.DataType, variable.Value);
+            //if (variable.DataType != "LIST")
+            //{
+            //}
+            //else
+            //{
+            //    var subItem = _context.Variables.Where(v => v.VarType == "SV").Where(v => v.ListSVID == variable.VID).ToList();
+            //    return Item.L(subItem.Select(v =>
+            //    {
+            //        return v.DataType == "LIST" ? GetSv(v.VID) : GemVariableToSecsItem(v);
+            //    }).ToArray());
+            //}
 
         }
         catch (Exception ex)
@@ -268,6 +268,9 @@ public partial class GemRepository
             case "FLOAT_8":
                 var FLOAT_8 = Convert.ToDouble(varStr);
                 return Item.F8(FLOAT_8);
+            case "LIST":
+                var LIST = JsonDocument.Parse(varStr).RootElement;
+                return LIST.ToItem();
             default:
                 return Item.J(); // !?
         }

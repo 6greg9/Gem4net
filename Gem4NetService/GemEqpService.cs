@@ -135,7 +135,7 @@ public partial class GemEqpService
 
 
         _connector.LinkTestEnabled = false;//想解決莫名斷線
-        _ = _connector.StartAsync(_hsmsCancellationTokenSource.Token); // HSMS, 啟動
+        _connector.Start(_hsmsCancellationTokenSource.Token); // HSMS, 啟動
 
         try
         {

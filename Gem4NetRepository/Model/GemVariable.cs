@@ -27,7 +27,7 @@ public class GemVariable
     public string?  MinValue { get; set; }
     public string?  MaxValue { get; set; }
     public string?  DefaultValue { get; set; } 
-    public int? ListSVID { get; set; } //在屬於的ListSV底下
+    //public int? ListSVID { get; set; } //在屬於的ListSV底下
     //public DateTime Version { get; set; }
     public IList<ReportVariableLink> ReportVariables { get; set; }
 }
