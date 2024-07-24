@@ -486,6 +486,17 @@ public partial class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS2F29);
                 break;
+            //S2F31 Date and Time Set Request
+            case SecsMessage msg when (msg.S == 2 && msg.F == 31):
+                var reqTime = msg.SecsItem[0].ToString();
+                var tiack = OnDateTimeSetRequest?.Invoke(reqTime) ?? 0;
+                using (var rtnS2F32 = new SecsMessage(2, 30)
+                {
+                    SecsItem = B((byte)tiack)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS2F32);
+                break;
+
             //S2F33 Define Report
             case SecsMessage msg when (msg.S == 2 && msg.F == 33):
                 var reportDefines = msg.SecsItem[1].Items.Select((secsItem) =>

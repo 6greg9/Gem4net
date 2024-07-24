@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Gem4Net.Control;
 using Gem4NetRepository.Model;
 using System.Security;
+using System.Collections.Generic;
 
 namespace Gem4Net;
 public partial class GemEqpService
@@ -55,14 +56,19 @@ public partial class GemEqpService
     /// 0 - Accepted, 1 - Permission not granted, 2 - length error, 3 - matrix overflow
     /// 4 - PPID not found, 5 - unsupported mode, 6 - initiated for asynchronous completion, 7 - storage limit error
     /// </summary>
-    public event Func<List<string>, int> OnProcessProgramDeleteReq;
-    
+    public event Func<List<string>, int>? OnProcessProgramDeleteReq;
+    /// <summary>
+    /// 0 - ok, 1 - not done
+    /// </summary>
+    public event Func<string, int>? OnDateTimeSetRequest;
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;
 
     #endregion
 
     #endregion
+
+    #region fot App
 
     #region Query States
     public ISecsGem? GetSecsWrapper     // 不在ON-LINE沒有辦法使用
@@ -233,4 +239,5 @@ public partial class GemEqpService
 
     #endregion
 
+    #endregion
 }
