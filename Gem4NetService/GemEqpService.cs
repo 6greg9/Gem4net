@@ -490,7 +490,7 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 2 && msg.F == 31):
                 var reqTime = msg.SecsItem[0].ToString();
                 var tiack = OnDateTimeSetRequest?.Invoke(reqTime) ?? 0;
-                using (var rtnS2F32 = new SecsMessage(2, 30)
+                using (var rtnS2F32 = new SecsMessage(2, 32)
                 {
                     SecsItem = B((byte)tiack)
                 })
@@ -549,7 +549,8 @@ public partial class GemEqpService
                         new CommandParameter { CPACK = -1, Name = par[0].ToString(), Value = par[1] });
                 }
 
-                var cmdResult = OnRemoteCommandReceived.Invoke(RemoteCmd);//交給應用程式惹
+                var cmdResult = OnRemoteCommandReceived?.Invoke(RemoteCmd)  
+                    ?? new RemoteCommand{ HCACK=1};//交給應用程式惹
                 var rtnSecsItem = msg.SecsItem;
                 rtnSecsItem.Items[0] = B((byte)cmdResult.HCACK);
 
@@ -684,11 +685,16 @@ public partial class GemEqpService
         {
             //S7F1 Process Program Load Inquire (這是啥)
             case SecsMessage msg when (msg.S == 7 && msg.F == 1):
-                
+                var ppgnt = OnPPLoadInquire?.Invoke(msg.SecsItem) ?? 6; //已經存在是要蓋過去?
+                using (var rtnS7F2 = new SecsMessage(7, 2)
+                {
+                    SecsItem = B((byte)ppgnt)
+                })
+                    await primaryMsgWrapper.TryReplyAsync(rtnS7F2);
                 break;
             //S7F3 Process Program Send
             case SecsMessage msg when (msg.S == 7 && msg.F == 3):
-                var Ackc7 = OnProcessProgramReceived.Invoke(msg.SecsItem); //已經存在是要蓋過去?
+                var Ackc7 = OnProcessProgramReceived?.Invoke(msg.SecsItem) ?? 8; //已經存在是要蓋過去?
                 using (var rtnS7F4 = new SecsMessage(7, 4)
                 {
                     SecsItem = B((byte)Ackc7)

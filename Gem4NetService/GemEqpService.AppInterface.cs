@@ -18,7 +18,6 @@ namespace Gem4Net;
 public partial class GemEqpService
 {
 
-    #region Events
 
     #region State Changed
     /// <summary> Connecting,Connected, Selected, Retry,</summary>
@@ -61,14 +60,16 @@ public partial class GemEqpService
     /// 0 - ok, 1 - not done
     /// </summary>
     public event Func<string, int>? OnDateTimeSetRequest;
+
+    /// <summary>
+    /// 0 - Ok, 1 - already have, 2 - no space, 3 - invalid PPID, 4 - busy, try later, 5 - will not accept, 6 - other error
+    /// </summary>
+    public event Func<Item,int>? OnPPLoadInquire;
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;
 
     #endregion
 
-    #endregion
-
-    #region fot App
 
     #region Query States
     public ISecsGem? GetSecsWrapper     // 不在ON-LINE沒有辦法使用
@@ -239,5 +240,4 @@ public partial class GemEqpService
 
     #endregion
 
-    #endregion
 }
