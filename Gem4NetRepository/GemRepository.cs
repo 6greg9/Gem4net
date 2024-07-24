@@ -197,8 +197,10 @@ public partial class GemRepository
         if (timeFormatcode == 1)
             return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
         if (timeFormatcode == 2)
-            return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+            return A(DateTime.UtcNow.ToString("yyyy-MM-dd") + "T" +  //UTC
+                DateTime.UtcNow.ToString("HH:mm:ss.fff") + "Z");
         return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+
     }
     Item? GemVariableToSecsItem(GemVariable variable)
     {

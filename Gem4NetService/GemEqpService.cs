@@ -420,8 +420,8 @@ public partial class GemEqpService
                 else if (EqpAppOptions.ClockFormatCode == 1)
                     Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
                 else if(EqpAppOptions.ClockFormatCode == 2)//SEMI E148 ?
-                    Clock = A(DateTime.Now.ToString("yyyy-MM-dd")+"T"+ 
-                        DateTime.Now.ToString("HH:mm:ss.ffff"));
+                    Clock = A(DateTime.UtcNow.ToString("yyyy-MM-dd")+"T"+  //UTC
+                        DateTime.UtcNow.ToString("HH:mm:ss.fff")+"Z");
                 else
                     Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
 
@@ -499,7 +499,7 @@ public partial class GemEqpService
 
             //S2F33 Define Report
             case SecsMessage msg when (msg.S == 2 && msg.F == 33):
-                var reportDefines = msg.SecsItem[1].Items.Select((secsItem) =>
+                var reportDefines = msg.SecsItem?[1].Items.Select((secsItem) =>
                 {
                     var rptId = secsItem[0].FirstValue<int>();
                     var vids = secsItem[1].Items.Select(i => i.FirstValue<int>()).ToArray();
