@@ -5,28 +5,33 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Gem4NetRepository.Migrations
 {
     [DbContext(typeof(GemDbContext))]
-    [Migration("20240511155350_UpdateSqliteee")]
-    partial class UpdateSqliteee
+    [Migration("20240727141950_CancelAlarmStateVidd")]
+    partial class CancelAlarmStateVidd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Gem4NetRepository.Model.EventReportLink", b =>
                 {
                     b.Property<int>("ECID")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("RPTID")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("ECID", "RPTID");
 
@@ -39,33 +44,33 @@ namespace Gem4NetRepository.Migrations
                 {
                     b.Property<Guid>("LogId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ApprovalLevel")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Editor")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("EquipmentModelType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PPBody")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PPID")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("SoftwareRevision")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("LogId");
 
@@ -78,29 +83,25 @@ namespace Gem4NetRepository.Migrations
                 {
                     b.Property<int>("ALID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ALID"));
 
                     b.Property<int>("ALCD")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("ALED")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ALTX")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("AlarmEnableVid")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("AlarmStateVid")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("text");
 
                     b.Property<bool>("DefaultAlarmEnable")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
-                    b.Property<bool>("DefaultAlarmState")
-                        .HasColumnType("INTEGER");
+                    b.Property<int>("DefaultAlarmState")
+                        .HasColumnType("integer");
 
                     b.HasKey("ALID");
 
@@ -111,29 +112,31 @@ namespace Gem4NetRepository.Migrations
                 {
                     b.Property<int>("ECID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ECID"));
 
                     b.Property<int?>("DATAID")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Definition")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("EnabledVid")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Trigger")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("ECID");
 
@@ -144,13 +147,15 @@ namespace Gem4NetRepository.Migrations
                 {
                     b.Property<int>("RPTID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RPTID"));
 
                     b.Property<string>("Definition")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("RPTID");
 
@@ -161,50 +166,49 @@ namespace Gem4NetRepository.Migrations
                 {
                     b.Property<int>("VID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VID"));
 
                     b.Property<string>("DataType")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("DefaultValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Definition")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int?>("Length")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ListSVID")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("MaxValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("MinValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("System")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Unit")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("VarType")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("VID");
 
@@ -215,33 +219,33 @@ namespace Gem4NetRepository.Migrations
                 {
                     b.Property<Guid>("LogId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ApprovalLevel")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Editor")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("EquipmentModelType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PPBody")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PPID")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("SoftwareRevision")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("LogId");
 
@@ -253,10 +257,10 @@ namespace Gem4NetRepository.Migrations
             modelBuilder.Entity("Gem4NetRepository.Model.ReportVariableLink", b =>
                 {
                     b.Property<int>("VID")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("RPTID")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("VID", "RPTID");
 
@@ -270,7 +274,7 @@ namespace Gem4NetRepository.Migrations
                     b.HasBaseType("Gem4NetRepository.Model.FormattedProcessProgram");
 
                     b.Property<int>("PPChangeStatus")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.ToTable("FormattedProcessProgramLogs");
                 });
@@ -280,7 +284,7 @@ namespace Gem4NetRepository.Migrations
                     b.HasBaseType("Gem4NetRepository.Model.ProcessProgram");
 
                     b.Property<int>("PPChangeStatus")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.ToTable("ProcessProgramLogs");
                 });

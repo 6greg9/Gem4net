@@ -34,12 +34,12 @@ public class GemDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         //options.UseSqlite($"Data Source = C:\\Users\\User\\Documents\\GemVariablesDb.sqlite");
-        ////options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true");
-        //return;
-        
-        var connectStr = configuration?.GetConnectionString("Npgsql") ?? string.Empty;  
-        options.UseNpgsql(connectStr );
+        options.UseNpgsql($"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg3058;Trust Server Certificate=true");
         return;
+
+        //var connectStr = configuration?.GetConnectionString("Npgsql") ?? string.Empty;  
+        //options.UseNpgsql(connectStr );
+        //return;
 
 
     }

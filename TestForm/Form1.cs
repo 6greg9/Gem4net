@@ -42,7 +42,7 @@ public partial class Form1 : Form
     public void UpdateVariables()
     {
         //var cnStr = " Data Source= C:\\Users\\User\\Documents\\GemVariablesDb.sqlite";
-        var cnStr = $"Host=127.0.0.1:5432; Database=GemEqpDb; Username=postgres; Password=greg4253058;";
+        var cnStr = $"Host=127.0.0.1:5432; Database=GemEqpDb; Username=postgres; Password=greg3058;";
         Task.Run(async () =>
         {
             while (true)

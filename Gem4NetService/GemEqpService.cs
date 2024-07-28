@@ -191,8 +191,8 @@ public partial class GemEqpService
                     SecsItem = L(
                         B(0),
                         L(
-                            A("MDLN"),
-                            A("SOFTREV")
+                            A(EqpAppOptions.ModelType),
+                            A(EqpAppOptions.SoftwareVersion)
                             ))
                 })
                 {
@@ -718,7 +718,7 @@ public partial class GemEqpService
                 int ackc7 = -1;
 
                 var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
-                ackc7 = OnProcessProgramDeleteReq.Invoke(ppids);
+                ackc7 = OnProcessProgramDeleteReq?.Invoke(ppids) ?? 8;
                 
 
                 using (var rtnS7F18 = new SecsMessage(7, 18)
@@ -729,6 +729,7 @@ public partial class GemEqpService
                 break;
             //S7F19 Current Process Program Dir Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 19):
+                // 這種做法是強制使用資料庫, 應該要可以使用其他方式
                 var ppArry = _GemRepo.GetFormattedPPAll().Select(pp => A(pp.PPID)).ToArray();
                 var itemS7F20 = L(ppArry);
                 using (var rtnS7F20 = new SecsMessage(7, 20)
@@ -739,7 +740,7 @@ public partial class GemEqpService
                 break;
             //S7F23 Formatted Process Program Send
             case SecsMessage msg when (msg.S == 7 && msg.F == 23):
-                var ACKC7 = OnFormattedProcessProgramReceived.Invoke(msg.SecsItem); //已經存在是要蓋過去?
+                var ACKC7 = OnFormattedProcessProgramReceived?.Invoke(msg.SecsItem) ?? 8; //已經存在是要蓋過去?
                 using (var rtnS7F24 = new SecsMessage(7, 24)
                 {
                     SecsItem = B((byte)ACKC7)

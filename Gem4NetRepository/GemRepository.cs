@@ -889,10 +889,10 @@ public partial class GemRepository
                     foreach (var evnt in _context.Events)
                     {
                         evnt.Enabled = isEnable;
-                        if (evnt.EnabledVid != null)
-                        {
-                            SetVarValue((int)evnt.EnabledVid, isEnable);
-                        }
+                        //if (evnt.EnabledVid != null)
+                        //{
+                        //    SetVarValue((int)evnt.EnabledVid, isEnable);
+                        //}
                     }
                 }
                 else
@@ -901,10 +901,10 @@ public partial class GemRepository
                     {
                         evnt.Enabled = isEnable;
                         //另外還要把對應SV改變
-                        if (evnt.EnabledVid != null)
-                        {
-                            SetVarValue((int)evnt.EnabledVid, isEnable);
-                        }
+                        //if (evnt.EnabledVid != null)
+                        //{
+                        //    SetVarValue((int)evnt.EnabledVid, isEnable);
+                        //}
                     }
                 }
 
