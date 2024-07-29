@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestForm", "TestForm\TestFo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolForm", "ToolForm\ToolForm.csproj", "{C812ABAA-432A-478C-9596-0C4F4D357DF6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "方案項目", "方案項目", "{06BD8A3B-868F-4C93-B9DB-D18A5862E2D3}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\Videos\aaaa.sql = ..\..\..\..\Videos\aaaa.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
