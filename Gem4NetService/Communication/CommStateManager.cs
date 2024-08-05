@@ -130,8 +130,9 @@ internal class CommStateManager
             }
             void GotoWaitDelay()
             {
-                CommStateCheckTaskCts = new CancellationTokenSource();
-                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.CommDelaySecond), CommStateCheckTaskCts.Token);// Tooxx?
+                CommDelayTimerTaskCts?.Cancel();
+                CommDelayTimerTaskCts = new CancellationTokenSource();
+                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.CommDelaySecond), CommDelayTimerTaskCts.Token);// Tooxx?
                 CurrentState = CommunicationState.WAIT_DELAY;
             }
         });
