@@ -8,6 +8,8 @@ using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using static Secs4Net.Item;
+using System.Text.Json;
+using Secs4Net.Json;
 
 namespace Gem4NetRepository;
 
@@ -255,7 +257,7 @@ public partial class GemRepository // 這部分應該是可以獨立
             var secsParaLst = Item.L();
             foreach (var para in processCmd.ProcessParameters)
             {
-                var secsPara = VarStringToItem(para.DataType, para.Value);
+                var secsPara = JsonDocument.Parse(para.Value).RootElement.ToItem();// VarStringToItem(para.DataType, para.Value);
                 return secsPara;
 
             }
