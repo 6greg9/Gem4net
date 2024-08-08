@@ -57,18 +57,32 @@ public partial class Form1 : Form
                     {
                         //var tran = cn.BeginTransaction();
                         //string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
+
+                        ////刪除多筆參數
+                        //var datas = new[]{
+                        //  new { vid = "1001", value = Item.F4((float)(cnt * 0.1)).ToJson() }  //};
+                        //, new { vid = "1002", value = Item.F4((float)(cnt * 0.2)).ToJson() }
+                        //, new { vid = "1003", value = Item.F4((float)(cnt * 0.3)).ToJson() }//};
+                        //, new { vid = "1004", value = Item.F4((float)(cnt * 0.4)).ToJson() }
+                        //, new { vid = "1005", value = Item.F4((float)(cnt * 0.5)).ToJson() }
+                        //, new { vid = "1006", value = Item.F4((float)(cnt * 0.6)).ToJson() }
+                        //, new { vid = "1007", value = Item.F4((float)(cnt * 0.7)).ToJson() }
+                        //, new { vid = "1008", value = Item.F4((float)(cnt * 0.8)).ToJson() }
+                        //, new { vid = "1009", value = Item.F4((float)(cnt * 0.9)).ToJson() }
+                        //, new { vid = "1010", value = Item.F4((float)(cnt * 1.0)).ToJson() }}; //似乎沒有顯著隨著row數目增加花費時間
+
                         //刪除多筆參數
                         var datas = new[]{
-                          new { vid = "1001", value = Item.F4((float)(cnt * 0.1)).ToJson() }  //};
-                        , new { vid = "1002", value = Item.F4((float)(cnt * 0.2)).ToJson() }
-                        , new { vid = "1003", value = Item.F4((float)(cnt * 0.3)).ToJson() }//};
-                        , new { vid = "1004", value = Item.F4((float)(cnt * 0.4)).ToJson() }
-                        , new { vid = "1005", value = Item.F4((float)(cnt * 0.5)).ToJson() }
-                        , new { vid = "1006", value = Item.F4((float)(cnt * 0.6)).ToJson() }
-                        , new { vid = "1007", value = Item.F4((float)(cnt * 0.7)).ToJson() }
-                        , new { vid = "1008", value = Item.F4((float)(cnt * 0.8)).ToJson() }
-                        , new { vid = "1009", value = Item.F4((float)(cnt * 0.9)).ToJson() }
-                        , new { vid = "1010", value = Item.F4((float)(cnt * 1.0)).ToJson() }}; //似乎沒有顯著隨著row數目增加花費時間
+                          new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
+                        , new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
+                        , new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
+                        , new { vid = "1004", value = (cnt * 0.4).ToString("0.##") }
+                        , new { vid = "1005", value = (cnt * 0.5).ToString("0.##") }
+                        , new { vid = "1006", value = (cnt * 0.6).ToString("0.##") }
+                        , new { vid = "1007", value = (cnt * 0.7).ToString("0.##") }
+                        , new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
+                        , new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
+                        , new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
                         var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
                         var inStr = "";
                         foreach (var data in datas)

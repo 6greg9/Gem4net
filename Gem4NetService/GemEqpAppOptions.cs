@@ -57,5 +57,4 @@ public class GemEqpAppOptions
     public int IsSpoolEnabled {  get; set; }
     public int OverWriteSpool { get; set; }
     #endregion
-    public int UsJsonSecsItem { get; set; }
 }

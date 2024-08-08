@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Secs4Net.Json;
 using static Secs4Net.Item;
+using Microsoft.Extensions.Options;
 namespace Gem4NetRepository;
 public partial class GemRepository
 {
@@ -30,12 +31,15 @@ public partial class GemRepository
     private GemDbContext _context;
     private static object lockObject = new object();
 
+    public int UseJsonSecsItem { get; private set; }
+
     IMapper Mapper;
     IConfiguration? _config;
     public GemRepository(IConfiguration configaration)
     {
         
         _config = configaration;
+        UseJsonSecsItem = Convert.ToInt32( _config["GemEqpRepoOptions:UseJsonSecsItem"] );
         using (_context = new GemDbContext(_config))
         {
             _ = _context.Variables.ToList();
@@ -204,7 +208,10 @@ public partial class GemRepository
     {
         try
         {
-            //return JsonDocument.Parse(variable.Value).RootElement.ToItem();
+            if (UseJsonSecsItem == 1)
+            {
+                return JsonDocument.Parse(variable.Value).RootElement.ToItem();
+            }
             return VarStringToItem(variable.DataType, variable.Value);
             //if (variable.DataType != "LIST")
             //{
