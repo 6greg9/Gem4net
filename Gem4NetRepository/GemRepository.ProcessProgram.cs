@@ -257,8 +257,9 @@ public partial class GemRepository // 這部分應該是可以獨立
             var secsParaLst = Item.L();
             foreach (var para in processCmd.ProcessParameters)
             {
-                var secsPara = JsonDocument.Parse(para.Value).RootElement.ToItem();// VarStringToItem(para.DataType, para.Value);
-                return secsPara;
+                //var secsPara = JsonDocument.Parse(para.Value).RootElement.ToItem();// VarStringToItem(para.DataType, para.Value);
+                var secsPara = VarStringToItem(para.DataType, para.Value);
+                secsParaLst.Items.Append(secsPara);
 
             }
             secsPPcmd.Items.Append(secsParaLst);
