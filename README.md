@@ -15,6 +15,7 @@
 - 技術選型錯誤...,好像應該用Garnet+redis-om-dotnet
 - PP是應該可以獨立抽出
 - ListSv還是不能用遞迴查詢，改用json
+- pp和log之間不要用繼承, 整個寫一遍用mapper, 避免ef core 的機制
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
