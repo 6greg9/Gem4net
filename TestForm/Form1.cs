@@ -72,28 +72,28 @@ public partial class Form1 : Form
                         //, new { vid = "1010", value = Item.F4((float)(cnt * 1.0)).ToJson() }}; //似乎沒有顯著隨著row數目增加花費時間
 
                         //刪除多筆參數
-                        var datas = new[]{
-                          new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
-                        , new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
-                        , new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
-                        , new { vid = "1004", value = (cnt * 0.4).ToString("0.##") }
-                        , new { vid = "1005", value = (cnt * 0.5).ToString("0.##") }
-                        , new { vid = "1006", value = (cnt * 0.6).ToString("0.##") }
-                        , new { vid = "1007", value = (cnt * 0.7).ToString("0.##") }
-                        , new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
-                        , new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
-                        , new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
-                        var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
-                        var inStr = "";
-                        foreach (var data in datas)
-                        {
-                            var caseStr = " WHEN " + data.vid.ToString() + " THEN '" + data.value.ToString() + "'";
-                            sql += caseStr;
-                            inStr += " ," + data.vid.ToString();
-                        }
-                        sql += "ELSE \"Value\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
+                        //var datas = new[]{
+                        //  new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
+                        //, new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
+                        //, new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
+                        //, new { vid = "1004", value = (cnt * 0.4).ToString("0.##") }
+                        //, new { vid = "1005", value = (cnt * 0.5).ToString("0.##") }
+                        //, new { vid = "1006", value = (cnt * 0.6).ToString("0.##") }
+                        //, new { vid = "1007", value = (cnt * 0.7).ToString("0.##") }
+                        //, new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
+                        //, new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
+                        //, new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
+                        //var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
+                        //var inStr = "";
+                        //foreach (var data in datas)
+                        //{
+                        //    var caseStr = " WHEN " + data.vid.ToString() + " THEN '" + data.value.ToString() + "'";
+                        //    sql += caseStr;
+                        //    inStr += " ," + data.vid.ToString();
+                        //}
+                        //sql += "ELSE \"Value\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
 
-                        cn.Execute(sql);
+                        //cn.Execute(sql);
                         //tran.Commit();
                     }
 
@@ -343,15 +343,15 @@ public partial class Form1 : Form
 
     private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)
     {
-        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87, false);
+        GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87, true);
     }
 
     private void Btn_InsertPP_Click(object sender, EventArgs e)
     {
         var pp = new FormattedProcessProgram();
         pp.LogId = Guid.NewGuid();
-        pp.PPID = "test" + DateTime.Now.ToString("YYYYMMddhhmmss");
-        pp.UpdateTime = DateTime.Now;
+        pp.PPID = "test"; //+ DateTime.Now.ToString("YYYYMMddhhmmss");
+        pp.UpdateTime = DateTime.UtcNow;
 
         pp.Editor = "87";
         pp.ApprovalLevel = "-1";
@@ -489,7 +489,7 @@ public partial class Form1 : Form
             var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
             var paraA = ppCmds.FirstOrDefault().ProcessParameters.FirstOrDefault();
             var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
-            return rtn;
+            return rtn.Result;
         };
         GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {

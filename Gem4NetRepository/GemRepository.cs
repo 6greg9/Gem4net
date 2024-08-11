@@ -55,7 +55,9 @@ public partial class GemRepository
         //AutoMapper
         var mapperConfig = new MapperConfiguration(cfg =>
         {
+            
             cfg.CreateMap<FormattedProcessProgram, FormattedProcessProgramLog>();
+            
             cfg.CreateMap<ProcessProgram, ProcessProgramLog>(); 
         }
         ); // 註冊Model間的對映

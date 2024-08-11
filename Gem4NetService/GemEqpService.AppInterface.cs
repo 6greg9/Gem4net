@@ -117,7 +117,7 @@ public partial class GemEqpService
             {
                 var rtns10f2 = await _secsGem.SendAsync(s10f1);
                 // 應先資料驗證
-                ack10 = rtns10f2.SecsItem.FirstValue<byte>();
+                ack10 = rtns10f2 is null ? 0: rtns10f2.SecsItem.FirstValue<byte>();
             }
         }
         catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
@@ -187,7 +187,7 @@ public partial class GemEqpService
                 _GemRepo.SetAlarmCode(alrmId, alrmSet);
             var secsAlrmCode = alrmSet;//? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
-            using var s5f1 = new SecsMessage(5, 1)
+            using var s5f1 = new SecsMessage(5, 1,Convert.ToBoolean(EqpAppOptions.IsS5WbitUsed))
             {
                 SecsItem = L(
                 B((byte)secsAlrmCode),

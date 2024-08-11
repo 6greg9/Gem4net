@@ -10,11 +10,13 @@ using Secs4Net;
 using static Secs4Net.Item;
 using System.Text.Json;
 using Secs4Net.Json;
+using Npgsql.Internal.TypeHandling;
 
 namespace Gem4NetRepository;
 
 public partial class GemRepository // 這部分應該是可以獨立
 {
+    static SemaphoreSlim semSlim = new SemaphoreSlim(1, 1);
     #region No Format
     public IEnumerable<ProcessProgram> GetProcessProgram(string PPID)
     {
@@ -22,8 +24,8 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             using (_context = new GemDbContext(_config))
             {
-                var cn = _context.Database.GetDbConnection();
-                var pps = cn.Query<ProcessProgram>("SELECT * FROM ProcessPrograms")
+
+                var pps = _context.ProcessPrograms
                     .Where(pp => pp.PPID == PPID).ToList();
                 return pps;
             }
@@ -33,8 +35,8 @@ public partial class GemRepository // 這部分應該是可以獨立
     {
         using (_context = new GemDbContext(_config))
         {
-            var cn = _context.Database.GetDbConnection();
-            var PPs = cn.Query<ProcessProgram>("SELECT * FROM ProcessPrograms")
+
+            var PPs = _context.ProcessPrograms
                 .ToList();
             return PPs;
         }
@@ -58,8 +60,11 @@ public partial class GemRepository // 這部分應該是可以獨立
     {
         using (_context = new GemDbContext(_config))
         {
-            var cn = _context.Database.GetDbConnection();
-            var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
+            //var cn = _context.Database.GetDbConnection();
+            //var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
+
+            _context.Remove(_context.ProcessPrograms.Where(pp => ppids.Contains(pp.PPID)));
+            var rows = _context.SaveChanges();
             if (rows > 0)
             {
                 return 0;
@@ -71,8 +76,9 @@ public partial class GemRepository // 這部分應該是可以獨立
     {
         using (_context = new GemDbContext(_config))
         {
-            var cn = _context.Database.GetDbConnection();
-            var rows = cn.Execute($"DELETE FROM ProcessPrograms ");
+
+            _context.RemoveRange(_context.ProcessPrograms);
+            _context.SaveChanges();
             return 0;
         }
     }
@@ -92,7 +98,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             pp.PPID = secsFpp.Items[0].GetString();
             pp.PPBody = secsFpp.Items[1].GetString();
-            
+
             return 0;
         }
         catch (Exception ex)
@@ -112,8 +118,8 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             using (_context = new GemDbContext(_config))
             {
-                var cn = _context.Database.GetDbConnection();
-                var pps = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessProgram")
+
+                var pps = _context.FormattedProcessPrograms
                     .Where(pp => pp.PPID == PPID).ToList();
                 return pps;
             }
@@ -125,38 +131,76 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             using (_context = new GemDbContext(_config))
             {
-                var cn = _context.Database.GetDbConnection();
-                var PPs = cn.Query<FormattedProcessProgram>("SELECT * FROM FormattedProcessPrograms")
-                    .ToList();
+                var PPs = _context.FormattedProcessPrograms.ToList();
+                //var tableName = "FormattedProcessPrograms";
+                //var cn = _context.Database.GetDbConnection();
+                //var PPs = cn.Query<FormattedProcessProgram>($"SELECT * FROM {tableName}")
+                //    .ToList();
                 return PPs;
             }
         }
     }
-    public int CreateFormattedProcessProgram(FormattedProcessProgram fpp)
+    public async Task<int> CreateFormattedProcessProgram(FormattedProcessProgram fpp)
     {
-        lock (lockObject)
+
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
+
                 //var cn = _context.Database.GetDbConnection();
-
-                //var row= cn.Execute("INSERT INTO FormattedProcessPrograms(ID, PPID, UpdateTime,  PPBody," +
-                //    " Editor, Description, ApprovalLevel, SoftwareRevision, EquipmentModelType) " +
+                //var sql = "INSERT INTO \"FormattedProcessPrograms\"( \"ID\", \"PPID\", \"UpdateTime\",  \"PPBody\"," +
+                //    " \"Editor\", \"Description\", \"ApprovalLevel\", \"SoftwareRevision\", \"EquipmentModelType\") " +
                 //     "VALUES(@ID, @PPID, @UpdateTime, @PPBody," +
-                //     " @Editor, @Description, @ApprovalLevel, @SoftwareRevision, @EquipmentModelType)", fpp);
+                //     " @Editor, @Description, @ApprovalLevel, @SoftwareRevision, @EquipmentModelType)";
+                //var row = cn.Execute(sql, fpp);
                 //Create Log, 要先Log再更新正在使用的表
-                var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
-                fppLog.LogId = Guid.NewGuid();
-                fppLog.PPChangeStatus = 1;
-                _context.FormattedProcessProgramLogs.Add(fppLog);
+                var doesExist = _context.FormattedProcessPrograms.Any(p => p.PPID == fpp.PPID);// 潛在問題,沒有在同個transaction, 需要上鎖
 
-                _context.FormattedProcessPrograms.Add(fpp);
+                if (doesExist)
+                {
+                    var target = _context.FormattedProcessPrograms.Where(p => p.PPID == fpp.PPID).Take(1).Single();//.Take(1);
+                                                                                                                   //await target.ForEachAsync(p => //行不通
+                                                                                                                   //{
+                                                                                                                   //    var guid = p.LogId;
+                                                                                                                   //    p = fpp;
+                                                                                                                   //    p.LogId = guid;
+                                                                                                                   //});
+                    _context.FormattedProcessPrograms.Remove(target);
+                    _context.FormattedProcessPrograms.Add(fpp);
+                    //_context.FormattedProcessPrograms.Update(target);
+                    LogPPChanged(2);
+                }
+                else
+                {
+                    _context.FormattedProcessPrograms.Add(fpp);
+                    LogPPChanged(1);
 
-                _context.SaveChanges();
-                return 0;
+                }
+
+                _ = _context.SaveChanges();
+
+
+                /// <summary>
+                /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
+                /// </summary>
+                void LogPPChanged(int ppChangeStatus)
+                {
+                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
+                    fppLog.LogId = Guid.NewGuid();
+                    fppLog.PPChangeStatus = ppChangeStatus;
+
+
+                    _context.FormattedProcessProgramLogs.Add(fppLog);
+                }
 
             }
         }
+
+        finally { semSlim.Release(); }
+        
+        return 0;
     }
     public int UpdateFormattedProcessProgram(FormattedProcessProgram fpp)
     {
@@ -168,7 +212,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 var cn = _context.Database.GetDbConnection();
                 fpp.LogId = Guid.NewGuid();
                 fpp.UpdateTime = DateTime.Now;
-                var rowCount = cn.Execute("UPDATE FormattedProcessPrograms SET LogId=@LogId, PPID=@PPID," +
+                var rowCount = cn.Execute($"UPDATE {nameof(FormattedProcessProgram)} SET LogId=@LogId, PPID=@PPID," +
                     " UpdateTime=@UpdateTime, PPBody=@PPBody," +
                     " Editor=@Editor, Description=@Description, ApprovalLevel=@ApprovalLevel, SoftwareRevision=@SoftwareRevision, EquipmentModelType=@EquipmentModel"
                      + $"WHERE PPID = {ppid}", fpp);
@@ -200,7 +244,7 @@ public partial class GemRepository // 這部分應該是可以獨立
             {
 
                 ///var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms where PPID IN @ppids", new { ppids = ppids });
-                var fpps = _context.FormattedProcessPrograms.Where(sc=>sc.GetType() != typeof(FormattedProcessProgramLog))
+                var fpps = _context.FormattedProcessPrograms.Where(sc => sc.GetType() != typeof(FormattedProcessProgramLog))
                     .Where(pp => ppids.Contains(pp.PPID));
                 var test = fpps.ToList();
                 foreach (var fpp in fpps)
@@ -241,7 +285,7 @@ public partial class GemRepository // 這部分應該是可以獨立
             }
         }
     }
-    
+
     public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp)
     {
         var secsFpp = Item.L();
@@ -288,11 +332,12 @@ public partial class GemRepository // 這部分應該是可以獨立
                 }
             }
             return 0;
-        }catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             return 1;
         }
-        
+
     }
     #endregion
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gem4NetRepository.Migrations
 {
     [DbContext(typeof(GemDbContext))]
-    [Migration("20240727141950_CancelAlarmStateVidd")]
-    partial class CancelAlarmStateVidd
+    [Migration("20240810093024_NoListSv")]
+    partial class NoListSv
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -124,9 +124,6 @@ namespace Gem4NetRepository.Migrations
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
-
-                    b.Property<int?>("EnabledVid")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()

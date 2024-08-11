@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gem4NetRepository.Migrations
 {
     /// <inheritdoc />
-    public partial class CancelAlarmStateVidd : Migration
+    public partial class NoListSv : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,6 @@ namespace Gem4NetRepository.Migrations
                     DATAID = table.Column<int>(type: "integer", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    EnabledVid = table.Column<int>(type: "integer", nullable: true),
                     Definition = table.Column<string>(type: "text", nullable: true),
                     Remark = table.Column<string>(type: "text", nullable: true),
                     Trigger = table.Column<string>(type: "text", nullable: true)

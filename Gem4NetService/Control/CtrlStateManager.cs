@@ -52,6 +52,11 @@ public class CtrlStateManager
         
         CurrentState = (ControlState)EqpAppOptions.DefaultInitControlState;
 
+        StartCheckCtrlStateLoop();
+    }
+
+    void StartCheckCtrlStateLoop()
+    {
         CtrlStateCheckTaskCts = new();
         var token = CtrlStateCheckTaskCts.Token;
         CtrlStateCheckTask = Task.Run(async () =>
@@ -64,6 +69,12 @@ public class CtrlStateManager
                         CtrlStateCheckTaskCts.Cancel(); //可以不用一直執行
                         break;
                     case ControlState.ATTEMPT_ON_LINE:
+                        if (S1F2Waiter is null || S1F2Waiter.Status != TaskStatus.Running) // 用Default進入的情形
+                        {
+                            using (var S1F1 = new SecsMessage(1, 1))
+                                S1F2Waiter = _secsGem.SendAsync(S1F1); //在while外部  
+                        }
+
                         var onlineReqResult = await S1F2Waiter;
                         if (S1F2Waiter.IsFaulted == true)
                         {
@@ -107,7 +118,7 @@ public class CtrlStateManager
 
     #region Command
 
-    Task<SecsMessage> S1F2Waiter;
+    Task<SecsMessage> S1F2Waiter ;
 
     public int OnLineRequest()
     {
@@ -115,11 +126,9 @@ public class CtrlStateManager
         {
             return 1;
         }
-        //可能可以改用Func, 就不用注入_secsGem
-        using (var S1F1 = new SecsMessage(1, 1))
-            S1F2Waiter = _secsGem.SendAsync(S1F1); //在while外部       
+            
         CurrentState = ControlState.ATTEMPT_ON_LINE;
-        EnterControlState();
+        StartCheckCtrlStateLoop();
         return 0;
     }
 
@@ -163,7 +172,7 @@ public class CtrlStateManager
     {
         if (CurrentState == ControlState.HOST_OFF_LINE)
         {
-            CurrentState = DefaultInitControlState;
+            CurrentState = DefaultLocalRemote;
             return 0;
         }
         return 1;

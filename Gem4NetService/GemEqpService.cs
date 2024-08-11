@@ -215,7 +215,9 @@ public partial class GemEqpService
             if (_ctrlStateManager.IsOnLine == false)
             {
                 var msg = ReceiveSecsMsg.PrimaryMessage;
-                if ((msg.S != 1 || msg.F != 13) || (msg.S != 1 || msg.F != 17))
+                if (!(msg.S == 1 && msg.F == 13)
+                 && !(msg.S == 1 && msg.F == 15)
+                 && !(msg.S == 1 && msg.F == 17))
                 {
                     //sNf0
                     using var rtnSNF0 = new SecsMessage(msg.S, 0);
@@ -307,7 +309,8 @@ public partial class GemEqpService
                 //Invoke, Handle
                 using (var rtnS1F2 = new SecsMessage(1, 2)
                 {
-                    SecsItem = L(A("aaa"), A("bbb"))
+                    SecsItem = L(A(EqpAppOptions.ModelType),
+                                 A(EqpAppOptions.SoftwareVersion))
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS1F2);
                 break;

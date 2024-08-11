@@ -571,6 +571,14 @@ public static class SecsItemSchemaValidator
     #endregion
 
     #region　Stream 10
+    public static Func<Item?, bool> IsS10F2 = (item) =>
+    {
+        if (item == null)
+            return false;
+        if (item.Format != SecsFormat.Binary)
+            return false;
+        return true;
+    };
     public static Func<Item?, bool> IsS10F3 = (item) =>
     {
         if (item == null)
