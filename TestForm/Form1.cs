@@ -366,7 +366,7 @@ public partial class Form1 : Form
             {
                 Name = "TempA",
                 Value = "87.9",
-                DataType = "FT_4",
+                DataType = "FLOAT_4",
                 Unit = "C",
                 Length = 8,
                 Definition = "test",

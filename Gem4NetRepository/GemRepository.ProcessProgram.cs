@@ -202,6 +202,11 @@ public partial class GemRepository // 這部分應該是可以獨立
         
         return 0;
     }
+    /// <summary>
+    /// 忘記要用在哪邊了...
+    /// </summary>
+    /// <param name="fpp"></param>
+    /// <returns></returns>
     public int UpdateFormattedProcessProgram(FormattedProcessProgram fpp)
     {
         lock (lockObject)
@@ -288,28 +293,35 @@ public partial class GemRepository // 這部分應該是可以獨立
 
     public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp)
     {
-        var secsFpp = Item.L();
-        secsFpp.Items.Append(A(fpp.PPID));
-        secsFpp.Items.Append(A(fpp.EquipmentModelType));
-        secsFpp.Items.Append(A(fpp.SoftwareRevision));
+        
+        
         var secsPPbody = Item.L();
         var PPbody = new PPBodyHandler().Parse(fpp.PPBody);
+        var ppBodyLst = new List<Item>();
         foreach (var processCmd in PPbody)
         {
-            var secsPPcmd = Item.L();
-            secsPPcmd.Items.Append(A(processCmd.CommandCode));
-            var secsParaLst = Item.L();
+            
+            var secsParaLst = new List<Item>();
             foreach (var para in processCmd.ProcessParameters)
             {
-                //var secsPara = JsonDocument.Parse(para.Value).RootElement.ToItem();// VarStringToItem(para.DataType, para.Value);
+                
                 var secsPara = VarStringToItem(para.DataType, para.Value);
-                secsParaLst.Items.Append(secsPara);
+                secsParaLst.Add(secsPara);
 
             }
-            secsPPcmd.Items.Append(secsParaLst);
-            secsPPbody.Items.Append(secsPPcmd);
+            var secsPPcmd = L(
+                              A(processCmd.CommandCode),
+                              L(secsParaLst.ToArray()));
+            
+            ppBodyLst.Add(secsPPcmd);
         }
-        secsFpp.Items.Append(secsPPbody);
+        var secsFpp = Item.L(
+                            A(fpp.PPID),
+                            A(fpp.EquipmentModelType),
+                            A(fpp.SoftwareRevision),
+                            L(ppBodyLst.ToArray()))
+            ;
+        
         return secsFpp;
     }
 

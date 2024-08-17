@@ -52,14 +52,13 @@ public class GemDbContext : DbContext
         modelBuilder.Entity<GemReport>().HasKey(sc => sc.RPTID);
         modelBuilder.Entity<GemVariable>().HasKey(sc => sc.VID);
         modelBuilder.Entity<GemAlarm>().HasKey(sc => sc.ALID);
-        modelBuilder.Entity<ProcessProgram>().UseTpcMappingStrategy()//.HasNoKey();
-            .HasKey(sc => sc.LogId);
 
-
-        modelBuilder.Entity<ProcessProgramLog>();
-        modelBuilder.Entity<FormattedProcessProgram>().UseTpcMappingStrategy()//.HasNoKey();
+        modelBuilder.Entity<ProcessProgram>()//.UseTpcMappingStrategy()//.HasNoKey();
             .HasKey(sc => sc.LogId);
-        modelBuilder.Entity<FormattedProcessProgramLog>();
+        modelBuilder.Entity<ProcessProgramLog>().HasKey(sc => sc.LogId);
+        modelBuilder.Entity<FormattedProcessProgram>()//.UseTpcMappingStrategy()//.HasNoKey();
+            .HasKey(sc => sc.LogId);
+        modelBuilder.Entity<FormattedProcessProgramLog>().HasKey(sc => sc.LogId);
 
         modelBuilder.Entity<EventReportLink>().HasKey(sc => new { sc.ECID, sc.RPTID });
 
