@@ -33,7 +33,7 @@ public partial class Form1 : Form
         .Build();
         _gemRepo = new GemRepository(configuration); //帶入的參數是ConnectionStr的Key
 
-        
+
 
         UpdateVariables();
 
@@ -431,16 +431,16 @@ public partial class Form1 : Form
             LinkTestInterval = 1000 * 60,
             T6 = 5000
         });
-        var gemEqpAppOptions = Options.Create( new GemEqpAppOptions
+        var gemEqpAppOptions = Options.Create(new GemEqpAppOptions
         {
-            ModelType ="MDLN",
+            ModelType = "MDLN",
             SoftwareVersion = "1.2.3.4",
             IsCommDefaultEnabled = 1,
             IsCommHostInit = 0,
             DefaultInitControlState = (int)ControlState.ATTEMPT_ON_LINE,
-            DefaultAfterFailOnline = (int) ControlState.EQUIPMENT_OFF_LINE,
-            DefaultLocalRemote = (int) ControlState.LOCAL,
-            CommDelaySecond = 10
+            DefaultAfterFailOnline = (int)ControlState.EQUIPMENT_OFF_LINE,
+            DefaultLocalRemote = (int)ControlState.LOCAL,
+            EstablishCommunicationsTimeout = 10
         });
         ;
         GemEquipment = new GemEqpService(logger, _gemRepo, secsGemOptions, gemEqpAppOptions); // 建構式就啟動惹..
@@ -493,7 +493,7 @@ public partial class Form1 : Form
         };
         GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {
-            return 0;
+
             if (ppLst.Count == 0)
             {
                 _gemRepo.DeleteFormattedPPAll();
@@ -502,7 +502,12 @@ public partial class Form1 : Form
             {
                 _gemRepo.DeleteFormattedProcessProgram(ppLst);
             }
-
+            return 0;
         };
+    }
+
+    private void button4_Click(object sender, EventArgs e)
+    {
+        var ttt = Item.A("yooooooo").ToString();
     }
 }

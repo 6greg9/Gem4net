@@ -69,7 +69,7 @@ internal class CommStateManager
                 {
                     case CommunicationState.WAIT_CRA:
                         await Task.WhenAny(S1F14Waiter, 
-                            Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.CommDelaySecond)));
+                            Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.EstablishCommunicationsTimeout)));
 
 
                         if (S1F14Waiter.IsCompleted)
@@ -132,7 +132,7 @@ internal class CommStateManager
             {
                 CommDelayTimerTaskCts?.Cancel();
                 CommDelayTimerTaskCts = new CancellationTokenSource();
-                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.CommDelaySecond), CommDelayTimerTaskCts.Token);// Tooxx?
+                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.EstablishCommunicationsTimeout), CommDelayTimerTaskCts.Token);// Tooxx?
                 CurrentState = CommunicationState.WAIT_DELAY;
             }
         });

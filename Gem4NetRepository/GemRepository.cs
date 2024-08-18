@@ -35,6 +35,8 @@ public partial class GemRepository
 
     IMapper Mapper;
     IConfiguration? _config;
+    private int TimeFormat;
+
     public GemRepository(IConfiguration configaration)
     {
         
@@ -47,6 +49,8 @@ public partial class GemRepository
             _ = _context.Alarms.ToList();
             //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
+
+        UpdateTimeFormat();
 
         //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
         SqlMapper.AddTypeHandler(new PPBodyHandler());
@@ -62,6 +66,12 @@ public partial class GemRepository
         }
         ); // 註冊Model間的對映
         Mapper = mapperConfig.CreateMapper();
+    }
+    void UpdateTimeFormat()
+    {
+        var TimeFormatEC = GetEC(Convert.ToInt32(_config["GemEqpRepoOptions:UseJsonSecsItem"]));
+        if (TimeFormatEC is not null)
+            TimeFormat = TimeFormatEC.FirstValue<int>();
     }
     public class SqliteGuidTypeHandler : SqlMapper.TypeHandler<Guid>
     {
@@ -84,6 +94,7 @@ public partial class GemRepository
     /// <returns></returns>
     public Item? GetSvList(IEnumerable<int> vidList)
     {
+        UpdateTimeFormat();
         lock (lockObject)
         {
             using (_context = new GemDbContext(_config))
@@ -99,6 +110,8 @@ public partial class GemRepository
     }
     public Item? GetSv(int vid)
     {
+        UpdateTimeFormat();
+
         lock (lockObject)
         {
             using (_context = new GemDbContext(_config))
@@ -112,7 +125,7 @@ public partial class GemRepository
     {
         // Clock, 是要用Name還是Vid找
         if (vid == Convert.ToInt32(_config["ClockVID"]))
-            return SubGetClock(Convert.ToInt32(_config["ClockFormatCode"]));
+            return SubGetClock(TimeFormat);
 
         var Variable = _context.Variables
             .Where(v => v.VarType == "SV")
@@ -196,6 +209,11 @@ public partial class GemRepository
     }
     Item? SubGetClock(int timeFormatcode)
     {
+        
+        //var timeFormat = GetEC(Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]))
+        //                        ?? U4((uint)Convert.ToInt32(_config["GemEqpAppOptions:ClockFormatCode"]));
+
+        //timeFormatcode = timeFormat.FirstValue<int>();
         if (timeFormatcode == 0)
             return A(DateTime.Now.ToString("yyMMddHHmmss"));
         if (timeFormatcode == 1)
@@ -716,6 +734,7 @@ public partial class GemRepository
 
     public Item? GetReportsByCeid(int ceid)
     {
+        UpdateTimeFormat();
         lock (lockObject)
         {
             using (_context = new GemDbContext(_config))

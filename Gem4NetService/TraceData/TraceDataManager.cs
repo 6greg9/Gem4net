@@ -49,8 +49,9 @@ public class TraceDataManager
             }
         }
 
-        var newTrace = new DataTracer(traceInit.trid, traceInit.dataSamplePeriod, traceInit.totalSampleAmount,
-            traceInit.reportGroupSize, traceInit.sampleVIDs);
+        var newTrace = new DataTracer(traceInit.trid, traceInit.dataSamplePeriod, 
+            traceInit.totalSampleAmount, traceInit.reportGroupSize, traceInit.sampleVIDs);
+        newTrace.TimeFormat = _gemEqpService.GetSecsTimeFormat().FirstValue<int>();
         newTrace.OnSample += HandleSampleForTracer;
         newTrace.OnTraceEventSend += HandleTraceEventSend;
         _tracerList.Add(newTrace);
@@ -84,10 +85,10 @@ public class TraceDataManager
     {
         var stime = () =>
         {
-            if(_gemEqpService.EqpAppOptions.ClockFormatCode == 0)
+            if(sender.TimeFormat == 0)
             {
                 return DateTime.Now.ToString("yyyyMMddHHmmss");
-            }else if(_gemEqpService.EqpAppOptions.ClockFormatCode == 1)
+            }else if(sender.TimeFormat == 1)
             {
                 return DateTime.Now.ToString("yyyyMMddHHmmssff");
             }

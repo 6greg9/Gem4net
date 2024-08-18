@@ -36,6 +36,7 @@ public class DataTracer
     public event Action<DataTracer> OnTraceEventSend;
 
     Timer SampleTimer { get; set; }
+    public int TimeFormat { get;set; }
     public DataTracer(string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
         int reportGroupSize, List<int> sampleVIDs)
     {

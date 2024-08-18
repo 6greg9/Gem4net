@@ -20,6 +20,7 @@ public class GemEqpAppOptions
     /// for TIME, ECV TimeFormat controls format, 0=A:12 YYMMDDHHMMSS, 1=A:16 YYYYMMDDHHMMSScc,2=YYYY-MM-DDTHH:MM:SS.s[s]*{Z|+hh:mm|-hh:mm}     
     /// </summary>
     public int ClockFormatCode { get; set; }
+    public int TimeFormatVID { get; set; } = 77;
     public int ClockVID { get; set; }
 
     #region Communication State
@@ -34,7 +35,7 @@ public class GemEqpAppOptions
     /// <summary>
     /// EQPIPMENT-INITIATED的時候, S1F13的等待時間, 同等EstablishCommunicationsTimeout, 注意與HSMS的T3秒數大小
     /// </summary>
-    public int CommDelaySecond { get; set; }
+    public int EstablishCommunicationsTimeout { get; set; }
     #endregion
 
     #region Control State

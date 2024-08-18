@@ -417,17 +417,8 @@ public partial class GemEqpService
                 break;
             //S2F17 Date and Time Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 17):
-                Item Clock;
-                if (EqpAppOptions.ClockFormatCode == 0)
-                    Clock = A(DateTime.Now.ToString("yyMMddHHmmss"));
-                else if (EqpAppOptions.ClockFormatCode == 1)
-                    Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
-                else if(EqpAppOptions.ClockFormatCode == 2)//SEMI E148 ?
-                    Clock = A(DateTime.UtcNow.ToString("yyyy-MM-dd")+"T"+  //UTC
-                        DateTime.UtcNow.ToString("HH:mm:ss.fff")+"Z");
-                else
-                    Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
-
+                Item Clock = GetSecsClock();
+                
                 using (var rtnS2F18 = new SecsMessage(2, 18)
                 {
                     SecsItem = Clock
@@ -573,6 +564,32 @@ public partial class GemEqpService
             default:
                 break;
         }
+    }
+    public Item GetSecsTimeFormat()
+    {
+        var timeFormat = _GemRepo.GetEC(EqpAppOptions.TimeFormatVID)
+                            ?? U4((uint)EqpAppOptions.ClockFormatCode);
+        return timeFormat;
+    }
+    public Item GetSecsClock()
+    {
+        Item Clock;
+        var timeFormat = GetSecsTimeFormat();
+        if (timeFormat.Format is not SecsFormat.U1 or SecsFormat.U2
+            or SecsFormat.U4 or SecsFormat.U8)
+        {
+            timeFormat = U4((uint)EqpAppOptions.ClockFormatCode);
+        }
+        if (timeFormat.FirstValue<int>() == 0)
+            Clock = A(DateTime.Now.ToString("yyMMddHHmmss"));
+        else if (timeFormat.FirstValue<int>() == 1)
+            Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+        else if (timeFormat.FirstValue<int>() == 2)//SEMI E148 ?
+            Clock = A(DateTime.UtcNow.ToString("yyyy-MM-dd") + "T" +  //UTC
+                DateTime.UtcNow.ToString("HH:mm:ss.fff") + "Z");
+        else
+            Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+        return Clock;
     }
     async void HandleStream5(PrimaryMessageWrapper? primaryMsgWrapper)
     {

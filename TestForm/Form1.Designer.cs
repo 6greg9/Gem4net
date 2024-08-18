@@ -74,6 +74,7 @@ partial class Form1
         Tbx_AlarmText = new TextBox();
         Btn_SendAlarm = new Button();
         timer1 = new System.Windows.Forms.Timer(components);
+        button4 = new Button();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         Tab_GemState.SuspendLayout();
@@ -231,6 +232,7 @@ partial class Form1
         // 
         // panel1
         // 
+        panel1.Controls.Add(button4);
         panel1.Controls.Add(lbl_HSMS);
         panel1.Controls.Add(Btn_GoLocal);
         panel1.Controls.Add(Btn_GoOffLine);
@@ -567,6 +569,17 @@ partial class Form1
         // 
         timer1.Tick += timer1_Tick;
         // 
+        // button4
+        // 
+        button4.Location = new Point(1575, 355);
+        button4.Margin = new Padding(5);
+        button4.Name = "button4";
+        button4.Size = new Size(173, 53);
+        button4.TabIndex = 16;
+        button4.Text = "S1F1";
+        button4.UseVisualStyleBackColor = true;
+        button4.Click += button4_Click;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(17F, 36F);
@@ -642,4 +655,5 @@ partial class Form1
     private System.Windows.Forms.Timer timer1;
     private RichTextBox richTextBox2;
     private Button Btn_DeletePP;
+    private Button button4;
 }

@@ -188,7 +188,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 void LogPPChanged(int ppChangeStatus)
                 {
                     var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
-                    fppLog.LogId = Guid.NewGuid();
+                   
                     fppLog.PPChangeStatus = ppChangeStatus;
 
 
@@ -280,7 +280,8 @@ public partial class GemRepository // 這部分應該是可以獨立
 
                     //Delete Log
                     var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
-                    fppLog.UpdateTime = DateTime.Now;
+                    fppLog.UpdateTime = DateTime.UtcNow;
+                    fppLog.LogId  = Guid.NewGuid();
                     fppLog.PPChangeStatus = 3;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
                 });
