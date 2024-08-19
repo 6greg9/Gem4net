@@ -377,9 +377,9 @@ public partial class GemRepository
         {
             using (_context = new GemDbContext(_config))
             {
-                var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID)
-                .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
-                return Item.L(itemList.ToArray());
+                var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID).ToList()
+                .Select(v => GemVariableToSecsItem(v)).ToArray();
+                return Item.L(itemList);
             }
         }
 
