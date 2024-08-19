@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Gem4Net.Control;
+using System.Configuration;
 
 namespace TestForm;
 
@@ -23,11 +24,12 @@ public partial class Form1 : Form
 {
     GemRepository _gemRepo;
     GemEqpService GemEquipment;
+    IConfiguration configuration;
     public Form1()
     {
 
         InitializeComponent();
-        IConfiguration configuration = new ConfigurationBuilder()
+        configuration = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appSettings.json", false)
         .Build();
@@ -427,7 +429,7 @@ public partial class Form1 : Form
             Port = 5000,
             //SocketReceiveBufferSize = 8096,
             SocketReceiveBufferSize = 1024,
-            DeviceId = 0,
+            DeviceId = 1,
             LinkTestInterval = 1000 * 60,
             T6 = 5000
         });
@@ -437,6 +439,7 @@ public partial class Form1 : Form
             SoftwareVersion = "1.2.3.4",
             IsCommDefaultEnabled = 1,
             IsCommHostInit = 0,
+            TimeFormatVID = 20,
             DefaultInitControlState = (int)ControlState.ATTEMPT_ON_LINE,
             DefaultAfterFailOnline = (int)ControlState.EQUIPMENT_OFF_LINE,
             DefaultLocalRemote = (int)ControlState.LOCAL,

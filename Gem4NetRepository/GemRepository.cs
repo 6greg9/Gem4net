@@ -69,8 +69,10 @@ public partial class GemRepository
     }
     void UpdateTimeFormat()
     {
-        var TimeFormatEC = GetEC(Convert.ToInt32(_config["GemEqpRepoOptions:UseJsonSecsItem"]));
-        if (TimeFormatEC is not null)
+        var TimeFormatVID = Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]);
+        var TimeFormatEC = GetEC(TimeFormatVID) ;
+        if ((TimeFormatEC is not null || TimeFormatEC != A("") )
+            && (TimeFormatEC.Format == SecsFormat.U1 || TimeFormatEC.Format == SecsFormat.U2 || TimeFormatEC.Format == SecsFormat.U4 || TimeFormatEC.Format == SecsFormat.U8))
             TimeFormat = TimeFormatEC.FirstValue<int>();
     }
     public class SqliteGuidTypeHandler : SqlMapper.TypeHandler<Guid>

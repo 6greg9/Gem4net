@@ -567,16 +567,17 @@ public partial class GemEqpService
     }
     public Item GetSecsTimeFormat()
     {
-        var timeFormat = _GemRepo.GetEC(EqpAppOptions.TimeFormatVID)
-                            ?? U4((uint)EqpAppOptions.ClockFormatCode);
-        return timeFormat;
+        var timeFormat = _GemRepo.GetEC(EqpAppOptions.TimeFormatVID);
+       
+        return timeFormat == A() ? U4((uint)EqpAppOptions.ClockFormatCode) : timeFormat;
     }
     public Item GetSecsClock()
     {
+        
         Item Clock;
         var timeFormat = GetSecsTimeFormat();
-        if (timeFormat.Format is not SecsFormat.U1 or SecsFormat.U2
-            or SecsFormat.U4 or SecsFormat.U8)
+        if (!(timeFormat.Format is  SecsFormat.U1 or  SecsFormat.U2
+            or SecsFormat.U4 or SecsFormat.U8))
         {
             timeFormat = U4((uint)EqpAppOptions.ClockFormatCode);
         }
