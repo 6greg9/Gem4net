@@ -320,7 +320,7 @@ public partial class GemEqpService
                 Item? svList;
                 if (vids is null || vids.Count() == 0)
                 {
-                    svList = _GemRepo.GetVariableAll();
+                    svList = _GemRepo.GetSvAll();
                 }
                 else
                 {

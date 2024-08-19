@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Dapper" Version="2.1.28" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
@@ -20,10 +20,33 @@
     <PackageReference Include="Secs4Net" Version="2.4.3" />
     <PackageReference Include="Secs4Net.Json" Version="2.4.2" />
     <PackageReference Include="Secs4Net.Sml" Version="2.4.3" />
+
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Dapper" Version="2.1.28" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+    <PackageReference Include="Secs4Net" Version="2.4.3" />
+    <PackageReference Include="Secs4Net.Json" Version="2.4.2" />
+    <PackageReference Include="Secs4Net.Sml" Version="2.4.3" />
+
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageId>Gem4netRepository</PackageId>
+    <Version>1.0.2</Version>
+    <Authors>6greg9</Authors>
+    <Company>gp</Company>
+  </PropertyGroup>
 
 </Project>

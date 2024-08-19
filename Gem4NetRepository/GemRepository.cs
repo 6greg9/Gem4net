@@ -108,7 +108,7 @@ public partial class GemRepository
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
-        return Item.L(vidList.Select(vid => SubGetSvByVID(vid)).ToArray());
+        return Item.L(vidList.OrderBy(vid=>vid).Select(vid => SubGetSvByVID(vid)).ToArray());
     }
     public Item? GetSv(int vid)
     {
@@ -367,7 +367,23 @@ public partial class GemRepository
         }
 
     }
+    /// <summary>
+    /// For S1F3
+    /// </summary>
+    /// <returns></returns>
+    public Item? GetSvAll()
+    {
+        lock (lockObject)
+        {
+            using (_context = new GemDbContext(_config))
+            {
+                var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID)
+                .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
+                return Item.L(itemList.ToArray());
+            }
+        }
 
+    }
 
     /// <summary>
     /// for s2f14
