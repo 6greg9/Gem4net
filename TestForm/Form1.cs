@@ -512,5 +512,8 @@ public partial class Form1 : Form
     private void button4_Click(object sender, EventArgs e)
     {
         var ttt = Item.A("yooooooo").ToString();
+        var t = Item.L(Item.A("aaa"), Item.U4(4), Item.B((byte)12), Item.F8(37.3)).ToJson();
+        richTextBox3.Text = t;
+        //MessageBox.Show(t);
     }
 }

@@ -255,53 +255,61 @@ public partial class GemRepository
     }
     public Item VarStringToItem(string dataType, string varStr)
     {
-        switch (dataType)
+        try
         {
-            case "BINARY":
+            switch (dataType)
+            {
+                case "BINARY":
 
-                return Item.B(Convert.FromHexString(varStr));
-            case "BOOL":
-                var BOOL = Convert.ToBoolean(varStr);
-                return Item.Boolean(BOOL);
-            case "ASCII":
-                var ASCII = varStr;
-                return Item.A(ASCII);
-            case "UINT_1":
-                var UINT_1 = Convert.ToByte(varStr);
-                return Item.U1(UINT_1);
-            case "UINT_2":
-                var UINT_2 = Convert.ToUInt16(varStr);
-                return Item.U2(UINT_2);
-            case "UINT_4":
-                var UINT_4 = Convert.ToUInt32(varStr);
-                return Item.U4(UINT_4);
-            case "UINT_8":
-                var UINT_8 = Convert.ToUInt64(varStr);
-                return Item.U8(UINT_8);
-            case "INT_1":
-                var INT_1 = Convert.ToSByte(varStr);
-                return Item.I1(INT_1);
-            case "INT_2":
-                var INT_2 = Convert.ToInt16(varStr);
-                return Item.I2(INT_2);
-            case "INT_4":
-                var INT_4 = Convert.ToInt32(varStr);
-                return Item.I4(INT_4);
-            case "INT_8":
-                var INT_8 = Convert.ToInt64(varStr);
-                return Item.I8(INT_8);
-            case "FLOAT_4":
-                var FLOAT_4 = Convert.ToSingle(varStr);
-                return Item.F4(FLOAT_4);
-            case "FLOAT_8":
-                var FLOAT_8 = Convert.ToDouble(varStr);
-                return Item.F8(FLOAT_8);
-            case "LIST":
-                var LIST = JsonDocument.Parse(varStr).RootElement;
-                return LIST.ToItem();
-            default:
-                return Item.J(); // !?
+                    return Item.B(Convert.FromHexString(varStr));
+                case "BOOL":
+                    var BOOL = Convert.ToBoolean(varStr);
+                    return Item.Boolean(BOOL);
+                case "ASCII":
+                    var ASCII = varStr;
+                    return Item.A(ASCII);
+                case "UINT_1":
+                    var UINT_1 = Convert.ToByte(varStr);
+                    return Item.U1(UINT_1);
+                case "UINT_2":
+                    var UINT_2 = Convert.ToUInt16(varStr);
+                    return Item.U2(UINT_2);
+                case "UINT_4":
+                    var UINT_4 = Convert.ToUInt32(varStr);
+                    return Item.U4(UINT_4);
+                case "UINT_8":
+                    var UINT_8 = Convert.ToUInt64(varStr);
+                    return Item.U8(UINT_8);
+                case "INT_1":
+                    var INT_1 = Convert.ToSByte(varStr);
+                    return Item.I1(INT_1);
+                case "INT_2":
+                    var INT_2 = Convert.ToInt16(varStr);
+                    return Item.I2(INT_2);
+                case "INT_4":
+                    var INT_4 = Convert.ToInt32(varStr);
+                    return Item.I4(INT_4);
+                case "INT_8":
+                    var INT_8 = Convert.ToInt64(varStr);
+                    return Item.I8(INT_8);
+                case "FLOAT_4":
+                    var FLOAT_4 = Convert.ToSingle(varStr);
+                    return Item.F4(FLOAT_4);
+                case "FLOAT_8":
+                    var FLOAT_8 = Convert.ToDouble(varStr);
+                    return Item.F8(FLOAT_8);
+                case "LIST":
+
+                    var LIST = JsonDocument.Parse(varStr).RootElement;
+                    return LIST.ToItem();
+                default:
+                    return Item.J(); // !?
+            }
+        }catch(Exception ex)
+        {
+            return Item.J(); // !?
         }
+       
     }
     /// <summary>
     /// SVID, SVNAMES, UNITS
