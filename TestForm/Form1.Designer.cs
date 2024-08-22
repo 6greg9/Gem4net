@@ -44,6 +44,7 @@ partial class Form1
         Btn_GoLocal = new Button();
         Btn_GoRemote = new Button();
         panel1 = new Panel();
+        button4 = new Button();
         Tab_Events = new TabControl();
         Tab_GemState = new TabPage();
         tabPage2 = new TabPage();
@@ -74,7 +75,7 @@ partial class Form1
         Tbx_AlarmText = new TextBox();
         Btn_SendAlarm = new Button();
         timer1 = new System.Windows.Forms.Timer(components);
-        button4 = new Button();
+        richTextBox3 = new RichTextBox();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         Tab_GemState.SuspendLayout();
@@ -232,6 +233,7 @@ partial class Form1
         // 
         // panel1
         // 
+        panel1.Controls.Add(richTextBox3);
         panel1.Controls.Add(button4);
         panel1.Controls.Add(lbl_HSMS);
         panel1.Controls.Add(Btn_GoLocal);
@@ -251,6 +253,17 @@ partial class Form1
         panel1.Name = "panel1";
         panel1.Size = new Size(1793, 501);
         panel1.TabIndex = 16;
+        // 
+        // button4
+        // 
+        button4.Location = new Point(1442, 326);
+        button4.Margin = new Padding(5);
+        button4.Name = "button4";
+        button4.Size = new Size(173, 53);
+        button4.TabIndex = 16;
+        button4.Text = "S1F1";
+        button4.UseVisualStyleBackColor = true;
+        button4.Click += button4_Click;
         // 
         // Tab_Events
         // 
@@ -569,16 +582,13 @@ partial class Form1
         // 
         timer1.Tick += timer1_Tick;
         // 
-        // button4
+        // richTextBox3
         // 
-        button4.Location = new Point(1575, 355);
-        button4.Margin = new Padding(5);
-        button4.Name = "button4";
-        button4.Size = new Size(173, 53);
-        button4.TabIndex = 16;
-        button4.Text = "S1F1";
-        button4.UseVisualStyleBackColor = true;
-        button4.Click += button4_Click;
+        richTextBox3.Location = new Point(1299, 388);
+        richTextBox3.Name = "richTextBox3";
+        richTextBox3.Size = new Size(425, 88);
+        richTextBox3.TabIndex = 17;
+        richTextBox3.Text = "";
         // 
         // Form1
         // 
@@ -586,7 +596,7 @@ partial class Form1
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(1924, 1014);
         Controls.Add(Tab_Events);
-        Font = new Font("Microsoft JhengHei UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+        Font = new Font("Microsoft JhengHei UI", 14F);
         Margin = new Padding(5);
         Name = "Form1";
         Text = "Form1";
@@ -656,4 +666,5 @@ partial class Form1
     private RichTextBox richTextBox2;
     private Button Btn_DeletePP;
     private Button button4;
+    private RichTextBox richTextBox3;
 }
