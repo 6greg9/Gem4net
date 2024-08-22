@@ -11,6 +11,7 @@ using static Secs4Net.Item;
 using System.Text.Json;
 using Secs4Net.Json;
 using Npgsql.Internal.TypeHandling;
+using static System.Net.WebRequestMethods;
 
 namespace Gem4NetRepository;
 
@@ -41,18 +42,55 @@ public partial class GemRepository // 這部分應該是可以獨立
             return PPs;
         }
     }
-    public int CreateProcessProgram(ProcessProgram pp)
+    public async Task<int> CreateProcessProgram(ProcessProgram pp)
     {
-        using (_context = new GemDbContext(_config))
-        {
-            var cn = _context.Database.GetDbConnection();
-            cn.Execute("INSERT INTO ProcessPrograms(ID, PPID, UpdateTime, Status, PPBody," +
-                " Editor, Description, ApprovalLevel, SoftwareRevision, EquipmentModelType) " +
-                 "VALUES(@ID, @PPID, @UpdateTime, @Status, @PPBody," +
-                 " @Editor, @Description, @ApprovalLevel, @SoftwareRevision, @EquipmentModelType)", pp);
 
-            return 0;
+        await semSlim.WaitAsync();
+        try
+        {
+            using (_context = new GemDbContext(_config))
+            {
+                //Create Log, 要先Log再更新正在使用的表
+                var doesExist = _context.ProcessPrograms.Any(p => p.PPID == pp.PPID);// 潛在問題,沒有在同個transaction, 需要上鎖
+
+                if (doesExist)
+                {
+                    var target = _context.ProcessPrograms.Where(p => p.PPID == pp.PPID).Take(1).Single();//.Take(1);
+                                                                                     //});
+                    _context.ProcessPrograms.Remove(target);
+                    _context.ProcessPrograms.Add(pp);
+                    //_context.FormattedProcessPrograms.Update(target);
+                    LogPPChanged(2);
+                }
+                else
+                {
+                    _context.ProcessPrograms.Add(pp);
+                    LogPPChanged(1);
+
+                }
+
+                _ = _context.SaveChanges();
+
+
+                /// <summary>
+                /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
+                /// </summary>
+                void LogPPChanged(int ppChangeStatus)
+                {
+                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(pp);
+
+                    fppLog.PPChangeStatus = ppChangeStatus;
+
+
+                    _context.FormattedProcessProgramLogs.Add(fppLog);
+                }
+
+            }
         }
+
+        finally { semSlim.Release(); }
+
+        return 0;
     }
     public int UpdateProcessProgram(ProcessProgram pp) { return 0; }
 

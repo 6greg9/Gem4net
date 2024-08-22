@@ -14,6 +14,7 @@ using Gem4Net.Control;
 using Gem4NetRepository.Model;
 using Gem4Net.TraceData;
 using System.Reflection.Metadata.Ecma335;
+using System.Threading;
 
 namespace Gem4Net;
 public partial class GemEqpService
@@ -134,7 +135,11 @@ public partial class GemEqpService
         _traceDataManager = new TraceDataManager(_secsGem, this, _GemRepo);
 
 
-        _connector.LinkTestEnabled = false;//想解決莫名斷線
+
+        //_connector.LinkTestEnabled = false;//想解決莫名斷線
+        //hsmsCancellationTokenSource!.Cancel();
+        _hsmsCancellationTokenSource = new();
+
         _connector.Start(_hsmsCancellationTokenSource.Token); // HSMS, 啟動
 
         try
@@ -148,6 +153,10 @@ public partial class GemEqpService
         {
             _logger.Error("GetPrimaryMessageAsync", ex);
         }
+    }
+    void StartHSMS()
+    {
+
     }
     public async void Disable() // 各種cancel, dispose
     {
@@ -792,19 +801,33 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
                 var terminalText = msg.SecsItem.Items[1].GetString();
-                var ackc10 = await Task.Run(() =>
-                {
-                    return OnTerminalMessageReceived?.Invoke(terminalText);
-                });
+                var ackc10 =  OnTerminalMessageReceived?.Invoke(terminalText);
 
                 using (var rtnS10F4 = new SecsMessage(10, 4)
                 {
-                    SecsItem = B(Convert.ToByte(ackc10))
+                    SecsItem = B(Convert.ToByte(ackc10?? 0))
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS10F4);
                 break;
             default:
                 break;
         }
+    }
+
+    ~GemEqpService() {
+        _hsmsCancellationTokenSource?.Cancel();
+        SecsMsgHandlerTaskCTS?.Cancel();
+
+        
+        if (_connector is not null)
+        {
+            _connector.Reconnect();
+            _connector?.DisposeAsync()
+                .ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+        
+        _secsGem?.Dispose();
+        
+
     }
 }
