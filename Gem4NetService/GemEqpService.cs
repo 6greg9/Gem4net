@@ -800,8 +800,9 @@ public partial class GemEqpService
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
+                var terminalID = msg.SecsItem.Items[0].FirstValue<int>();
                 var terminalText = msg.SecsItem.Items[1].GetString();
-                var ackc10 =  OnTerminalMessageReceived?.Invoke(terminalText);
+                var ackc10 =  OnTerminalMessageReceived?.Invoke( (terminalID,terminalText ) );
 
                 using (var rtnS10F4 = new SecsMessage(10, 4)
                 {

@@ -35,7 +35,7 @@ public partial class GemEqpService
     /// <summary> 0 - ok, 1 - one or more constants does not exist, 2 - busy, 3 - one or more values out of range/// </summary>
     public event Func<List<(int,Item)>, int>? OnEcRecieved;
     /// <summary> 0 - accepted for display , 1 - message will not be displayed , 2 - terminal not available</summary>
-    public event Func<string, int>? OnTerminalMessageReceived;
+    public event Func<(int,string), int>? OnTerminalMessageReceived;
     /// <summary> for S2F41  Input : ( RCMD, L( CPNAME, CPVAL ) ) , Output : ( HACK, L( CPNAME, CPVAL ) ) 
     /// HACK : 0 - ok, completed , 1 - invalid command , 2 - cannot do now , 3 - parameter error , 4 - initiated for asynchronous completion , 5 - rejected, already in desired condition , 6 - invalid object
     /// </summary>
