@@ -68,6 +68,8 @@ public partial class GemEqpService
     //public event Action<SecsMessage>? OnSecsMessageSend;
     //public event Action? OnProcessProgramChanged;
 
+    public event Action<PrimaryMessageWrapper>? OnUnhandledPrimaryMessage;
+    
     #endregion
 
 

@@ -154,10 +154,7 @@ public partial class GemEqpService
             _logger.Error("GetPrimaryMessageAsync", ex);
         }
     }
-    void StartHSMS()
-    {
-
-    }
+    
     public async void Disable() // 各種cancel, dispose
     {
         if (!_hsmsCancellationTokenSource.IsCancellationRequested)
@@ -305,6 +302,16 @@ public partial class GemEqpService
                 HandleStream10(primaryMsgWrapper);
                 break;
             default:
+                if( OnUnhandledPrimaryMessage is null)
+                {
+                    OnUnhandledPrimaryMessage!.Invoke(primaryMsgWrapper);
+
+                }
+                else
+                {
+                    primaryMsgWrapper.TryReplyAsync();
+
+                }
                 break;
         }
     }
