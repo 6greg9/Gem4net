@@ -58,14 +58,14 @@ public partial class GemEqpService
 
         Enable();
 
-        RecieveMessageHandlerTask = Task.Run(() =>
+        RecieveMessageHandlerTask = Task.Run(async () =>
         {
             var token = SecsMsgHandlerTaskCTS.Token;
             while (token.IsCancellationRequested != true)
             {
                 try
                 {
-                    HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage);
+                    await HandleRecievedSecsMessage(this.RecvBuffer, HandlePrimaryMessage);
                 }
                 catch (Exception ex)
                 {
@@ -174,7 +174,7 @@ public partial class GemEqpService
         RecvBuffer.Reader.ReadAllAsync(); //清理 buffer
     }
 
-    async void HandleRecievedSecsMessage(Channel<PrimaryMessageWrapper> recvBuffer, Action<PrimaryMessageWrapper> handlePrimaryMessage)
+    async Task HandleRecievedSecsMessage(Channel<PrimaryMessageWrapper> recvBuffer, Action<PrimaryMessageWrapper> handlePrimaryMessage)
     {
         //await foreach (var ReceiveSecsMsg in recvBuffer.Reader.ReadAllAsync())
         // 會有神秘的處理延遲的抖動, 還是樸實一點...
