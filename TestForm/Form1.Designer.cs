@@ -128,7 +128,7 @@ partial class Form1
         button3.TabIndex = 5;
         button3.Text = "S1F1";
         button3.UseVisualStyleBackColor = true;
-        button3.Click += button3_Click;
+        button3.Click +=  button3_Click;
         // 
         // rtbx_HSMS
         // 

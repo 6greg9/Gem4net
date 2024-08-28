@@ -56,8 +56,8 @@ public partial class GemEqpService
         // ef core 第一次使用會花費很長時間
         
 
-        Enable();
-
+        Enable().Wait();
+         
         RecieveMessageHandlerTask = Task.Run(async () =>
         {
             var token = SecsMsgHandlerTaskCTS.Token;
@@ -83,7 +83,7 @@ public partial class GemEqpService
     /// <summary>
     /// 啟動HSMS, 初始化GEM
     /// </summary>
-    public async void Enable()
+    public async Task Enable()
     {
         _secsGem?.Dispose();
 
@@ -155,7 +155,7 @@ public partial class GemEqpService
         }
     }
     
-    public async void Disable() // 各種cancel, dispose
+    public async Task Disable() // 各種cancel, dispose
     {
         if (!_hsmsCancellationTokenSource.IsCancellationRequested)
         {
@@ -279,27 +279,28 @@ public partial class GemEqpService
     /// 前面validate 會先擋住
     /// </summary>
     /// <param name="primaryMsgWrapper"></param>
-    void HandlePrimaryMessage(PrimaryMessageWrapper primaryMsgWrapper)
+    async void HandlePrimaryMessage(PrimaryMessageWrapper primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
             case SecsMessage msg when (msg.S == 1):
-                HandleStream1(primaryMsgWrapper);
+                
+                await HandleStream1(primaryMsgWrapper);
                 break;
             case SecsMessage msg when (msg.S == 2):
-                HandleStream2(primaryMsgWrapper);
+                await HandleStream2(primaryMsgWrapper);
                 break;
             case SecsMessage msg when (msg.S == 5):
-                HandleStream5(primaryMsgWrapper);
+                await HandleStream5(primaryMsgWrapper);
                 break;
             case SecsMessage msg when (msg.S == 6):
-                HandleStream6(primaryMsgWrapper);
+                await HandleStream6(primaryMsgWrapper);
                 break;
             case SecsMessage msg when (msg.S == 7):
-                HandleStream7(primaryMsgWrapper);
+                await HandleStream7(primaryMsgWrapper);
                 break;
             case SecsMessage msg when (msg.S == 10):
-                HandleStream10(primaryMsgWrapper);
+                await HandleStream10(primaryMsgWrapper);
                 break;
             default:
                 if( OnUnhandledPrimaryMessage is null)
@@ -309,13 +310,13 @@ public partial class GemEqpService
                 }
                 else
                 {
-                    primaryMsgWrapper.TryReplyAsync();
+                    await primaryMsgWrapper.TryReplyAsync();
 
                 }
                 break;
         }
     }
-    async void HandleStream1(PrimaryMessageWrapper? primaryMsgWrapper)
+    async Task HandleStream1(PrimaryMessageWrapper primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
@@ -375,7 +376,7 @@ public partial class GemEqpService
                 break;
         }
     }
-    async void HandleStream2(PrimaryMessageWrapper? primaryMsgWrapper)
+    async Task HandleStream2(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
@@ -608,7 +609,7 @@ public partial class GemEqpService
             Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
         return Clock;
     }
-    async void HandleStream5(PrimaryMessageWrapper? primaryMsgWrapper)
+    async Task HandleStream5(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
@@ -681,7 +682,7 @@ public partial class GemEqpService
                 break;
         }
     }
-    async void HandleStream6(PrimaryMessageWrapper? primaryMsgWrapper)
+    async Task HandleStream6(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
@@ -716,7 +717,7 @@ public partial class GemEqpService
                 break;
         }
     }
-    async void HandleStream7(PrimaryMessageWrapper? primaryMsgWrapper)
+    async Task HandleStream7(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
@@ -800,7 +801,7 @@ public partial class GemEqpService
                 break;
         }
     }
-    async void HandleStream10(PrimaryMessageWrapper? primaryMsgWrapper)
+    async Task HandleStream10(PrimaryMessageWrapper? primaryMsgWrapper)
     {
         switch (primaryMsgWrapper.PrimaryMessage)
         {
