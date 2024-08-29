@@ -56,7 +56,7 @@ public partial class GemEqpService
         // ef core 第一次使用會花費很長時間
         
 
-        Enable().Wait();
+        _ = Enable();
          
         RecieveMessageHandlerTask = Task.Run(async () =>
         {
@@ -741,7 +741,7 @@ public partial class GemEqpService
                 break;
             //S7F5 Process Program Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 5):
-                var PPs = _GemRepo.GetProcessProgram(msg.SecsItem.GetString()).ToList();
+                var PPs =await  _GemRepo.GetProcessProgram(msg.SecsItem.GetString());
 
                 var Pp = _GemRepo.ProcessProgramToSecsItem(PPs.First());
                 using (var rtnS7F6 = new SecsMessage(7, 6)
@@ -768,8 +768,8 @@ public partial class GemEqpService
             //S7F19 Current Process Program Dir Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 19):
                 // 這種做法是強制使用資料庫, 應該要可以使用其他方式
-                var ppArry = _GemRepo.GetFormattedPPAll().Select(pp => A(pp.PPID)).ToArray();
-                var itemS7F20 = L(ppArry);
+                var ppArry = await _GemRepo.GetFormattedPPAll();
+                var itemS7F20 = L(ppArry.Select(pp => A(pp.PPID)).ToArray());
                 using (var rtnS7F20 = new SecsMessage(7, 20)
                 {
                     SecsItem = itemS7F20
@@ -788,7 +788,7 @@ public partial class GemEqpService
             //S7F25 Formatted Process Program Request
             case SecsMessage msg when (msg.S == 7 && msg.F == 25):
 
-                var fpp = _GemRepo.GetFormattedProcessProgram(msg.SecsItem.GetString()).ToList();
+                var fpp = await _GemRepo.GetFormattedProcessProgram(msg.SecsItem.GetString());
 
                 var pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First());
                 using (var rtnS7F26 = new SecsMessage(7, 26)

@@ -19,9 +19,10 @@ public partial class GemRepository // 這部分應該是可以獨立
 {
     static SemaphoreSlim semSlim = new SemaphoreSlim(1, 1);
     #region No Format
-    public IEnumerable<ProcessProgram> GetProcessProgram(string PPID)
+    public async Task<IEnumerable<ProcessProgram>> GetProcessProgram(string PPID)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -30,17 +31,31 @@ public partial class GemRepository // 這部分應該是可以獨立
                     .Where(pp => pp.PPID == PPID).ToList();
                 return pps;
             }
+
         }
+
+        finally { semSlim.Release(); }
+        
     }
-    public IEnumerable<ProcessProgram> GetProcessProgramAll()
+    public async Task<IEnumerable<ProcessProgram>> GetProcessProgramAll()
     {
-        using (_context = new GemDbContext(_config))
+        await semSlim.WaitAsync();
+        try
         {
 
-            var PPs = _context.ProcessPrograms
+            using (_context = new GemDbContext(_config))
+            {
+
+                var PPs = _context.ProcessPrograms
                 .ToList();
-            return PPs;
+                return PPs;
+            }
         }
+
+        finally { semSlim.Release(); }
+
+
+        
     }
     public async Task<int> CreateProcessProgram(ProcessProgram pp)
     {
@@ -77,12 +92,12 @@ public partial class GemRepository // 這部分應該是可以獨立
                 /// </summary>
                 void LogPPChanged(int ppChangeStatus)
                 {
-                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(pp);
+                    var ppLog = Mapper.Map<ProcessProgramLog>(pp);
 
-                    fppLog.PPChangeStatus = ppChangeStatus;
+                    ppLog.PPChangeStatus = ppChangeStatus;
 
 
-                    _context.FormattedProcessProgramLogs.Add(fppLog);
+                    _context.ProcessProgramLogs.Add(ppLog);
                 }
 
             }
@@ -94,31 +109,47 @@ public partial class GemRepository // 這部分應該是可以獨立
     }
     public int UpdateProcessProgram(ProcessProgram pp) { return 0; }
 
-    public int DeleteProcessProgram(List<string> ppids)
+    public async Task<int> DeleteProcessProgram(List<string> ppids)
     {
-        using (_context = new GemDbContext(_config))
+        await semSlim.WaitAsync();
+        try
         {
-            //var cn = _context.Database.GetDbConnection();
-            //var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
-
-            _context.Remove(_context.ProcessPrograms.Where(pp => ppids.Contains(pp.PPID)));
-            var rows = _context.SaveChanges();
-            if (rows > 0)
+            using (_context = new GemDbContext(_config))
             {
+                //var cn = _context.Database.GetDbConnection();
+                //var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
+
+                _context.Remove(_context.ProcessPrograms.Where(pp => ppids.Contains(pp.PPID)));
+                var rows = _context.SaveChanges();
+                if (rows > 0)
+                {
+                    return 0;
+                }
+                return 1;
+            }
+
+        }
+
+        finally { semSlim.Release(); }
+        
+    }
+    public async Task<int> DeletedProcessProgramAll()
+    {
+        await semSlim.WaitAsync();
+        try
+        {
+            using (_context = new GemDbContext(_config))
+            {
+
+                _context.RemoveRange(_context.ProcessPrograms);
+                _context.SaveChanges();
                 return 0;
             }
-            return 1;
-        }
-    }
-    public int DeletedProcessProgramAll()
-    {
-        using (_context = new GemDbContext(_config))
-        {
 
-            _context.RemoveRange(_context.ProcessPrograms);
-            _context.SaveChanges();
-            return 0;
         }
+
+        finally { semSlim.Release(); }
+        
     }
 
     public Item ProcessProgramToSecsItem(ProcessProgram pp)
@@ -150,9 +181,10 @@ public partial class GemRepository // 這部分應該是可以獨立
 
     #region Formatted
     // 純增刪查改不做資料驗證
-    public IEnumerable<FormattedProcessProgram> GetFormattedProcessProgram(string PPID)
+    public async Task<IEnumerable<FormattedProcessProgram>> GetFormattedProcessProgram(string PPID)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -161,11 +193,16 @@ public partial class GemRepository // 這部分應該是可以獨立
                     .Where(pp => pp.PPID == PPID).ToList();
                 return pps;
             }
+
         }
+
+        finally { semSlim.Release(); }
+        
     }
-    public IEnumerable<FormattedProcessProgram> GetFormattedPPAll()
+    public async Task<IEnumerable<FormattedProcessProgram>> GetFormattedPPAll()
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -176,7 +213,11 @@ public partial class GemRepository // 這部分應該是可以獨立
                 //    .ToList();
                 return PPs;
             }
+
         }
+
+        finally { semSlim.Release(); }
+        
     }
     public async Task<int> CreateFormattedProcessProgram(FormattedProcessProgram fpp)
     {
@@ -279,9 +320,10 @@ public partial class GemRepository // 這部分應該是可以獨立
     /// </summary>
     /// <param name="ppids"></param>
     /// <returns></returns>
-    public int DeleteFormattedProcessProgram(List<string> ppids)
+    public async Task<int> DeleteFormattedProcessProgram(List<string> ppids)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -304,22 +346,27 @@ public partial class GemRepository // 這部分應該是可以獨立
                 _context.SaveChanges();
                 return 1;
             }
+
         }
+
+        finally { semSlim.Release(); }
+        
     }
-    public int DeleteFormattedPPAll()
+    public async Task<int> DeleteFormattedPPAll()
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
-                _context.FormattedProcessPrograms.ForEachAsync(fpp =>
+                _ = _context.FormattedProcessPrograms.ForEachAsync(fpp =>
                 {
                     _context.FormattedProcessPrograms.Remove(fpp);
 
                     //Delete Log
                     var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
                     fppLog.UpdateTime = DateTime.UtcNow;
-                    fppLog.LogId  = Guid.NewGuid();
+                    fppLog.LogId = Guid.NewGuid();
                     fppLog.PPChangeStatus = 3;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
                 });
@@ -327,7 +374,11 @@ public partial class GemRepository // 這部分應該是可以獨立
                 _context.SaveChanges();
                 return 0;
             }
+
         }
+
+        finally { semSlim.Release(); }
+        
     }
 
     public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp)

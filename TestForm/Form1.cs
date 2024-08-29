@@ -348,7 +348,7 @@ public partial class Form1 : Form
         GemEquipment.SendTerminalMessageAsync((string)Tbx_TerminalInput.Text, 87, true);
     }
 
-    private void Btn_InsertPP_Click(object sender, EventArgs e)
+    private async void Btn_InsertPP_Click(object sender, EventArgs e)
     {
         var pp = new FormattedProcessProgram();
         pp.LogId = Guid.NewGuid();
@@ -376,13 +376,13 @@ public partial class Form1 : Form
             });
         ppBody.Add(temperatureCmd);
         pp.PPBody = JsonSerializer.Serialize(ppBody);
-        _gemRepo.CreateFormattedProcessProgram(pp);
+        await _gemRepo.CreateFormattedProcessProgram(pp);
         richTextBox2.Text = pp.PPID;
     }
 
-    private void Btn_SelectAllPP_Click(object sender, EventArgs e)
+    private async void Btn_SelectAllPP_Click(object sender, EventArgs e)
     {
-        var pps = _gemRepo.GetFormattedPPAll().Select(pp => pp).ToList();
+        var pps = await _gemRepo.GetFormattedPPAll();
         var ppBody = pps.FirstOrDefault().PPBody;
         var p = JsonSerializer.Deserialize<List<ProcessCommand>>(ppBody);
     }
