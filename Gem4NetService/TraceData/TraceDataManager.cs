@@ -40,7 +40,8 @@ public class TraceDataManager
         {
             return 3;
         }
-        var variableLst = _repo.GetSvNameListAll().Items.ToList();
+        var variableLstItem = await _repo.GetSvNameListAll();
+        var variableLst = variableLstItem.Items.ToList();
         foreach (var vid in traceInit.sampleVIDs) // 檢查不存在VID
         {
             if (variableLst.Where(item => item.Items[0].FirstValue<int>() == vid).Any() == false)

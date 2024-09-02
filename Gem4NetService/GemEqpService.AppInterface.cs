@@ -92,13 +92,13 @@ public partial class GemEqpService
 
     #region Commands
 
-    public int UpdateSV(int VID, object varValue)
+    public async Task<int> UpdateSV(int VID, object varValue)
     {
-        return _GemRepo.SetVarValue(VID, varValue);
+        return await _GemRepo.SetVarValue(VID, varValue);
     }
-    public int UpdateEC(List<(int, Item)> idValList)
+    public async Task<int> UpdateEC(List<(int, Item)> idValList)
     {
-        return _GemRepo.SetEcList(idValList);
+        return await _GemRepo.SetEcList(idValList);
     }
 
     //Report類
@@ -134,7 +134,7 @@ public partial class GemEqpService
     int dataID = 0;
     public async Task SendEventReport(int eventId, bool useWbit)
     {
-        var reports = _GemRepo.GetReportsByCeid(eventId);
+        var reports = await _GemRepo.GetReportsByCeid(eventId);
         //Random random = new Random();
         dataID +=1;
         using var s6f11 = new SecsMessage(6, 11, useWbit)
@@ -149,7 +149,7 @@ public partial class GemEqpService
     }
     public async Task SendEventReport(int dataId,int eventId, bool useWbit)
     {
-        var reports = _GemRepo.GetReportsByCeid(eventId);
+        var reports =await _GemRepo.GetReportsByCeid(eventId);
         
         using var s6f11 = new SecsMessage(6, 11, useWbit)
         {

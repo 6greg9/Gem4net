@@ -206,7 +206,7 @@ public partial class Form1 : Form
         var test = await _gemRepo.GetSv(9);
         MessageBox.Show(test.ToJson());
 
-        var nameList = _gemRepo.GetSvNameListAll();
+        var nameList = await _gemRepo.GetSvNameListAll();
         MessageBox.Show(nameList.ToJson());
         //using (var db = new GemVarContext())
         //{
@@ -304,11 +304,11 @@ public partial class Form1 : Form
         //MessageBox.Show(testNull.ToString());
     }
 
-    private void Btn_TestGetEvents_Click(object sender, EventArgs e)
+    private async void Btn_TestGetEvents_Click(object sender, EventArgs e)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        var test = _gemRepo.GetReportsByCeid(1);
+        var test = await _gemRepo.GetReportsByCeid(1);
         sw.Stop();
         MessageBox.Show(test.ToJson());
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
@@ -337,10 +337,10 @@ public partial class Form1 : Form
         //MessageBox.Show(test.ToString());
     }
 
-    private void Btn_TestSendS6F11_Click(object sender, EventArgs e)
+    private async void Btn_TestSendS6F11_Click(object sender, EventArgs e)
     {
         var inputId = Convert.ToInt32(Tbx_InputECID.Text.Trim());
-        GemEquipment.SendEventReport(inputId, false);
+        await GemEquipment.SendEventReport(inputId, false);
     }
 
     private void Btn_S10F1TerminalRequest_Click(object sender, EventArgs e)

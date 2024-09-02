@@ -22,7 +22,6 @@ public partial class GemRepository
         }
 
         finally { semSlim.Release(); }
-        
     }
     public async Task<IEnumerable<GemAlarm?>> GetAlarm(IEnumerable<int> alarmIds)
     {
@@ -41,7 +40,6 @@ public partial class GemRepository
         }
 
         finally { semSlim.Release(); }
-        
     }
     public async Task<IEnumerable<GemAlarm>> GetAlarmAll()
     {

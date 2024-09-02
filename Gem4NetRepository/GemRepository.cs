@@ -34,7 +34,7 @@ public partial class GemRepository
     public int UseJsonSecsItem { get; private set; }
 
     IMapper Mapper;
-    IConfiguration? _config;
+    IConfiguration _config;
     private int TimeFormat;
 
     public GemRepository(IConfiguration configaration)
@@ -50,7 +50,7 @@ public partial class GemRepository
             //_ = _context.Database.ExecuteSqlRaw("PRAGMA synchronous = ON;"); //sqlite加速?
         }
 
-        UpdateTimeFormat();
+        UpdateTimeFormat().Wait();
 
         //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
         SqlMapper.AddTypeHandler(new PPBodyHandler());
@@ -92,8 +92,7 @@ public partial class GemRepository
         finally { semSlim.Release(); }
     }
 
-
-    async void UpdateTimeFormat()
+    async Task UpdateTimeFormat()
     {
         var TimeFormatVID = Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]);
         var TimeFormatEC = await GetEC(TimeFormatVID) ;
@@ -122,10 +121,10 @@ public partial class GemRepository
     /// <returns></returns>
     public async Task<Item?> GetSvList(IEnumerable<int> vidList)
     {
-        UpdateTimeFormat();
+        await UpdateTimeFormat();
 
-        return await LockGemRepo(
-            () => SubGetSvListByVidList(vidList)
+        return await LockGemRepo<Item?>(
+            () =>  SubGetSvListByVidList(vidList)
         );
 
 
@@ -138,18 +137,10 @@ public partial class GemRepository
     }
     public async Task<Item?> GetSv(int vid)
     {
-        UpdateTimeFormat();
-        await semSlim.WaitAsync();
-        try
-        {
-            using (_context = new GemDbContext(_config))
-            {
-                return SubGetSvByVID(vid);
-            }
-        }
-        finally { semSlim.Release(); }
-
-
+        await UpdateTimeFormat();
+        return await LockGemRepo<Item?>(
+            () => SubGetSvByVID(vid)
+        );
     }
     Item? SubGetSvByVID(int vid)
     {
@@ -167,15 +158,9 @@ public partial class GemRepository
     }
     public async Task<Item?> GetEcList(IEnumerable<int> vidList)
     {
-        await semSlim.WaitAsync();
-        try
-        {
-            using (_context = new GemDbContext(_config))
-            {
-                return SubGetEcListByVidList(vidList);
-            }
-        }
-        finally { semSlim.Release(); }
+        return await LockGemRepo<Item?>(
+            () => SubGetEcListByVidList(vidList)
+        );
 
     }
     Item? SubGetEcListByVidList(IEnumerable<int> vidList)
@@ -184,20 +169,10 @@ public partial class GemRepository
     }
     public async Task<Item?> GetEC(int vid)
     {
-        await semSlim.WaitAsync();
-        try
-        {
-            using (_context = new GemDbContext(_config))
-            {
-                return SubGetEcByVID(vid);
-            }
-        }
-        finally { semSlim.Release(); }
-
+        return await LockGemRepo<Item?>( () => SubGetEcByVID(vid) );
     }
     Item? SubGetEcByVID(int vid)
     {
-
         var Variable = _context.Variables
             .Where(v => v.VarType == "EC")
             .Where(v => v.VID == vid).FirstOrDefault();
@@ -206,19 +181,13 @@ public partial class GemRepository
 
         return GemVariableToSecsItem(Variable);
     }
-    public Item? GetVariable(string name)
+    public async Task<Item?> GetVariable(string name)
     {
-        using (_context = new GemDbContext(_config))
-        {
-            return SubGetVarByName(name);
-        }
+        return await LockGemRepo<Item?>(() => SubGetVarByName(name));
     }
-    public Item? GetVariable(int vid)
+    public async Task<Item?> GetVariable(int vid)
     {
-        using (_context = new GemDbContext(_config))
-        {
-            return SubGetVarByVid(vid);
-        }
+        return await LockGemRepo<Item?>(() => SubGetVarByVid(vid) );
     }
     Item? SubGetVarByName(string name)
     {
@@ -232,20 +201,13 @@ public partial class GemRepository
     }
     Item? SubGetVarByVid(int vid)
     {
-        var Variable = _context.Variables
-            //.Where(v=>v.VarType=="SV")
-            .Where(v => v.VID == vid).FirstOrDefault();
+        var Variable = _context.Variables.Where(v => v.VID == vid).FirstOrDefault();
         if (Variable == null)//找不到
             return A(); // ?
         return GemVariableToSecsItem(Variable);
     }
     Item? SubGetClock(int timeFormatcode)
     {
-
-        //var timeFormat = GetEC(Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]))
-        //                        ?? U4((uint)Convert.ToInt32(_config["GemEqpAppOptions:ClockFormatCode"]));
-
-        //timeFormatcode = timeFormat.FirstValue<int>();
         if (timeFormatcode == 0)
             return A(DateTime.Now.ToString("yyMMddHHmmss"));
         if (timeFormatcode == 1)
@@ -254,7 +216,6 @@ public partial class GemRepository
             return A(DateTime.UtcNow.ToString("yyyy-MM-dd") + "T" +  //UTC
                 DateTime.UtcNow.ToString("HH:mm:ss.fff") + "Z");
         return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
-
     }
     Item? GemVariableToSecsItem(GemVariable variable)
     {
@@ -346,15 +307,9 @@ public partial class GemRepository
     /// SVID, SVNAMES, UNITS
     /// </summary>
     /// <returns></returns>
-    public Item? GetVariableAll()
+    public async Task<Item?> GetVariableAll()
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
-                return SubGetVariableAll();
-            }
-        }
+        return await LockGemRepo<Item?>(SubGetVariableAll);
     }
     public Item? SubGetVariableAll()
     {
@@ -366,12 +321,10 @@ public partial class GemRepository
     /// </summary>
     /// <param name="vidList"></param>
     /// <returns></returns>
-    public Item? GetSvNameList(IEnumerable<int> vidList)
+    public async Task<Item?> GetSvNameList(IEnumerable<int> vidList)
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
                 var svNameList = vidList.Select(vid =>
                 {   //這種寫法有一天要改
                     return _context.Variables.Where(v => v.VarType == "SV") //混到EC, EV可嗎?
@@ -379,48 +332,43 @@ public partial class GemRepository
                 }).Select(v =>  // Comment: A:0 for SVNAME and UNITS indicates unknown SVID
                 {
                     if (v is null)
-                    {
                         return A();// ?
-                    }
+                    
                     return Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit));
                 });
                 return Item.L(svNameList.ToArray());
             }
-        }
-
+        );
     }
     /// <summary>
     /// For S1F11
     /// </summary>
     /// <returns></returns>
-    public Item? GetSvNameListAll()
+    public async Task<Item?> GetSvNameListAll()
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
+
                 var itemList = _context.Variables.Where(v => v.VarType == "SV")
                 .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
                 return Item.L(itemList.ToArray());
             }
-        }
-
+        );
     }
     /// <summary>
     /// For S1F3
     /// </summary>
     /// <returns></returns>
-    public Item? GetSvAll()
+    public async Task<Item?> GetSvAll()
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
+
                 var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID).ToList()
                 .Select(v => GemVariableToSecsItem(v)).ToArray();
                 return Item.L(itemList);
             }
-        }
+        );
 
     }
 
@@ -428,16 +376,14 @@ public partial class GemRepository
     /// for s2f14
     /// </summary>
     /// <returns></returns>
-    public Item? GetEcValueList(IEnumerable<int> vidList)
+    public async Task<Item?> GetEcValueList(IEnumerable<int> vidList)
     {
         if (vidList.Count() == 0)
         {
-            return GetEcValueListAll();
+            return await GetEcValueListAll();
         }
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
                 //IQueryable<GemVariable?> rtnGemVar = null;
                 List<GemVariable?> rtnGemVar = new();
                 foreach (var vid in vidList)
@@ -463,21 +409,20 @@ public partial class GemRepository
                 });
                 return Item.L(itemLst);
             }
-        }
-
+        );
+        
     }
-    public Item? GetEcValueListAll()
+    public async Task<Item?> GetEcValueListAll()
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
                 var ecLst = _context.Variables.Where(v => v.VarType == "EC");
                 var itemList = ecLst.ToList().Select(v => GemVariableToSecsItem(v)); // 這裡有EF的坑
                 var itemArry = itemList.ToArray();
                 return Item.L(itemArry);
             }
-        }
+        );
+        
 
     }
 
@@ -486,37 +431,30 @@ public partial class GemRepository
     /// </summary>
     /// <param name="vidList"></param>
     /// <returns></returns>
-    public Item? GetEcDetailList(IEnumerable<int> vidList)
+    public async Task<Item?> GetEcDetailList(IEnumerable<int> vidList)
     {
-        if (vidList.Count() == 0)
-        {
-            return GetEcDetailListAll();
-        }
-        lock (lockObject)
-        {
+        if (!vidList.Any())
+            return await GetEcDetailListAll();
 
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
                 var ecDetailLst = _context.Variables.Where(v=> vidList.Contains(v.VID) )
                     //.Where(v => v.VarType == "EC") //我決定不管都給,頂多是空的
                     .ToList().Select(v => GemEcDetailToSecsItem(v));
                 return L(ecDetailLst.ToArray());
             }
-        }
-
-    }
-    public Item? GetEcDetailListAll()
+        );
+            }
+    public async Task<Item?> GetEcDetailListAll()
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
                 var ecLst = _context.Variables.Where(v => v.VarType == "EC");
                 var itemList = ecLst.ToList().Select(v => GemEcDetailToSecsItem(v)); // 這裡有EF的坑
                 var itemArry = itemList.ToArray();
                 return Item.L(itemArry);
             }
-        }
+        );
 
     }
     /// <summary>
@@ -550,91 +488,90 @@ public partial class GemRepository
     /// <param name="vid"></param>
     /// <param name="updateValue"></param>
     /// <returns></returns>
-    public int SetVarValue(int vid, object updateValue)
+    public async Task<int> SetVarValue(int vid, object updateValue)
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
-                var variable = _context.Variables.FirstOrDefault(v => v.VID == vid);
-                if (variable is null)
-                    return 1;//NotFound
-                try
-                {
-                    if (variable.DataType != "LIST")
-                    {
-                        switch (variable.DataType)
-                        {
+        return await LockGemRepo<int>(
+           () => {
+               var variable = _context.Variables.FirstOrDefault(v => v.VID == vid);
+               if (variable is null)
+                   return 1;//NotFound
+               try
+               {
+                   if (variable.DataType != "LIST")
+                   {
+                       switch (variable.DataType)
+                       {
 
-                            case "BINARY":
-                                var HexString = Convert.ToHexString((byte[])updateValue);
-                                variable.Value = HexString;
-                                break;
-                            case "BOOL":
-                                var BOOL = Convert.ToBoolean(updateValue);
-                                variable.Value = BOOL.ToString();
-                                break;
-                            case "ASCII":
-                                var ASCII = Convert.ToString(updateValue);
-                                variable.Value = ASCII.ToString();
-                                break;
-                            case "UINT_1":  ///數值類注意OutOfRange
-                                var UINT_1 = Convert.ToByte(updateValue);
-                                variable.Value = UINT_1.ToString();
-                                break;
-                            case "UINT_2":
-                                var UINT_2 = Convert.ToUInt16(updateValue);
-                                variable.Value = UINT_2.ToString();
-                                break;
-                            case "UINT_4":
-                                var UINT_4 = Convert.ToUInt32(updateValue);
-                                variable.Value = UINT_4.ToString();
-                                break;
-                            case "UINT_8":
-                                var UINT_8 = Convert.ToUInt64(updateValue);
-                                variable.Value = UINT_8.ToString();
-                                break;
-                            case "INT_1":
-                                var INT_1 = Convert.ToSByte(updateValue);
-                                variable.Value = INT_1.ToString();
-                                break;
-                            case "INT_2":
-                                var INT_2 = Convert.ToInt16(updateValue);
-                                variable.Value = INT_2.ToString();
-                                break;
-                            case "INT_4":
-                                var INT_4 = Convert.ToInt32(updateValue);
-                                variable.Value = INT_4.ToString();
-                                break;
-                            case "INT_8":
-                                var INT_8 = Convert.ToInt64(updateValue);
-                                variable.Value = INT_8.ToString();
-                                break;
-                            case "FLOAT_4":
-                                var FLOAT_4 = Convert.ToSingle(updateValue);
-                                variable.Value = FLOAT_4.ToString();
-                                break;
-                            case "FLOAT_8":
-                                var FLOAT_8 = Convert.ToDouble(updateValue);
-                                variable.Value = FLOAT_8.ToString();
-                                break;
-                            case "LIST":
-                                var LIST = updateValue as Item;
-                                variable.Value = LIST.ToJson();
-                                break;
-                            default:
-                                return 2;
-                        }
-                        _context.SaveChanges();
-                        if (variable.VarType == "EC")
-                            return 2;
-                        return 0; //SV,DV
-                    }
-                }
-                catch (Exception) { throw; }
-                return 3;//ListSV ?!
-            }
-        }
+                           case "BINARY":
+                               var HexString = Convert.ToHexString((byte[])updateValue);
+                               variable.Value = HexString;
+                               break;
+                           case "BOOL":
+                               var BOOL = Convert.ToBoolean(updateValue);
+                               variable.Value = BOOL.ToString();
+                               break;
+                           case "ASCII":
+                               var ASCII = Convert.ToString(updateValue);
+                               variable.Value = ASCII.ToString();
+                               break;
+                           case "UINT_1":  ///數值類注意OutOfRange
+                               var UINT_1 = Convert.ToByte(updateValue);
+                               variable.Value = UINT_1.ToString();
+                               break;
+                           case "UINT_2":
+                               var UINT_2 = Convert.ToUInt16(updateValue);
+                               variable.Value = UINT_2.ToString();
+                               break;
+                           case "UINT_4":
+                               var UINT_4 = Convert.ToUInt32(updateValue);
+                               variable.Value = UINT_4.ToString();
+                               break;
+                           case "UINT_8":
+                               var UINT_8 = Convert.ToUInt64(updateValue);
+                               variable.Value = UINT_8.ToString();
+                               break;
+                           case "INT_1":
+                               var INT_1 = Convert.ToSByte(updateValue);
+                               variable.Value = INT_1.ToString();
+                               break;
+                           case "INT_2":
+                               var INT_2 = Convert.ToInt16(updateValue);
+                               variable.Value = INT_2.ToString();
+                               break;
+                           case "INT_4":
+                               var INT_4 = Convert.ToInt32(updateValue);
+                               variable.Value = INT_4.ToString();
+                               break;
+                           case "INT_8":
+                               var INT_8 = Convert.ToInt64(updateValue);
+                               variable.Value = INT_8.ToString();
+                               break;
+                           case "FLOAT_4":
+                               var FLOAT_4 = Convert.ToSingle(updateValue);
+                               variable.Value = FLOAT_4.ToString();
+                               break;
+                           case "FLOAT_8":
+                               var FLOAT_8 = Convert.ToDouble(updateValue);
+                               variable.Value = FLOAT_8.ToString();
+                               break;
+                           case "LIST":
+                               var LIST = updateValue as Item;
+                               variable.Value = LIST.ToJson();
+                               break;
+                           default:
+                               return 2;
+                       }
+                       _context.SaveChanges();
+                       if (variable.VarType == "EC")
+                           return 2;
+                       return 0; //SV,DV
+                   }
+               }
+               catch (Exception) { throw; }
+               return 3;//ListSV ?!
+           }
+       );
+       
 
     }
 
@@ -644,14 +581,12 @@ public partial class GemRepository
     /// </summary>
     /// <param name="idValLst"></param>
     /// <returns></returns>
-    public int SetEcList(IEnumerable<(int, Item)> idValLst)
+    public async Task<int> SetEcList(IEnumerable<(int, Item)> idValLst)
     {
         int EAC = -1;
         var idLst = idValLst.Select(pair => pair.Item1).ToList();
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<int>(
+            () => {
                 var ECs = _context.Variables.Where(v => v.VarType == "EC");
                 if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idLst.Count)
                 {
@@ -668,8 +603,8 @@ public partial class GemRepository
                 _context.SaveChanges();
                 return 0; //all success
             }
-        }
-
+        );
+        
     }
     int SubSetVarById(GemVariable variable, (int, Item) idVal)
     {
@@ -789,13 +724,11 @@ public partial class GemRepository
     }
     #endregion
 
-    public Item? GetReportsByCeid(int ceid)
+    public async Task<Item?> GetReportsByCeid(int ceid)
     {
-        UpdateTimeFormat();
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        await UpdateTimeFormat();
+        return await LockGemRepo<Item>(
+            () => {
                 List<(int, Item)> rtnRptItems = new();
                 var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
                     .Select(link => link.Report);
@@ -821,15 +754,12 @@ public partial class GemRepository
                 }
                 return L(rtnRptItems.Select(p => L(U4((uint)p.Item1), L(p.Item2))));
             }
-        }
-
+        );
     }
-    public Item? GetReportByRpid(int rpid)
+    public async Task<Item?> GetReportByRpid(int rpid)
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<Item?>(
+            () => {
                 var rptVarLink = _context.ReportVariableLinks.Where(rpt => rpt.RPTID == rpid);
                 if (!rptVarLink.Any())
                 {
@@ -843,9 +773,9 @@ public partial class GemRepository
                     ).ToList()
                     .Select(v => GemVariableToSecsItem(v)).ToArray();
                 return L(reportVars);
-
             }
-        }
+        );
+       
 
     }
     #region DynamicEventReport
@@ -853,12 +783,10 @@ public partial class GemRepository
     /// 0 - ok, 1 - out of spac, 2 - invalid format, 3 - 1 or more RPTID already defined, 4 - 1 or more invalid VID
     /// </summary>
     /// <returns></returns>
-    public int DefineReport(IEnumerable<(int RPTID, int[] VID)> rptLst)
+    public async Task<int> DefineReport(IEnumerable<(int RPTID, int[] VID)> rptLst)
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<int>(
+            () => {
                 if (rptLst.Count() == 0)//清光, 也許應該寫在其他地方...
                 {
                     //_context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports "); sqlite 居然沒有Truncate
@@ -898,7 +826,8 @@ public partial class GemRepository
                 _context.SaveChanges();
                 return 0;
             }
-        }
+        );
+       
 
     }
 
@@ -907,12 +836,10 @@ public partial class GemRepository
     /// </summary>
     /// <param name="evntRptLinks"></param>
     /// <returns></returns>
-    public int LinkEvent(IEnumerable<(int CEID, int[] RPTIDs)> evntRptLinks)
+    public async Task<int> LinkEvent(IEnumerable<(int CEID, int[] RPTIDs)> evntRptLinks)
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<int>(
+            () => {
                 if (evntRptLinks.Count() == 0)//清光, 也許應該寫在其他地方...
                 {
                     _context.Database.ExecuteSqlRaw("DELETE FROM Events");
@@ -950,8 +877,7 @@ public partial class GemRepository
                 _context.SaveChanges();
                 return 0;
             }
-        }
-
+        );
     }
     /// <summary>
     /// 0 - ok, 1 - denied
@@ -959,12 +885,10 @@ public partial class GemRepository
     /// <param name="isEnable"></param>
     /// <param name="ecids"></param>
     /// <returns></returns>
-    public int EnableEvent(bool isEnable, IEnumerable<int> ecids)
+    public async Task<int> EnableEvent(bool isEnable, IEnumerable<int> ecids)
     {
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
+        return await LockGemRepo<int>(
+            () => {
                 if (_context.Events.Where(evnt => ecids.Contains(evnt.ECID)).Count() != ecids.Count()) //ECID有不存在
                     return 1;
                 if (ecids.Count() == 0) // 全部
@@ -994,10 +918,7 @@ public partial class GemRepository
                 _context.SaveChanges();
                 return 0;
             }
-        }
-
+        );
     }
     #endregion
-
-
 }

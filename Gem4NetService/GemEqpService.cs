@@ -249,7 +249,7 @@ public partial class GemEqpService
                 {
                     SecsItem = B((byte)result)
                 })
-                    ReceiveSecsMsg.TryReplyAsync(rtnMsg);
+                    await ReceiveSecsMsg.TryReplyAsync(rtnMsg);
                 return;
             }
 
@@ -261,7 +261,7 @@ public partial class GemEqpService
                 {
                     SecsItem = B((byte)result)
                 })
-                    ReceiveSecsMsg.TryReplyAsync(rtnMsg);
+                    await ReceiveSecsMsg.TryReplyAsync(rtnMsg);
                 return;
             }
             //Handle PrimaryMessage
@@ -337,7 +337,7 @@ public partial class GemEqpService
                 Item? svList;
                 if (vids is null || vids.Count() == 0)
                 {
-                    svList = _GemRepo.GetSvAll();
+                    svList =await _GemRepo.GetSvAll();
                 }
                 else
                 {
@@ -355,7 +355,7 @@ public partial class GemEqpService
                 vids = msg.SecsItem.Items.Select(item => item.FirstValue<int>());
                 if (vids.Any())
                 {
-                    var svNameList = _GemRepo.GetSvNameList(vids);
+                    var svNameList = await _GemRepo.GetSvNameList(vids);
                     using (var rtnS1F12 = new SecsMessage(1, 12)
                     {
                         SecsItem = svNameList
@@ -364,7 +364,7 @@ public partial class GemEqpService
                 }
                 else
                 {
-                    var svNameList = _GemRepo.GetSvNameListAll();
+                    var svNameList = await _GemRepo.GetSvNameListAll();
                     using (var rtnS1F12 = new SecsMessage(1, 12)
                     {
                         SecsItem = svNameList
@@ -385,7 +385,7 @@ public partial class GemEqpService
                 var idCnt = msg.SecsItem?.Items.Length;
                 if (idCnt is null or 0)
                 {
-                    var allEC = _GemRepo?.GetEcValueListAll();
+                    var allEC = await _GemRepo?.GetEcValueListAll();
                     using (var rtnMsg = new SecsMessage(2, 14)
                     {
                         SecsItem = allEC
@@ -396,7 +396,7 @@ public partial class GemEqpService
                 // 查EC
                 var ecids = msg.SecsItem?.Items
                         .Select(item => item.FirstValue<int>());
-                var ecs = _GemRepo?.GetEcValueList(ecids);
+                var ecs = await _GemRepo?.GetEcValueList(ecids);
                 // 如果一個查不到就要回空L
                 if (ecs.Items.Where(item => item.Format == SecsFormat.ASCII && item.GetString() == "").Count() > 0)
                 {
@@ -423,7 +423,7 @@ public partial class GemEqpService
                                   item.Items[1])).ToList();
                 rtnS2F15 = OnEcRecieved!.Invoke(ecidecv);
                 if (rtnS2F15 == 0)
-                    rtnS2F15 = _GemRepo.SetEcList(ecidecv);
+                    rtnS2F15 = await _GemRepo.SetEcList(ecidecv);
 
                 using (var rtnS2F16 = new SecsMessage(2, 16)
                 {
@@ -490,7 +490,7 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 2 && msg.F == 29):
                 var vidLst = msg.SecsItem.Items.Select( i=> i.FirstValue<int>()).ToList();  
 
-                var s2F30 = _GemRepo.GetEcDetailList(vidLst);
+                var s2F30 = await _GemRepo.GetEcDetailList(vidLst);
                 using (var rtnS2F29 = new SecsMessage(2, 30)
                 {
                     SecsItem = s2F30
@@ -690,7 +690,7 @@ public partial class GemEqpService
             //S6F15 Event Report Request
             case SecsMessage msg when (msg.S == 6 && msg.F == 15):
                 var eventId = msg.SecsItem[0].FirstValue<int>();
-                var reports = _GemRepo.GetReportsByCeid(eventId);
+                var reports = await _GemRepo.GetReportsByCeid(eventId);
                 Random random = new Random();
                 var dataId = random.Next();
                 using (var rtnS6F16 = new SecsMessage(6, 16)
@@ -707,7 +707,7 @@ public partial class GemEqpService
             //S6F19 Individual Report Request
             case SecsMessage msg when (msg.S == 6 && msg.F == 19):
                 var rptId = msg.SecsItem.FirstValue<int>();
-                var rptItem = _GemRepo.GetReportByRpid(rptId);
+                var rptItem = await _GemRepo.GetReportByRpid(rptId);
                 using (var rtnS6F20 = new SecsMessage(6, 20)
                 {
                     SecsItem = rptItem
