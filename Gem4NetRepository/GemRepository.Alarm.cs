@@ -10,19 +10,24 @@ namespace Gem4NetRepository;
 public partial class GemRepository
 {
     // S5系列
-    public GemAlarm? GetAlarm(int alarmId)
+    public async Task<GemAlarm?> GetAlarm(int alarmId)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
                 return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
             }
         }
+
+        finally { semSlim.Release(); }
+        
     }
-    public IEnumerable<GemAlarm?> GetAlarm(IEnumerable<int> alarmIds)
+    public async Task<IEnumerable<GemAlarm?>> GetAlarm(IEnumerable<int> alarmIds)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -34,25 +39,33 @@ public partial class GemRepository
                 return tempAlarm;
             }
         }
+
+        finally { semSlim.Release(); }
+        
     }
-    public IEnumerable<GemAlarm> GetAlarmAll()
+    public async Task<IEnumerable<GemAlarm>> GetAlarmAll()
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
                 return _context.Alarms.ToList();
             }
         }
+
+        finally { semSlim.Release(); }
+        
     }
     /// <summary>
     /// 0:success ,1:notfound, 2:
     /// </summary>
     /// <param name="alarm"></param>
     /// <returns></returns>
-    public int SetAlarmCode(int alid, int alcd)
+    public async Task<int> SetAlarmCode(int alid, int alcd)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -69,10 +82,13 @@ public partial class GemRepository
                 return 0;
             }
         }
+        finally { semSlim.Release(); }
+        
     }
-    public int EnableAlarm(int alid, bool enable)
+    public async Task<int> EnableAlarm(int alid, bool enable)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
@@ -89,5 +105,7 @@ public partial class GemRepository
                 return 0;
             }
         }
+        finally { semSlim.Release(); }
+        
     }
 }
