@@ -155,13 +155,13 @@ public partial class GemEqpService
     /// <returns></returns>
     public Task<int> SendAlarmReport(int alrmSet, int alrmId,string alrmText, bool useWbit ) {
 
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
-            var alrm = _GemRepo.GetAlarm(alrmId);
+            var alrm = await _GemRepo.GetAlarm(alrmId);
             if (alrm == null)
                 return 1;
             if (alrm.ALCD != alrmSet)
-                _GemRepo.SetAlarmCode(alrmId, alrmSet);
+                _ =await _GemRepo.SetAlarmCode(alrmId, alrmSet);
             if(alrm.ALED!= true) return 2;
             var secsAlrmCode = alrmSet;//? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
@@ -180,14 +180,14 @@ public partial class GemEqpService
     }
     public Task<int> SendAlarmReport(int alrmSet, int alrmId)
     {
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
-            var alrm = _GemRepo.GetAlarm(alrmId);
+            var alrm =await _GemRepo.GetAlarm(alrmId);
             if (alrm == null)
                 return 1;
             if (alrm.ALED != true) return 2;
             if (alrm.ALCD != alrmSet)
-                _GemRepo.SetAlarmCode(alrmId, alrmSet);
+                _ = await _GemRepo.SetAlarmCode(alrmId, alrmSet);
             var secsAlrmCode = alrmSet;//? 128 : 0;
             //var secsAlrmEnabled = alrm.ALED ? 128 : 0;
             using var s5f1 = new SecsMessage(5, 1,Convert.ToBoolean(EqpAppOptions.IsS5WbitUsed))

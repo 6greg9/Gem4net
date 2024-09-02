@@ -633,11 +633,11 @@ public partial class GemEqpService
                 IEnumerable<GemAlarm> alrmLst;
                 if (alarmIdVector.Count == 0)
                 {
-                    alrmLst = _GemRepo.GetAlarmAll();
+                    alrmLst =  await _GemRepo.GetAlarmAll();
                 }
                 else
                 {
-                    alrmLst = _GemRepo.GetAlarm(alarmIdVector.Select(uint16 => (int)uint16));
+                    alrmLst = await _GemRepo.GetAlarm(alarmIdVector.Select(uint16 => (int)uint16));
                 }
                 var secsAlrmLst = alrmLst.Select(alrm =>
                 {
@@ -660,7 +660,8 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 5 && msg.F == 7):
 
 
-                var secsEnabledAlrmLst = _GemRepo.GetAlarmAll()
+                var allAlarm = await _GemRepo.GetAlarmAll();
+                var secsEnabledAlrmLst = allAlarm
                     .Where(alrm => alrm.ALED == true).Select(alrm =>
                 {
                     if (alrm is null)
