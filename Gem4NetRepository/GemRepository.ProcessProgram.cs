@@ -17,7 +17,7 @@ namespace Gem4NetRepository;
 
 public partial class GemRepository // 這部分應該是可以獨立
 {
-    static SemaphoreSlim semSlim = new SemaphoreSlim(1, 1);
+    
     #region No Format
     public async Task<IEnumerable<ProcessProgram>> GetProcessProgram(string PPID)
     {

@@ -31,7 +31,7 @@ public class DataTracer
     public string DetailDescription { get; set; }
 
     public List<int> SampledVIDs { get; private set; }
-    public event Func<List<int>,List<Item>> OnSample;
+    public event Func<List<int>,Task<List<Item>>> OnSample;
     public List<Item> SVsBag { get; private set; } = new List<Item>();
     public event Action<DataTracer> OnTraceEventSend;
 
@@ -47,10 +47,10 @@ public class DataTracer
         SampledVIDs = sampleVIDs;
         DataSamplePeriod = dataSamplePeriod;
 
-        SampleTimer = new Timer((e) => {
+        SampleTimer = new Timer(async (e) => {
             TotalSampleCounter += 1;
             SampleNumber += 1;
-            var SVs = OnSample?.Invoke(SampledVIDs);
+            var SVs = await OnSample?.Invoke(SampledVIDs);
             SVsBag?.AddRange(SVs);
 
             if(SampleNumber == ReportGroupSize)

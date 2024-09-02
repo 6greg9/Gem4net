@@ -28,7 +28,7 @@ public class TraceDataManager
     /// 4 - unknown SVID, 5 - bad REPGSZ
     /// </summary>
     /// <returns></returns>
-    public int TraceInitialize((string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
+    public async Task<int> TraceInitialize((string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
         int reportGroupSize, List<int> sampleVIDs) traceInit)
     {
         if (_tracerList.Where(tr => tr.TRID == traceInit.trid).Any() == true)
@@ -51,7 +51,8 @@ public class TraceDataManager
 
         var newTrace = new DataTracer(traceInit.trid, traceInit.dataSamplePeriod, 
             traceInit.totalSampleAmount, traceInit.reportGroupSize, traceInit.sampleVIDs);
-        newTrace.TimeFormat = _gemEqpService.GetSecsTimeFormat().FirstValue<int>();
+        var format = await _gemEqpService.GetSecsTimeFormat();
+        newTrace.TimeFormat = format.FirstValue<int>();
         newTrace.OnSample += HandleSampleForTracer;
         newTrace.OnTraceEventSend += HandleTraceEventSend;
         _tracerList.Add(newTrace);
@@ -72,10 +73,10 @@ public class TraceDataManager
     /// 
     /// </summary>
     /// <param name="sender"></param>
-    List<Item?> HandleSampleForTracer(List<int> lstVid)
+    async Task< List<Item?> > HandleSampleForTracer(List<int> lstVid)
     {
-
-        return _repo.GetSvList(lstVid).Items.ToList();
+        var svListItem = await _repo.GetSvList(lstVid);
+        return svListItem.Items.ToList();
     }
     /// <summary>
     /// S6F1

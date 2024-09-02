@@ -79,9 +79,9 @@ public partial class GemEqpService
         => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
                                         ? _secsGem : null;
 
-    public Item? GetVariableById(int VID)
+    public async Task<Item?> GetVariableById(int VID)
     {
-        return _GemRepo.GetSv(VID); //這樣還有要?
+        return await _GemRepo.GetSv(VID); //這樣還有要?
     }
     public void GetVariableByName(string name)
     {
@@ -131,11 +131,26 @@ public partial class GemEqpService
         return ack10;
 
     }
-    public void SendEventReport(int eventId, bool useWbit)
+    int dataID = 0;
+    public async Task SendEventReport(int eventId, bool useWbit)
     {
         var reports = _GemRepo.GetReportsByCeid(eventId);
-        Random random = new Random();
-        var dataId = random.Next();
+        //Random random = new Random();
+        dataID +=1;
+        using var s6f11 = new SecsMessage(6, 11, useWbit)
+        {
+            SecsItem = L(
+            U4((uint)dataID), //DATAID
+            U4((uint)eventId), //CEID
+            reports
+            ),
+        };
+        _ = _secsGem?.SendAsync(s6f11);//射後不理
+    }
+    public async Task SendEventReport(int dataId,int eventId, bool useWbit)
+    {
+        var reports = _GemRepo.GetReportsByCeid(eventId);
+        
         using var s6f11 = new SecsMessage(6, 11, useWbit)
         {
             SecsItem = L(

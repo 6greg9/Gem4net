@@ -341,7 +341,7 @@ public partial class GemEqpService
                 }
                 else
                 {
-                    svList = _GemRepo.GetSvList(vids);
+                    svList = await _GemRepo.GetSvList(vids);
                 }
 
                 using (var rtnS2F4 = new SecsMessage(1, 4)
@@ -434,7 +434,7 @@ public partial class GemEqpService
                 break;
             //S2F17 Date and Time Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 17):
-                Item Clock = GetSecsClock();
+                Item Clock =await  GetSecsClock();
                 
                 using (var rtnS2F18 = new SecsMessage(2, 18)
                 {
@@ -469,7 +469,7 @@ public partial class GemEqpService
                 }
                 else
                 {
-                    tiaack = _traceDataManager.TraceInitialize((dsperStr, dsper, totsmp, repgsz, lstSv));
+                    tiaack = await _traceDataManager.TraceInitialize((dsperStr, dsper, totsmp, repgsz, lstSv));
                 }
                 using (var rtnS2F24 = new SecsMessage(2, 24)
                 {
@@ -582,17 +582,17 @@ public partial class GemEqpService
                 break;
         }
     }
-    public Item GetSecsTimeFormat()
+    public async Task<Item> GetSecsTimeFormat()
     {
-        var timeFormat = _GemRepo.GetEC(EqpAppOptions.TimeFormatVID);
+        var timeFormat =await _GemRepo.GetEC(EqpAppOptions.TimeFormatVID);
        
         return timeFormat == A() ? U4((uint)EqpAppOptions.ClockFormatCode) : timeFormat;
     }
-    public Item GetSecsClock()
+    public async Task<Item> GetSecsClock()
     {
         
         Item Clock;
-        var timeFormat = GetSecsTimeFormat();
+        var timeFormat = await GetSecsTimeFormat();
         if (!(timeFormat.Format is  SecsFormat.U1 or  SecsFormat.U2
             or SecsFormat.U4 or SecsFormat.U8))
         {

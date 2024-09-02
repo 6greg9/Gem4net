@@ -200,10 +200,10 @@ public partial class Form1 : Form
 #endif
     }
 
-    private void button1_Click(object sender, EventArgs e)
+    private async void button1_Click(object sender, EventArgs e)
     {
 
-        var test = _gemRepo.GetSv(9);
+        var test = await _gemRepo.GetSv(9);
         MessageBox.Show(test.ToJson());
 
         var nameList = _gemRepo.GetSvNameListAll();
@@ -314,12 +314,12 @@ public partial class Form1 : Form
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
     }
 
-    private void Btn_GetSvById_Click(object sender, EventArgs e)
+    private async void Btn_GetSvById_Click(object sender, EventArgs e)
     {
         var inputId = Convert.ToInt32(Tbx_InputVid.Text.Trim());
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        var test = _gemRepo.GetSv(inputId);
+        var test = await _gemRepo.GetSv(inputId);
         sw.Stop();
         MessageBox.Show($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
         MessageBox.Show(test.ToJson());

@@ -30,7 +30,7 @@ public partial class GemRepository
     /// </summary>
     private GemDbContext _context;
     private static object lockObject = new object();
-
+    static SemaphoreSlim semSlim = new SemaphoreSlim(1, 1);
     public int UseJsonSecsItem { get; private set; }
 
     IMapper Mapper;
@@ -39,9 +39,9 @@ public partial class GemRepository
 
     public GemRepository(IConfiguration configaration)
     {
-        
+
         _config = configaration;
-        UseJsonSecsItem = Convert.ToInt32( _config["GemEqpRepoOptions:UseJsonSecsItem"] );
+        UseJsonSecsItem = Convert.ToInt32(_config["GemEqpRepoOptions:UseJsonSecsItem"]);
         using (_context = new GemDbContext(_config))
         {
             _ = _context.Variables.ToList();
@@ -59,19 +59,45 @@ public partial class GemRepository
         //AutoMapper
         var mapperConfig = new MapperConfiguration(cfg =>
         {
-            
+
             cfg.CreateMap<FormattedProcessProgram, FormattedProcessProgramLog>();
-            
-            cfg.CreateMap<ProcessProgram, ProcessProgramLog>(); 
+
+            cfg.CreateMap<ProcessProgram, ProcessProgramLog>();
         }
         ); // 註冊Model間的對映
         Mapper = mapperConfig.CreateMapper();
     }
-    void UpdateTimeFormat()
+    async Task<T> LockGemRepo<T>(Func<T> subFunc)
+    {
+        await semSlim.WaitAsync();
+        try
+        {
+            using (_context = new GemDbContext(_config))
+            {
+                return subFunc();
+            }
+        }
+        finally { semSlim.Release(); }
+    }
+    async Task LockGemRepo(Action subAction)
+    {
+        await semSlim.WaitAsync();
+        try
+        {
+            using (_context = new GemDbContext(_config))
+            {
+                subAction();
+            }
+        }
+        finally { semSlim.Release(); }
+    }
+
+
+    async void UpdateTimeFormat()
     {
         var TimeFormatVID = Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]);
-        var TimeFormatEC = GetEC(TimeFormatVID) ;
-        if ((TimeFormatEC is not null || TimeFormatEC != A("") )
+        var TimeFormatEC = await GetEC(TimeFormatVID) ;
+        if ((TimeFormatEC is not null || TimeFormatEC != A(""))
             && (TimeFormatEC.Format == SecsFormat.U1 || TimeFormatEC.Format == SecsFormat.U2 || TimeFormatEC.Format == SecsFormat.U4 || TimeFormatEC.Format == SecsFormat.U8))
             TimeFormat = TimeFormatEC.FirstValue<int>();
     }
@@ -94,33 +120,35 @@ public partial class GemRepository
     /// <summary>for s1f3,s1f4</summary>
     /// <param name="vidList"></param>
     /// <returns></returns>
-    public Item? GetSvList(IEnumerable<int> vidList)
+    public async Task<Item?> GetSvList(IEnumerable<int> vidList)
     {
         UpdateTimeFormat();
-        lock (lockObject)
-        {
-            using (_context = new GemDbContext(_config))
-            {
-                return SubGetSvListByVidList(vidList);
-            }
-        }
+
+        return await LockGemRepo(
+            () => SubGetSvListByVidList(vidList)
+        );
+
+
+
 
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
-        return Item.L(vidList.OrderBy(vid=>vid).Select(vid => SubGetSvByVID(vid)).ToArray());
+        return Item.L(vidList.OrderBy(vid => vid).Select(vid => SubGetSvByVID(vid)).ToArray());
     }
-    public Item? GetSv(int vid)
+    public async Task<Item?> GetSv(int vid)
     {
         UpdateTimeFormat();
-
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
                 return SubGetSvByVID(vid);
             }
         }
+        finally { semSlim.Release(); }
+
 
     }
     Item? SubGetSvByVID(int vid)
@@ -137,33 +165,35 @@ public partial class GemRepository
 
         return GemVariableToSecsItem(Variable);
     }
-    public Item? GetEcList(IEnumerable<int> vidList)
+    public async Task<Item?> GetEcList(IEnumerable<int> vidList)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
             using (_context = new GemDbContext(_config))
             {
                 return SubGetEcListByVidList(vidList);
             }
         }
+        finally { semSlim.Release(); }
 
     }
     Item? SubGetEcListByVidList(IEnumerable<int> vidList)
     {
         return Item.L(vidList.Select(vid => SubGetEcByVID(vid)).ToArray());
     }
-    public Item? GetEC(int vid)
+    public async Task<Item?> GetEC(int vid)
     {
-        lock (lockObject)
+        await semSlim.WaitAsync();
+        try
         {
-            lock (lockObject)
+            using (_context = new GemDbContext(_config))
             {
-                using (_context = new GemDbContext(_config))
-                {
-                    return SubGetEcByVID(vid);
-                }
+                return SubGetEcByVID(vid);
             }
         }
+        finally { semSlim.Release(); }
+
     }
     Item? SubGetEcByVID(int vid)
     {
@@ -211,7 +241,7 @@ public partial class GemRepository
     }
     Item? SubGetClock(int timeFormatcode)
     {
-        
+
         //var timeFormat = GetEC(Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]))
         //                        ?? U4((uint)Convert.ToInt32(_config["GemEqpAppOptions:ClockFormatCode"]));
 
@@ -305,11 +335,12 @@ public partial class GemRepository
                 default:
                     return Item.J(); // !?
             }
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             return Item.J(); // !?
         }
-       
+
     }
     /// <summary>
     /// SVID, SVNAMES, UNITS
@@ -468,7 +499,7 @@ public partial class GemRepository
             {
                 var ecDetailLst = _context.Variables.Where(v=> vidList.Contains(v.VID) )
                     //.Where(v => v.VarType == "EC") //我決定不管都給,頂多是空的
-                    .ToList().Select(v => GemEcDetailToSecsItem(v)); 
+                    .ToList().Select(v => GemEcDetailToSecsItem(v));
                 return L(ecDetailLst.ToArray());
             }
         }
@@ -534,7 +565,7 @@ public partial class GemRepository
                     {
                         switch (variable.DataType)
                         {
-                            
+
                             case "BINARY":
                                 var HexString = Convert.ToHexString((byte[])updateValue);
                                 variable.Value = HexString;
@@ -653,7 +684,7 @@ public partial class GemRepository
                         //Memory<byte> bytes = idVal.Item2.GetMemory<byte>();
                         var BINARY = idVal.Item2.FirstValue<byte>();
                         variable.Value = Convert.ToString((int)BINARY);
-                        
+
                         break;
                     case "BOOL":
                         var BOOL = idVal.Item2.FirstValue<bool>;
