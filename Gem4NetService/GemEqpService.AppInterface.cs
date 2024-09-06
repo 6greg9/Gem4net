@@ -256,6 +256,10 @@ public partial class GemEqpService
         return 0;
     }
 
+    public void StopCommunication()
+    {
+        this._commStateManager.GoNotCommunicating();
+    }
     #endregion
 
 }

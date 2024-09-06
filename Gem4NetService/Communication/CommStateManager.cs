@@ -1,4 +1,5 @@
-﻿using Secs4Net;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using Secs4Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -200,6 +201,17 @@ internal class CommStateManager
         }
         return 1;
 
+    }
+    public int GoNotCommunicating()
+    {
+        if (CurrentState != CommunicationState.COMMUNICATING)
+        {
+            CommStateCheckTaskCts?.Cancel();
+            CommDelayTimerTaskCts?.Cancel();
+            EnterCommunicationState();
+            return 1;
+        }
+        return 0;
     }
 
     #endregion

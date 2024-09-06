@@ -44,7 +44,6 @@ public partial class GemEqpService
     CancellationTokenSource SecsMsgHandlerTaskCTS = new();
 
     private GemRepository _GemRepo;
-
     public GemEqpService(ISecsGemLogger logger, GemRepository gemReposiroty,
         IOptions<SecsGemOptions> secsGemOptions, IOptions<GemEqpAppOptions> gemEqpAppOptions)
     {
@@ -56,7 +55,7 @@ public partial class GemEqpService
         // ef core 第一次使用會花費很長時間
         
 
-        _ = Enable();
+        //_ = Enable();
          
         RecieveMessageHandlerTask = Task.Run(async () =>
         {
@@ -153,8 +152,7 @@ public partial class GemEqpService
         {
             _logger.Error("GetPrimaryMessageAsync", ex);
         }
-    }
-    
+    }   
     public async Task Disable() // 各種cancel, dispose
     {
         if (!_hsmsCancellationTokenSource.IsCancellationRequested)
@@ -235,6 +233,7 @@ public partial class GemEqpService
             //Format Validation, S9F7
             if (SecsItemSchemaValidator.IsValid(ReceiveSecsMsg.PrimaryMessage) == false)
             {
+                
                 _ = ReceiveSecsMsg.TryReplyAsync();//不帶Item, 會給S9F7
                                                    //await Task.Delay(10);
                                                    //continue;
@@ -809,7 +808,7 @@ public partial class GemEqpService
             //S10F3 Terminal Display, Single
             case SecsMessage msg when (msg.S == 10 && msg.F == 3):
 
-                var terminalID = msg.SecsItem.Items[0].FirstValue<int>();
+                var terminalID = msg.SecsItem.Items[0].FirstValue<byte>();
                 var terminalText = msg.SecsItem.Items[1].GetString();
                 var ackc10 =  OnTerminalMessageReceived?.Invoke( (terminalID,terminalText ) );
 
