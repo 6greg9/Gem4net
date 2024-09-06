@@ -33,10 +33,7 @@ public class GemEqpAppOptions
     /// HOST-INITIATED(等Host的S1F13) 或 EQPIPMENT-INITIATED(主動定時S1F13)
     /// </summary>
     public int IsCommHostInit { get; set; }
-    /// <summary>
-    /// EQPIPMENT-INITIATED的時候, S1F13的等待時間, 同等EstablishCommunicationsTimeout, 注意與HSMS的T3秒數大小
-    /// </summary>
-    public int CommDelaySecond { get; set; }
+    
     #endregion
 
     #region Control State
@@ -58,6 +55,10 @@ public class GemEqpAppOptions
     #region Spool
     public int IsSpoolEnabled {  get; set; }
     public int OverWriteSpool { get; set; }
-    public int EstablishCommunicationsTimeout { get; set; }
+    /// <summary>
+    /// EQPIPMENT-INITIATED的時候, S1F13的等待時間, 同等CommDelaySecond, 注意與HSMS的T3秒數大小
+    /// </summary>
+    public int? EstablishCommunicationsTimeout { get; set; }
+    public int? EstablishCommunicationsTimeoutVID { get; set; }
     #endregion
 }

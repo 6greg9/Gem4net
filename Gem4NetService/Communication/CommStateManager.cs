@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿using Gem4NetRepository;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Secs4Net;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,39 @@ internal class CommStateManager
 {
 
     ISecsGem _secsGem; //可能要給個介面
+
+    GemRepository GemRepo;
     public GemEqpAppOptions EqpAppOptions { get; private set; }
-    public CommStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions)
+    public int EstablishCommunicationsTimeout { get
+        {
+            try
+            {
+                var vid = EqpAppOptions.EstablishCommunicationsTimeoutVID;
+                if (vid is int VID)
+                {
+                    var secItem = GemRepo.GetVariable(VID).Result;
+                    if (secItem is not null
+                        && secItem.Format is SecsFormat.U1 or SecsFormat.U2 or SecsFormat.U4 or SecsFormat.U8)
+                    {
+                        return secItem.FirstValue<int>();
+                    }
+                }
+                return EqpAppOptions.EstablishCommunicationsTimeout ?? 20;
+
+            }
+            catch (Exception ex)
+            {
+                return 20;
+            }
+        } }
+    public CommStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions, GemRepository gemRepo)
     {
         EqpAppOptions = eqpAppOptions;
         _secsGem = secsGem;
+        GemRepo = gemRepo;
+        
+
+
         CurrentState = CommunicationState.DISABLED;
 
     }
@@ -70,7 +99,7 @@ internal class CommStateManager
                 {
                     case CommunicationState.WAIT_CRA:
                         await Task.WhenAny(S1F14Waiter, 
-                            Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.EstablishCommunicationsTimeout)));
+                            Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout)));
 
 
                         if (S1F14Waiter.IsCompleted)
@@ -133,7 +162,7 @@ internal class CommStateManager
             {
                 CommDelayTimerTaskCts?.Cancel();
                 CommDelayTimerTaskCts = new CancellationTokenSource();
-                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EqpAppOptions.EstablishCommunicationsTimeout), CommDelayTimerTaskCts.Token);// Tooxx?
+                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout), CommDelayTimerTaskCts.Token);// Tooxx?
                 CurrentState = CommunicationState.WAIT_DELAY;
             }
         });

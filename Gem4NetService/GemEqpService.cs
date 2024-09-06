@@ -53,8 +53,6 @@ public partial class GemEqpService
         _GemRepo = gemReposiroty;
 
         // ef core 第一次使用會花費很長時間
-        
-
         //_ = Enable();
          
         RecieveMessageHandlerTask = Task.Run(async () =>
@@ -71,8 +69,6 @@ public partial class GemEqpService
                     logger.Error("RecieveMessageHandler", ex);
                 }
             }
-
-
         });
         //_communicatinoState = CommunicationState.DISABLED;
         //_GemRepo = ThreadSafeClassProxy.Create(gemReposiroty);
@@ -98,7 +94,7 @@ public partial class GemEqpService
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
-        _commStateManager = new CommStateManager(_secsGem, EqpAppOptions);
+        _commStateManager = new CommStateManager(_secsGem, EqpAppOptions, _GemRepo);
         _ctrlStateManager = new CtrlStateManager(_secsGem, EqpAppOptions);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
