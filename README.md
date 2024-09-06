@@ -8,14 +8,11 @@
 ## 測試資料
 ### Variables
 ## Todo
-- 把SecsFormat改為和Secs4Net的enum一樣, 開始處理binary
-- GemService參數整理成Option
 - PP 要有使用中,編輯中..等等狀態, 並考慮實際的設定
-- ProcessProgram 格式還是二維比較好
-- 技術選型錯誤...,好像應該用Garnet+redis-om-dotnet
+- ProcessProgram 格式還是二維比較好?
 - PP是應該可以獨立抽出
-- ListSv還是不能用遞迴查詢，改用json
-- pp和log之間不要用繼承, 整個寫一遍用mapper, 避免ef core 的機制
+- Spooling
+
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
@@ -42,9 +39,9 @@
 - [X] S6F11 Event Report Send
 - [X] S6F15 Event Report Request
 - [x] S6F19 Individual Report Request
-- [ ] S7F1 Process Program Load Inquire
-- [ ] S7F3 Process Program Send
-- [ ] S7F5 Process Program Reques
+- [x] S7F1 Process Program Load Inquire
+- [x] S7F3 Process Program Send
+- [x] S7F5 Process Program Reques
 - [X] S7F17 Delete Process Program Send
 - [X] S7F19 Current Process Program Dir Request
 - [X] S7F23 Formatted Process Program Send
@@ -62,24 +59,6 @@
 - DefaultOnLineFailSubstate: EQP_OFF_LINE, HOST_OFF_LINE
 - DefaultOnLineSubState: Remote, Local
 ## ITRI-like Interface
-- [ ] Initialize: 建構式加callback?
-- [ ] Close: 外部可 Enable, Disable
-- [ ] ProcessMessage: 直接把Secs4Net拿來用...
-- [X] UpdateSV: SV,DV,EC混在一起?
-- [ ] GetSV
-- [X] UpdateEC
-- [ ] GetEC
-- [X] SendTerminalMessage
-- [X] EventReportSend
-- [ ] AlarmReportSend
-- [X] EnableComm
-- [X] DisableComm
-- [X] GetCurrentCommState
-- [X] OnLineRequest
-- [X] OffLine
-- [X] OnLineLocal
-- [X] OnLineRemote
-- [ ] Command: 這個應該有細分空間
 ## 架構說明
 ### 查詢類型語句
 不會改變資料狀態,例如S1F1,S1F3,S2F13
