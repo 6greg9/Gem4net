@@ -785,8 +785,12 @@ public partial class GemEqpService
             case SecsMessage msg when (msg.S == 7 && msg.F == 25):
 
                 var fpp = await _GemRepo.GetFormattedProcessProgram(msg.SecsItem.GetString());
-
-                var pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First());
+                Item pp = L();
+                if (fpp.Any())
+                {
+                     pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First());
+                }
+                
                 using (var rtnS7F26 = new SecsMessage(7, 26)
                 {
                     SecsItem = pp
