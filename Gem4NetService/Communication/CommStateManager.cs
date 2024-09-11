@@ -1,5 +1,6 @@
 ﻿using Gem4NetRepository;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Logging;
 using Secs4Net;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ internal class CommStateManager
 {
 
     ISecsGem _secsGem; //可能要給個介面
-
+    ISecsGemLogger Logger;
     GemRepository GemRepo;
     public GemEqpAppOptions EqpAppOptions { get; private set; }
     public int EstablishCommunicationsTimeout { get
@@ -35,16 +36,17 @@ internal class CommStateManager
             }
             catch (Exception ex)
             {
+                
                 return 20;
             }
         } }
-    public CommStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions, GemRepository gemRepo)
+    public CommStateManager(ISecsGem secsGem,ISecsGemLogger logger,
+                GemEqpAppOptions eqpAppOptions, GemRepository gemRepo)
     {
         EqpAppOptions = eqpAppOptions;
         _secsGem = secsGem;
+        Logger = logger;
         GemRepo = gemRepo;
-        
-
 
         CurrentState = CommunicationState.DISABLED;
 

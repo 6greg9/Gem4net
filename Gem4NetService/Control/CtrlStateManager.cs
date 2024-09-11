@@ -34,14 +34,16 @@ public class CtrlStateManager
     Task CtrlStateCheckTask = Task.CompletedTask;
     CancellationTokenSource CtrlStateCheckTaskCts;
     ISecsGem _secsGem;
+    ISecsGemLogger Logger;
     public GemEqpAppOptions EqpAppOptions { get; private set; }
     public ControlState DefaultInitControlState => (ControlState)EqpAppOptions.DefaultInitControlState;
     public ControlState DefaultAfterFailOnline => (ControlState)EqpAppOptions.DefaultAfterFailOnline;
     public ControlState DefaultLocalRemote => (ControlState)EqpAppOptions.DefaultLocalRemote;
 
-    public CtrlStateManager(ISecsGem secsGem, GemEqpAppOptions eqpAppOptions)
+    public CtrlStateManager(ISecsGem secsGem, ISecsGemLogger logger, GemEqpAppOptions eqpAppOptions)
     {
         _secsGem = secsGem;
+        Logger = logger;
         EqpAppOptions = eqpAppOptions;
     }
 
