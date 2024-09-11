@@ -124,7 +124,7 @@ public partial class GemRepository
         await UpdateTimeFormat();
 
         return await LockGemRepo<Item?>(
-            () =>  SubGetSvListByVidList(vidList)
+            () => SubGetSvListByVidList(vidList)
         );
 
 
@@ -169,7 +169,7 @@ public partial class GemRepository
     }
     public async Task<Item?> GetEC(int vid)
     {
-        return await LockGemRepo<Item?>( () => SubGetEcByVID(vid) );
+        return await LockGemRepo<Item?>(() => SubGetEcByVID(vid));
     }
     Item? SubGetEcByVID(int vid)
     {
@@ -187,7 +187,7 @@ public partial class GemRepository
     }
     public async Task<Item?> GetVariable(int vid)
     {
-        return await LockGemRepo<Item?>(() => SubGetVarByVid(vid) );
+        return await LockGemRepo<Item?>(() => SubGetVarByVid(vid));
     }
     Item? SubGetVarByName(string name)
     {
@@ -250,46 +250,45 @@ public partial class GemRepository
         {
             switch (dataType)
             {
-                case "BINARY":
-
+                case nameof(SecsFormat.Binary):
                     return Item.B(Convert.FromHexString(varStr));
-                case "BOOL":
+                case nameof(SecsFormat.Boolean):
                     var BOOL = Convert.ToBoolean(varStr);
                     return Item.Boolean(BOOL);
-                case "ASCII":
+                case nameof(SecsFormat.ASCII):
                     var ASCII = varStr;
                     return Item.A(ASCII);
-                case "UINT_1":
+                case nameof(SecsFormat.U1):
                     var UINT_1 = Convert.ToByte(varStr);
                     return Item.U1(UINT_1);
-                case "UINT_2":
+                case nameof(SecsFormat.U2):
                     var UINT_2 = Convert.ToUInt16(varStr);
                     return Item.U2(UINT_2);
-                case "UINT_4":
+                case nameof(SecsFormat.U4):
                     var UINT_4 = Convert.ToUInt32(varStr);
                     return Item.U4(UINT_4);
-                case "UINT_8":
+                case nameof(SecsFormat.U8):
                     var UINT_8 = Convert.ToUInt64(varStr);
                     return Item.U8(UINT_8);
-                case "INT_1":
+                case nameof(SecsFormat.I1):
                     var INT_1 = Convert.ToSByte(varStr);
                     return Item.I1(INT_1);
-                case "INT_2":
+                case nameof(SecsFormat.I2):
                     var INT_2 = Convert.ToInt16(varStr);
                     return Item.I2(INT_2);
-                case "INT_4":
+                case nameof(SecsFormat.I4):
                     var INT_4 = Convert.ToInt32(varStr);
                     return Item.I4(INT_4);
-                case "INT_8":
+                case nameof(SecsFormat.I8):
                     var INT_8 = Convert.ToInt64(varStr);
                     return Item.I8(INT_8);
-                case "FLOAT_4":
+                case nameof(SecsFormat.F4):
                     var FLOAT_4 = Convert.ToSingle(varStr);
                     return Item.F4(FLOAT_4);
-                case "FLOAT_8":
+                case nameof(SecsFormat.F8):
                     var FLOAT_8 = Convert.ToDouble(varStr);
                     return Item.F8(FLOAT_8);
-                case "LIST":
+                case nameof(SecsFormat.List):
 
                     var LIST = JsonDocument.Parse(varStr).RootElement;
                     return LIST.ToItem();
@@ -310,8 +309,9 @@ public partial class GemRepository
             switch (item.Format)
             {
                 case SecsFormat.Binary:
-                    var memory = item.GetMemory<byte>();
-                    return Convert.ToHexString(memory.Span.ToArray());
+                    //var memory = item.GetMemory<byte>();
+                    //return Convert.ToHexString(memory.Span.ToArray());
+                    return item.FirstValue<byte>().ToString();
                 case SecsFormat.Boolean:
                     return item.FirstValue<bool>().ToString();
                 case SecsFormat.ASCII:
@@ -319,13 +319,13 @@ public partial class GemRepository
                 case SecsFormat.U1:
                     return item.FirstValue<byte>().ToString();
                 case SecsFormat.U2:
-                    
+
                     return item.FirstValue<ushort>().ToString();
                 case SecsFormat.U4:
 
                     return item.FirstValue<uint>().ToString();
                 case SecsFormat.U8:
-                    
+
                     return item.FirstValue<UInt64>().ToString();
                 case SecsFormat.I1:
 
@@ -374,7 +374,8 @@ public partial class GemRepository
     public async Task<Item?> GetSvNameList(IEnumerable<int> vidList)
     {
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
                 var svNameList = vidList.Select(vid =>
                 {   //這種寫法有一天要改
                     return _context.Variables.Where(v => v.VarType == "SV") //混到EC, EV可嗎?
@@ -397,7 +398,8 @@ public partial class GemRepository
     public async Task<Item?> GetSvNameListAll()
     {
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
 
                 var itemList = _context.Variables.Where(v => v.VarType == "SV")
                 .Select(v => Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit)));
@@ -412,7 +414,8 @@ public partial class GemRepository
     public async Task<Item?> GetSvAll()
     {
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
 
                 var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID).ToList()
                 .Select(v => GemVariableToSecsItem(v)).ToArray();
@@ -433,7 +436,8 @@ public partial class GemRepository
             return await GetEcValueListAll();
         }
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
                 //IQueryable<GemVariable?> rtnGemVar = null;
                 List<GemVariable?> rtnGemVar = new();
                 foreach (var vid in vidList)
@@ -460,19 +464,20 @@ public partial class GemRepository
                 return Item.L(itemLst);
             }
         );
-        
+
     }
     public async Task<Item?> GetEcValueListAll()
     {
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
                 var ecLst = _context.Variables.Where(v => v.VarType == "EC");
                 var itemList = ecLst.ToList().Select(v => GemVariableToSecsItem(v)); // 這裡有EF的坑
                 var itemArry = itemList.ToArray();
                 return Item.L(itemArry);
             }
         );
-        
+
 
     }
 
@@ -487,18 +492,20 @@ public partial class GemRepository
             return await GetEcDetailListAll();
 
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
                 var ecDetailLst = _context.Variables.Where(v=> vidList.Contains(v.VID) )
                     //.Where(v => v.VarType == "EC") //我決定不管都給,頂多是空的
                     .ToList().Select(v => GemEcDetailToSecsItem(v));
                 return L(ecDetailLst.ToArray());
             }
         );
-            }
+    }
     public async Task<Item?> GetEcDetailListAll()
     {
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
                 var ecLst = _context.Variables.Where(v => v.VarType == "EC");
                 var itemList = ecLst.ToList().Select(v => GemEcDetailToSecsItem(v)); // 這裡有EF的坑
                 var itemArry = itemList.ToArray();
@@ -541,87 +548,87 @@ public partial class GemRepository
     public async Task<int> SetVarValue(int vid, object updateValue)
     {
         return await LockGemRepo<int>(
-           () => {
+           () =>
+           {
                var variable = _context.Variables.FirstOrDefault(v => v.VID == vid);
                if (variable is null)
                    return 1;//NotFound
                try
                {
-                   if (variable.DataType != "LIST")
-                   {
-                       switch (variable.DataType)
-                       {
 
-                           case "BINARY":
-                               var HexString = Convert.ToHexString((byte[])updateValue);
-                               variable.Value = HexString;
-                               break;
-                           case "BOOL":
-                               var BOOL = Convert.ToBoolean(updateValue);
-                               variable.Value = BOOL.ToString();
-                               break;
-                           case "ASCII":
-                               var ASCII = Convert.ToString(updateValue);
-                               variable.Value = ASCII.ToString();
-                               break;
-                           case "UINT_1":  ///數值類注意OutOfRange
-                               var UINT_1 = Convert.ToByte(updateValue);
-                               variable.Value = UINT_1.ToString();
-                               break;
-                           case "UINT_2":
-                               var UINT_2 = Convert.ToUInt16(updateValue);
-                               variable.Value = UINT_2.ToString();
-                               break;
-                           case "UINT_4":
-                               var UINT_4 = Convert.ToUInt32(updateValue);
-                               variable.Value = UINT_4.ToString();
-                               break;
-                           case "UINT_8":
-                               var UINT_8 = Convert.ToUInt64(updateValue);
-                               variable.Value = UINT_8.ToString();
-                               break;
-                           case "INT_1":
-                               var INT_1 = Convert.ToSByte(updateValue);
-                               variable.Value = INT_1.ToString();
-                               break;
-                           case "INT_2":
-                               var INT_2 = Convert.ToInt16(updateValue);
-                               variable.Value = INT_2.ToString();
-                               break;
-                           case "INT_4":
-                               var INT_4 = Convert.ToInt32(updateValue);
-                               variable.Value = INT_4.ToString();
-                               break;
-                           case "INT_8":
-                               var INT_8 = Convert.ToInt64(updateValue);
-                               variable.Value = INT_8.ToString();
-                               break;
-                           case "FLOAT_4":
-                               var FLOAT_4 = Convert.ToSingle(updateValue);
-                               variable.Value = FLOAT_4.ToString();
-                               break;
-                           case "FLOAT_8":
-                               var FLOAT_8 = Convert.ToDouble(updateValue);
-                               variable.Value = FLOAT_8.ToString();
-                               break;
-                           case "LIST":
-                               var LIST = updateValue as Item;
-                               variable.Value = LIST.ToJson();
-                               break;
-                           default:
-                               return 2;
-                       }
-                       _context.SaveChanges();
-                       if (variable.VarType == "EC")
+                   switch (variable.DataType)
+                   {
+
+                       case nameof(SecsFormat.Binary):
+                           var HexString = Convert.ToHexString((byte[])updateValue);
+                           variable.Value = HexString;
+                           break;
+                       case nameof(SecsFormat.Boolean):
+                           var BOOL = Convert.ToBoolean(updateValue);
+                           variable.Value = BOOL.ToString();
+                           break;
+                       case nameof(SecsFormat.ASCII):
+                           var ASCII = Convert.ToString(updateValue);
+                           variable.Value = ASCII.ToString();
+                           break;
+                       case nameof(SecsFormat.U1): ///數值類注意OutOfRange
+                           var UINT_1 = Convert.ToByte(updateValue);
+                           variable.Value = UINT_1.ToString();
+                           break;
+                       case nameof(SecsFormat.U2):
+                           var UINT_2 = Convert.ToUInt16(updateValue);
+                           variable.Value = UINT_2.ToString();
+                           break;
+                       case nameof(SecsFormat.U4):
+                           var UINT_4 = Convert.ToUInt32(updateValue);
+                           variable.Value = UINT_4.ToString();
+                           break;
+                       case nameof(SecsFormat.U8):
+                           var UINT_8 = Convert.ToUInt64(updateValue);
+                           variable.Value = UINT_8.ToString();
+                           break;
+                       case nameof(SecsFormat.I1):
+                           var INT_1 = Convert.ToSByte(updateValue);
+                           variable.Value = INT_1.ToString();
+                           break;
+                       case nameof(SecsFormat.I2):
+                           var INT_2 = Convert.ToInt16(updateValue);
+                           variable.Value = INT_2.ToString();
+                           break;
+                       case nameof(SecsFormat.I4):
+                           var INT_4 = Convert.ToInt32(updateValue);
+                           variable.Value = INT_4.ToString();
+                           break;
+                       case nameof(SecsFormat.I8):
+                           var INT_8 = Convert.ToInt64(updateValue);
+                           variable.Value = INT_8.ToString();
+                           break;
+                       case nameof(SecsFormat.F4):
+                           var FLOAT_4 = Convert.ToSingle(updateValue);
+                           variable.Value = FLOAT_4.ToString();
+                           break;
+                       case nameof(SecsFormat.F8):
+                           var FLOAT_8 = Convert.ToDouble(updateValue);
+                           variable.Value = FLOAT_8.ToString();
+                           break;
+                       case nameof(SecsFormat.List):
+                           var LIST = updateValue as Item;
+                           variable.Value = LIST.ToJson();
+                           break;
+                       default:
                            return 2;
-                       return 0; //SV,DV
                    }
+                   _context.SaveChanges();
+                   if (variable.VarType == "EC")
+                       return 2;
+                   return 0; //SV,DV
+
                }
                catch (Exception) { throw; }
                return 3;//ListSV ?!
            }
        );
-       
+
 
     }
 
@@ -636,7 +643,8 @@ public partial class GemRepository
         int EAC = -1;
         var idLst = idValLst.Select(pair => pair.Item1).ToList();
         return await LockGemRepo<int>(
-            () => {
+            () =>
+            {
                 var ECs = _context.Variables.Where(v => v.VarType == "EC");
                 if (ECs.Where(v => idLst.Contains(v.VID)).Count() != idLst.Count)
                 {
@@ -654,98 +662,101 @@ public partial class GemRepository
                 return 0; //all success
             }
         );
-        
+
     }
     int SubSetVarById(GemVariable variable, (int, Item) idVal)
     {
         try
         {
-            if (variable.DataType != "LIST")
+
+            switch (variable.DataType)
             {
+                case nameof(SecsFormat.Binary)://應該只會有1個byte?
+                                               //Memory<byte> bytes = idVal.Item2.GetMemory<byte>();
+                    var BINARY = idVal.Item2.FirstValue<byte>();
+                    variable.Value = Convert.ToString((int)BINARY);
 
-                switch (variable.DataType)
-                {
-                    case "BINARY"://應該只會有1個byte?
-                        //Memory<byte> bytes = idVal.Item2.GetMemory<byte>();
-                        var BINARY = idVal.Item2.FirstValue<byte>();
-                        variable.Value = Convert.ToString((int)BINARY);
+                    break;
+                case nameof(SecsFormat.Boolean):
+                    var BOOL = idVal.Item2.FirstValue<bool>;
+                    variable.Value = BOOL.ToString();
+                    break;
+                case nameof(SecsFormat.ASCII):
+                    var ASCII = idVal.Item2.GetString();
+                    variable.Value = ASCII.ToString();
+                    break;
+                case nameof(SecsFormat.U1):  ///數值類注意OutOfRange
+                    var UINT_1 = idVal.Item2.FirstValue<byte>();
+                    if (IsOutOfValueRange(UINT_1, variable))
+                        return 3;
+                    variable.Value = UINT_1.ToString();
+                    break;
+                case nameof(SecsFormat.U2):
+                    var UINT_2 = idVal.Item2.FirstValue<UInt16>();
+                    if (IsOutOfValueRange(UINT_2, variable))
+                        return 3;
+                    variable.Value = UINT_2.ToString();
+                    break;
+                case nameof(SecsFormat.U4):
+                    var UINT_4 = idVal.Item2.FirstValue<UInt32>();
+                    if (IsOutOfValueRange(UINT_4, variable))
+                        return 3;
+                    variable.Value = UINT_4.ToString();
+                    break;
+                case nameof(SecsFormat.U8):
+                    var UINT_8 = idVal.Item2.FirstValue<UInt64>();
+                    if (IsOutOfValueRange(UINT_8, variable))
+                        return 3;
+                    variable.Value = UINT_8.ToString();
+                    break;
+                case nameof(SecsFormat.I1):
+                    var INT_1 = idVal.Item2.FirstValue<SByte>();
+                    if (IsOutOfValueRange(INT_1, variable))
+                        return 3;
+                    variable.Value = INT_1.ToString();
+                    break;
+                case nameof(SecsFormat.I2):
+                    var INT_2 = idVal.Item2.FirstValue<Int16>();
+                    if (IsOutOfValueRange(INT_2, variable))
+                        return 3;
+                    variable.Value = INT_2.ToString();
+                    break;
+                case nameof(SecsFormat.I4):
+                    var INT_4 = idVal.Item2.FirstValue<Int32>();
+                    if (IsOutOfValueRange(INT_4, variable))
+                        return 3;
+                    variable.Value = INT_4.ToString();
+                    break;
+                case nameof(SecsFormat.I8):
+                    var INT_8 = idVal.Item2.FirstValue<Int64>();
+                    variable.Value = INT_8.ToString();
+                    break;
+                case nameof(SecsFormat.F4):
+                    var FLOAT_4 = idVal.Item2.FirstValue<float>;
+                    if (IsOutOfValueRange(FLOAT_4, variable))
+                        return 3;
+                    variable.Value = FLOAT_4.ToString();
+                    break;
+                case nameof(SecsFormat.F8):
+                    var FLOAT_8 = idVal.Item2.FirstValue<Double>();
+                    if (IsOutOfValueRange(FLOAT_8, variable))
+                        return 3;
+                    variable.Value = FLOAT_8.ToString();
+                    break;
+                case nameof(SecsFormat.List):
+                    var LIST = idVal.Item2.ToJson();
 
-                        break;
-                    case "BOOL":
-                        var BOOL = idVal.Item2.FirstValue<bool>;
-                        variable.Value = BOOL.ToString();
-                        break;
-                    case "ASCII":
-                        var ASCII = idVal.Item2.GetString();
-                        variable.Value = ASCII.ToString();
-                        break;
-                    case "UINT_1":  ///數值類注意OutOfRange
-                        var UINT_1 = idVal.Item2.FirstValue<byte>();
-                        if (IsOutOfValueRange(UINT_1, variable))
-                            return 3;
-                        variable.Value = UINT_1.ToString();
-                        break;
-                    case "UINT_2":
-                        var UINT_2 = idVal.Item2.FirstValue<UInt16>();
-                        if (IsOutOfValueRange(UINT_2, variable))
-                            return 3;
-                        variable.Value = UINT_2.ToString();
-                        break;
-                    case "UINT_4":
-                        var UINT_4 = idVal.Item2.FirstValue<UInt32>();
-                        if (IsOutOfValueRange(UINT_4, variable))
-                            return 3;
-                        variable.Value = UINT_4.ToString();
-                        break;
-                    case "UINT_8":
-                        var UINT_8 = idVal.Item2.FirstValue<UInt64>();
-                        if (IsOutOfValueRange(UINT_8, variable))
-                            return 3;
-                        variable.Value = UINT_8.ToString();
-                        break;
-                    case "INT_1":
-                        var INT_1 = idVal.Item2.FirstValue<SByte>();
-                        if (IsOutOfValueRange(INT_1, variable))
-                            return 3;
-                        variable.Value = INT_1.ToString();
-                        break;
-                    case "INT_2":
-                        var INT_2 = idVal.Item2.FirstValue<Int16>();
-                        if (IsOutOfValueRange(INT_2, variable))
-                            return 3;
-                        variable.Value = INT_2.ToString();
-                        break;
-                    case "INT_4":
-                        var INT_4 = idVal.Item2.FirstValue<Int32>();
-                        if (IsOutOfValueRange(INT_4, variable))
-                            return 3;
-                        variable.Value = INT_4.ToString();
-                        break;
-                    case "INT_8":
-                        var INT_8 = idVal.Item2.FirstValue<Int64>();
-                        variable.Value = INT_8.ToString();
-                        break;
-                    case "FLOAT_4":
-                        var FLOAT_4 = idVal.Item2.FirstValue<float>;
-                        if (IsOutOfValueRange(FLOAT_4, variable))
-                            return 3;
-                        variable.Value = FLOAT_4.ToString();
-                        break;
-                    case "FLOAT_8":
-                        var FLOAT_8 = idVal.Item2.FirstValue<Double>();
-                        if (IsOutOfValueRange(FLOAT_8, variable))
-                            return 3;
-                        variable.Value = FLOAT_8.ToString();
-                        break;
-                    default:
-                        return 2;
-                }
-                //_context.SaveChanges();
-                return 0; //SV,DV
+                    variable.Value = LIST;
+                    break;
+                default:
+                    return 2;
             }
+            //_context.SaveChanges();
+            return 0; //SV,DV
+
         }
         catch (Exception) { return 4; }
-        return 3;//ListSV ?!
+
 
         return 1;
     }
@@ -778,7 +789,8 @@ public partial class GemRepository
     {
         await UpdateTimeFormat();
         return await LockGemRepo<Item>(
-            () => {
+            () =>
+            {
                 List<(int, Item)> rtnRptItems = new();
                 var reports = _context.EventReportLinks.Where(link => link.ECID == ceid)
                     .Select(link => link.Report);
@@ -809,7 +821,8 @@ public partial class GemRepository
     public async Task<Item?> GetReportByRpid(int rpid)
     {
         return await LockGemRepo<Item?>(
-            () => {
+            () =>
+            {
                 var rptVarLink = _context.ReportVariableLinks.Where(rpt => rpt.RPTID == rpid);
                 if (!rptVarLink.Any())
                 {
@@ -825,7 +838,7 @@ public partial class GemRepository
                 return L(reportVars);
             }
         );
-       
+
 
     }
     #region DynamicEventReport
@@ -836,7 +849,8 @@ public partial class GemRepository
     public async Task<int> DefineReport(IEnumerable<(int RPTID, int[] VID)> rptLst)
     {
         return await LockGemRepo<int>(
-            () => {
+            () =>
+            {
                 if (rptLst.Count() == 0)//清光, 也許應該寫在其他地方...
                 {
                     //_context.Database.ExecuteSqlRaw("TRUNCATE TABLE Reports "); sqlite 居然沒有Truncate
@@ -877,7 +891,7 @@ public partial class GemRepository
                 return 0;
             }
         );
-       
+
 
     }
 
@@ -889,7 +903,8 @@ public partial class GemRepository
     public async Task<int> LinkEvent(IEnumerable<(int CEID, int[] RPTIDs)> evntRptLinks)
     {
         return await LockGemRepo<int>(
-            () => {
+            () =>
+            {
                 if (evntRptLinks.Count() == 0)//清光, 也許應該寫在其他地方...
                 {
                     _context.Database.ExecuteSqlRaw("DELETE FROM Events");
@@ -938,7 +953,8 @@ public partial class GemRepository
     public async Task<int> EnableEvent(bool isEnable, IEnumerable<int> ecids)
     {
         return await LockGemRepo<int>(
-            () => {
+            () =>
+            {
                 if (_context.Events.Where(evnt => ecids.Contains(evnt.ECID)).Count() != ecids.Count()) //ECID有不存在
                     return 1;
                 if (ecids.Count() == 0) // 全部
