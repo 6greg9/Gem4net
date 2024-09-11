@@ -440,10 +440,11 @@ public partial class Form1 : Form
             IsCommDefaultEnabled = 1,
             IsCommHostInit = 0,
             TimeFormatVID = 20,
+            EstablishCommunicationsTimeoutVID = 30,
             DefaultInitControlState = (int)ControlState.ATTEMPT_ON_LINE,
             DefaultAfterFailOnline = (int)ControlState.EQUIPMENT_OFF_LINE,
             DefaultLocalRemote = (int)ControlState.LOCAL,
-            EstablishCommunicationsTimeout = 10
+            EstablishCommunicationsTimeout = 17
         });
         ;
         GemEquipment = new GemEqpService(logger, _gemRepo, secsGemOptions, gemEqpAppOptions); // 建構式就啟動惹..

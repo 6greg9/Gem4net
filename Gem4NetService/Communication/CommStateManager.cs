@@ -24,9 +24,10 @@ internal class CommStateManager
                 {
                     var secItem = GemRepo.GetVariable(VID).Result;
                     if (secItem is not null
-                        && secItem.Format is SecsFormat.U1 or SecsFormat.U2 or SecsFormat.U4 or SecsFormat.U8)
+                        && secItem.Format is SecsFormat.U2 ) // or SecsFormat.U1 or  SecsFormat.U4 or SecsFormat.U8)
                     {
-                        return secItem.FirstValue<int>();
+                        var timeoutSec = secItem.FirstValue<UInt16>();
+                        return  timeoutSec ;
                     }
                 }
                 return EqpAppOptions.EstablishCommunicationsTimeout ?? 20;
