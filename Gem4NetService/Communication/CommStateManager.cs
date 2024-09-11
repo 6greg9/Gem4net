@@ -36,7 +36,7 @@ internal class CommStateManager
             }
             catch (Exception ex)
             {
-                
+                Logger.Error(ex.ToString());
                 return 20;
             }
         } }

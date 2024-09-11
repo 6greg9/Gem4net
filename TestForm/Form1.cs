@@ -135,7 +135,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Black;
-                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}<-- [0x{id:X8}] {msg.ToSml()}\n");
+                _form.richTextBox1.AppendText($"{DateTime.UtcNow.ToString()}<-- [0x{id:X8}] {msg.ToSml()}\n");
             });
         }
 
@@ -144,7 +144,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Black;
-                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}--> [0x{id:X8}] {msg.ToSml()}\n");
+                _form.richTextBox1.AppendText($"{DateTime.UtcNow.ToString()}--> [0x{id:X8}] {msg.ToSml()}\n");
             });
         }
 
@@ -153,7 +153,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Blue;
-                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.UtcNow.ToString()}{msg}\n");
             });
         }
 
@@ -162,7 +162,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Green;
-                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.UtcNow.ToString()}{msg}\n");
             });
         }
 
@@ -171,7 +171,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Red;
-                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.UtcNow.ToString()}{msg}\n");
                 _form.richTextBox1.AppendText($"{message?.ToSml()}\n");
                 _form.richTextBox1.SelectionColor = Color.Gray;
                 _form.richTextBox1.AppendText($"{ex}\n");
@@ -183,7 +183,7 @@ public partial class Form1 : Form
             _form.Invoke((MethodInvoker)delegate
             {
                 _form.richTextBox1.SelectionColor = Color.Yellow;
-                _form.richTextBox1.AppendText($"{DateTime.Now.ToString()}{msg}\n");
+                _form.richTextBox1.AppendText($"{DateTime.UtcNow.ToString()}{msg}\n");
             });
         }
 
@@ -352,7 +352,7 @@ public partial class Form1 : Form
     {
         var pp = new FormattedProcessProgram();
         pp.LogId = Guid.NewGuid();
-        pp.PPID = "test"; //+ DateTime.Now.ToString("YYYYMMddhhmmss");
+        pp.PPID = "test"; //+ DateTime.UtcNow.ToString("YYYYMMddhhmmss");
         pp.UpdateTime = DateTime.UtcNow;
 
         pp.Editor = "87";
@@ -488,8 +488,8 @@ public partial class Form1 : Form
         GemEquipment.OnFormattedProcessProgramReceived += (fppSecs) =>
         {
             //return 0; // 要自行依照process program 結構來處理
-            var pp = new FormattedProcessProgram();
-            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs, out pp);
+            //var pp = new FormattedProcessProgram();
+            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs,out var pp);
             var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
             var paraA = ppCmds.FirstOrDefault().ProcessParameters.FirstOrDefault();
             var rtn = _gemRepo.CreateFormattedProcessProgram(pp);

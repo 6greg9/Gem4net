@@ -94,8 +94,8 @@ public partial class GemEqpService
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
-        _commStateManager = new CommStateManager(_secsGem, EqpAppOptions, _GemRepo);
-        _ctrlStateManager = new CtrlStateManager(_secsGem, EqpAppOptions);
+        _commStateManager = new CommStateManager(_secsGem,_logger, EqpAppOptions, _GemRepo);
+        _ctrlStateManager = new CtrlStateManager(_secsGem,_logger, EqpAppOptions);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
             if (transition.currentState == CommunicationState.COMMUNICATING)
@@ -594,14 +594,14 @@ public partial class GemEqpService
             timeFormat = U4((uint)EqpAppOptions.ClockFormatCode);
         }
         if (timeFormat.FirstValue<int>() == 0)
-            Clock = A(DateTime.Now.ToString("yyMMddHHmmss"));
+            Clock = A(DateTime.UtcNow.ToString("yyMMddHHmmss"));
         else if (timeFormat.FirstValue<int>() == 1)
-            Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+            Clock = A(DateTime.UtcNow.ToString("yyyyMMddHHmmssff"));
         else if (timeFormat.FirstValue<int>() == 2)//SEMI E148 ?
             Clock = A(DateTime.UtcNow.ToString("yyyy-MM-dd") + "T" +  //UTC
                 DateTime.UtcNow.ToString("HH:mm:ss.fff") + "Z");
         else
-            Clock = A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+            Clock = A(DateTime.UtcNow.ToString("yyyyMMddHHmmssff"));
         return Clock;
     }
     async Task HandleStream5(PrimaryMessageWrapper? primaryMsgWrapper)

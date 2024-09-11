@@ -551,7 +551,7 @@ public static class SecsItemSchemaValidator
          || item.Items[2].Format != SecsFormat.ASCII || item.Items[3].Format != SecsFormat.List)
             return false;
         var ProcessCommandList = item.Items[3];
-        foreach (var cc in item.Items)
+        foreach (var cc in ProcessCommandList.Items)
         {
             if (cc.Format != SecsFormat.List || cc.Items.Count() != 2)
                 return false;

@@ -89,14 +89,14 @@ public class TraceDataManager
         {
             if(sender.TimeFormat == 0)
             {
-                return DateTime.Now.ToString("yyyyMMddHHmmss");
+                return DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             }else if(sender.TimeFormat == 1)
             {
-                return DateTime.Now.ToString("yyyyMMddHHmmssff");
+                return DateTime.UtcNow.ToString("yyyyMMddHHmmssff");
             }
             else
             {
-                return DateTime.Now.ToString("yyyyMMddHHmmssff");
+                return DateTime.UtcNow.ToString("yyyyMMddHHmmssff");
             }
         };
         var s6f1Item = Item.L(

@@ -209,13 +209,13 @@ public partial class GemRepository
     Item? SubGetClock(int timeFormatcode)
     {
         if (timeFormatcode == 0)
-            return A(DateTime.Now.ToString("yyMMddHHmmss"));
+            return A(DateTime.UtcNow.ToString("yyMMddHHmmss"));
         if (timeFormatcode == 1)
-            return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+            return A(DateTime.UtcNow.ToString("yyyyMMddHHmmssff"));
         if (timeFormatcode == 2)
             return A(DateTime.UtcNow.ToString("yyyy-MM-dd") + "T" +  //UTC
                 DateTime.UtcNow.ToString("HH:mm:ss.fff") + "Z");
-        return A(DateTime.Now.ToString("yyyyMMddHHmmssff"));
+        return A(DateTime.UtcNow.ToString("yyyyMMddHHmmssff"));
     }
     Item? GemVariableToSecsItem(GemVariable variable)
     {
@@ -300,6 +300,56 @@ public partial class GemRepository
         catch (Exception ex)
         {
             return Item.J(); // !?
+        }
+
+    }
+    public string ItemToVarString(Item item)
+    {
+        try
+        {
+            switch (item.Format)
+            {
+                case SecsFormat.Binary:
+                    var memory = item.GetMemory<byte>();
+                    return Convert.ToHexString(memory.Span.ToArray());
+                case SecsFormat.Boolean:
+                    return item.FirstValue<bool>().ToString();
+                case SecsFormat.ASCII:
+                    return item.GetString();
+                case SecsFormat.U1:
+                    return item.FirstValue<byte>().ToString();
+                case SecsFormat.U2:
+                    
+                    return item.FirstValue<ushort>().ToString();
+                case SecsFormat.U4:
+
+                    return item.FirstValue<uint>().ToString();
+                case SecsFormat.U8:
+                    
+                    return item.FirstValue<UInt64>().ToString();
+                case SecsFormat.I1:
+
+                    return item.FirstValue<sbyte>().ToString();
+                case SecsFormat.I2:
+                    return item.FirstValue<short>().ToString();
+                case SecsFormat.I4:
+                    return item.FirstValue<int>().ToString();
+                case SecsFormat.I8:
+                    return item.FirstValue<Int64>().ToString();
+                case SecsFormat.F4:
+                    return item.FirstValue<Single>().ToString();
+                case SecsFormat.F8:
+                    return item.FirstValue<Double>().ToString();
+                case SecsFormat.List:
+
+                    return item.ToJson();
+                default:
+                    return ""; // !?
+            }
+        }
+        catch (Exception ex)
+        {
+            return ""; // !?
         }
 
     }

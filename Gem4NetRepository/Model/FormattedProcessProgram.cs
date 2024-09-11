@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Secs4Net;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,9 +20,9 @@ public class FormattedProcessProgram
     //更多資訊, Recipe Specifier
 
     public DateTime UpdateTime { get; set; }
-    
+
     /// <summary>
-    /// JSON !!!
+    /// JSON !!!, 請用List<ProcessCommand>反序列化
     /// </summary>
     public string PPBody { get; set; } 
     
@@ -44,6 +45,9 @@ public class ProcessCommand
 }
 public class ProcessParameter
 {
+    /// <summary>
+    /// "BINARY" "ASCII" "UINT_1" "UINT_2" "UINT_4""UINT_8"
+    /// "INT_1" "INT_2" "INT_4" "FLOAT_4" "FLOAT_8" "LIST"</summary>
     public string DataType { get; set; }
     public int Length { get; set; }
     public string Unit { get; set; }
