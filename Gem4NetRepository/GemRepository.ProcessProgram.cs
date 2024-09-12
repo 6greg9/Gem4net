@@ -301,7 +301,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             using (_context = new GemDbContext(_config))
             {
-                _ = _context.FormattedProcessPrograms.ForEachAsync(fpp =>
+                foreach(var fpp in _context.FormattedProcessPrograms)
                 {
                     _context.FormattedProcessPrograms.Remove(fpp);
 
@@ -311,7 +311,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                     fppLog.LogId = Guid.NewGuid();
                     fppLog.PPChangeStatus = 3;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
-                });
+                }
 
                 _context.SaveChanges();
                 return 0;

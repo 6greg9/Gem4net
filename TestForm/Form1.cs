@@ -495,16 +495,16 @@ public partial class Form1 : Form
             var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
             return rtn.Result;
         };
-        GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
+        GemEquipment.OnProcessProgramDeleteReq +=  (ppLst) =>
         {
 
             if (ppLst.Count == 0)
             {
-                _gemRepo.DeleteFormattedPPAll();
+                 _gemRepo.DeleteFormattedPPAll().Wait();
             }
             else
             {
-                _gemRepo.DeleteFormattedProcessProgram(ppLst);
+                 _gemRepo.DeleteFormattedProcessProgram(ppLst).Wait();
             }
             return 0;
         };
