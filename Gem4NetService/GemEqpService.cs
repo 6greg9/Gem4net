@@ -787,7 +787,7 @@ public partial class GemEqpService
                 var fpp = await _GemRepo.GetFormattedProcessProgram(msg.SecsItem.GetString());
                 Item pp = L();
                 if (fpp.Any())
-                     pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First());
+                     pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First(), EqpAppOptions.CommandCodeFormat);
                 
                 
                 using (var rtnS7F26 = new SecsMessage(7, 26)

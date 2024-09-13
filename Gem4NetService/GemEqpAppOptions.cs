@@ -61,4 +61,11 @@ public class GemEqpAppOptions
     public int? EstablishCommunicationsTimeout { get; set; }
     public int? EstablishCommunicationsTimeoutVID { get; set; }
     #endregion
+
+    #region ProcessProgram
+    /// <summary>
+    /// 0:Ascii, 1:U2, 2:U4, 3:I2, 4:I4
+    /// </summary>
+    public int CommandCodeFormat { get; set; }
+    #endregion
 }

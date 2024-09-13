@@ -17,7 +17,7 @@ namespace Gem4NetRepository;
 
 public partial class GemRepository // 這部分應該是可以獨立
 {
-    
+
     #region No Format
     public async Task<IEnumerable<ProcessProgram>> GetProcessProgram(string PPID)
     {
@@ -31,111 +31,82 @@ public partial class GemRepository // 這部分應該是可以獨立
     }
     public async Task<IEnumerable<ProcessProgram>> GetProcessProgramAll()
     {
-        await semSlim.WaitAsync();
-        try
+        return await LockGemRepo<IEnumerable<ProcessProgram>>(() =>
         {
-
-            using (_context = new GemDbContext(_config))
-            {
-
-                var PPs = _context.ProcessPrograms
+            var PPs = _context.ProcessPrograms
                 .ToList();
-                return PPs;
-            }
-        }
-
-        finally { semSlim.Release(); }
- 
+            return PPs;
+        });
     }
     public async Task<int> CreateProcessProgram(ProcessProgram pp)
     {
-
-        await semSlim.WaitAsync();
-        try
+        return await LockGemRepo<int>(() =>
         {
-            using (_context = new GemDbContext(_config))
+            pp.UpdateTime = DateTime.UtcNow;
+            //Create Log, 要先Log再更新正在使用的表
+            var doesExist = _context.ProcessPrograms.Any(p => p.PPID == pp.PPID);// 潛在問題,沒有在同個transaction, 需要上鎖
+
+            if (doesExist)
             {
-                pp.UpdateTime = DateTime.UtcNow;
-                //Create Log, 要先Log再更新正在使用的表
-                var doesExist = _context.ProcessPrograms.Any(p => p.PPID == pp.PPID);// 潛在問題,沒有在同個transaction, 需要上鎖
-
-                if (doesExist)
-                {
-                    var target = _context.ProcessPrograms.Where(p => p.PPID == pp.PPID).Take(1).Single();//.Take(1);
-                                                                                     //});
-                    _context.ProcessPrograms.Remove(target);
-                    _context.ProcessPrograms.Add(pp);
-                    //_context.FormattedProcessPrograms.Update(target);
-                    LogPPChanged(2);
-                }
-                else
-                {
-                    _context.ProcessPrograms.Add(pp);
-                    LogPPChanged(1);
-
-                }
-
-                _ = _context.SaveChanges();
-
-
-                /// <summary>
-                /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
-                /// </summary>
-                void LogPPChanged(int ppChangeStatus)
-                {
-                    var ppLog = Mapper.Map<ProcessProgramLog>(pp);
-
-                    ppLog.PPChangeStatus = ppChangeStatus;
-
-
-                    _context.ProcessProgramLogs.Add(ppLog);
-                }
+                var target = _context.ProcessPrograms.Where(p => p.PPID == pp.PPID).Take(1).Single();//.Take(1);
+                                                                                                     //});
+                _context.ProcessPrograms.Remove(target);
+                _context.ProcessPrograms.Add(pp);
+                //_context.FormattedProcessPrograms.Update(target);
+                LogPPChanged(2);
+            }
+            else
+            {
+                _context.ProcessPrograms.Add(pp);
+                LogPPChanged(1);
 
             }
-        }
-        finally { semSlim.Release(); }
 
-        return 0;
+            _ = _context.SaveChanges();
+            return 0;
+
+            /// <summary>
+            /// For PPChangeStatus, 1 Created, 2 Edited, 3 Deleted , 4-64 Reserved
+            /// </summary>
+            void LogPPChanged(int ppChangeStatus)
+            {
+                var ppLog = Mapper.Map<ProcessProgramLog>(pp);
+
+                ppLog.PPChangeStatus = ppChangeStatus;
+
+
+                _context.ProcessProgramLogs.Add(ppLog);
+            }
+
+        });
     }
 
     public async Task<int> DeleteProcessProgram(List<string> ppids)
     {
-        await semSlim.WaitAsync();
-        try
+        return await LockGemRepo<int>(() =>
         {
-            using (_context = new GemDbContext(_config))
-            {
-                //var cn = _context.Database.GetDbConnection();
-                //var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
+            //var cn = _context.Database.GetDbConnection();
+            //var rows = cn.Execute($"DELETE FROM ProcessPrograms where PPID IN @ppids", new { ppids = ppids });
 
-                _context.Remove(_context.ProcessPrograms.Where(pp => ppids.Contains(pp.PPID)));
-                var rows = _context.SaveChanges();
-                if (rows > 0)
-                {
-                    return 0;
-                }
-                return 1;
+            _context.Remove(_context.ProcessPrograms.Where(pp => ppids.Contains(pp.PPID)));
+            var rows = _context.SaveChanges();
+            if (rows > 0)
+            {
+                return 0;
             }
-        }
-        finally { semSlim.Release(); }
+            return 1;
+        });
+        
     }
     public async Task<int> DeletedProcessProgramAll()
     {
-        await semSlim.WaitAsync();
-        try
+        return await LockGemRepo<int>(() =>
         {
-            using (_context = new GemDbContext(_config))
-            {
-
-                _context.RemoveRange(_context.ProcessPrograms);
-                _context.SaveChanges();
-                return 0;
-            }
-
-        }
-        finally { semSlim.Release(); }
+            _context.RemoveRange(_context.ProcessPrograms);
+            _context.SaveChanges();
+            return 0;
+        });
     }
-
     public Item ProcessProgramToSecsItem(ProcessProgram pp)
     {
         var ppid = A(pp.PPID);
@@ -143,7 +114,6 @@ public partial class GemRepository // 這部分應該是可以獨立
         var ppSecs = L(ppid, ppbody);
         return ppSecs;
     }
-
     public int PharseSecsItemToPP(Item secsFpp, out ProcessProgram pp)
     {
         pp = new ProcessProgram();
@@ -181,7 +151,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         }
 
         finally { semSlim.Release(); }
-        
+
     }
     public async Task<IEnumerable<FormattedProcessProgram>> GetFormattedPPAll()
     {
@@ -201,7 +171,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         }
 
         finally { semSlim.Release(); }
-        
+
     }
     public async Task<int> CreateFormattedProcessProgram(FormattedProcessProgram fpp)
     {
@@ -244,7 +214,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 void LogFPPChanged(int ppChangeStatus)
                 {
                     var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
-                   
+
                     fppLog.PPChangeStatus = ppChangeStatus;
 
 
@@ -254,10 +224,10 @@ public partial class GemRepository // 這部分應該是可以獨立
             }
         }
         finally { semSlim.Release(); }
-        
+
         return 0;
     }
-    
+
     /// <summary>
     /// for S7F17
     /// </summary>
@@ -282,7 +252,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                     var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
                     fppLog.LogId = Guid.NewGuid();
                     fppLog.UpdateTime = DateTime.UtcNow;
-                    
+
                     fppLog.PPChangeStatus = 3;
                     _context.FormattedProcessProgramLogs.Add(fppLog);
                 }
@@ -292,7 +262,7 @@ public partial class GemRepository // 這部分應該是可以獨立
 
         }
         finally { semSlim.Release(); }
-        
+
     }
     public async Task<int> DeleteFormattedPPAll()
     {
@@ -301,7 +271,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             using (_context = new GemDbContext(_config))
             {
-                foreach(var fpp in _context.FormattedProcessPrograms)
+                foreach (var fpp in _context.FormattedProcessPrograms)
                 {
                     _context.FormattedProcessPrograms.Remove(fpp);
 
@@ -320,8 +290,13 @@ public partial class GemRepository // 這部分應該是可以獨立
         }
         finally { semSlim.Release(); }
     }
-
-    public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp)
+    /// <summary>
+    /// 0:Ascii, 1:U2, 2:U4, 3:I2, 4:I4
+    /// </summary>
+    /// <param name="fpp"></param>
+    /// <param name="CcodeFormat"></param>
+    /// <returns></returns>
+    public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp,int CcodeFormat)
     {
 
         var secsPPbody = Item.L();
@@ -329,19 +304,42 @@ public partial class GemRepository // 這部分應該是可以獨立
         var ppBodyLst = new List<Item>();
         foreach (var processCmd in PPbody)
         {
-            
+
             var secsParaLst = new List<Item>();
             foreach (var para in processCmd.ProcessParameters)
             {
-                
+
                 var secsPara = VarStringToItem(para.DataType, para.Value);
                 secsParaLst.Add(secsPara);
 
             }
-            var secsPPcmd = L(
-                              A(processCmd.CommandCode),
+            Item  secsPPcmd;
+            Item  ccodeItem = A();
+            switch (CcodeFormat)
+            {
+                case 0:
+                    ccodeItem = A(processCmd.CommandCode);
+                    break;
+                case 1:
+                    ccodeItem = U2(Convert.ToUInt16(processCmd.CommandCode) );
+                    break;
+                case 2:
+                    ccodeItem = U4(Convert.ToUInt32(processCmd.CommandCode) );
+                    break;
+                case 3:
+                    ccodeItem = I2(Convert.ToInt16(processCmd.CommandCode));
+                    break;
+                case 4:
+                    ccodeItem = I4(Convert.ToInt32(processCmd.CommandCode));
+                    break;
+                default:
+                    ccodeItem = A(processCmd.CommandCode);
+                    break;
+            }
+            secsPPcmd = L(
+                              ccodeItem,
                               L(secsParaLst.ToArray()));
-            
+
             ppBodyLst.Add(secsPPcmd);
         }
         var secsFpp = Item.L(
@@ -350,7 +348,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                             A(fpp.SoftwareRevision),
                             L(ppBodyLst.ToArray()))
             ;
-        
+
         return secsFpp;
     }
 
@@ -396,7 +394,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                     pCmd.ProcessParameters.Add(p);
                 }
                 PPCommands.Add(pCmd);
-                
+
             }
             fpp.PPBody = JsonSerializer.Serialize(PPCommands);
             return 0;
