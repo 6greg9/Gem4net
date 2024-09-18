@@ -31,7 +31,7 @@ public class DataTracer
     public string DetailDescription { get; set; }
 
     public List<int> SampledVIDs { get; private set; }
-    public event Func<List<int>,Task<List<Item>>> OnSample;
+    public Func<List<int>,Task<List<Item>>> OnSample;
     public List<Item> SVsBag { get; private set; } = new List<Item>();
     public event Action<DataTracer> OnTraceEventSend;
 
