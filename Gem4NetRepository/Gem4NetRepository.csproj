@@ -44,7 +44,7 @@
   </ItemGroup>
   <PropertyGroup>
     <PackageId>Gem4netRepository</PackageId>
-    <Version>1.0.16</Version>
+    <Version>1.0.18</Version>
     <Authors>6greg9</Authors>
     <Company>gp</Company>
   </PropertyGroup>

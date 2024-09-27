@@ -101,11 +101,10 @@ internal class CommStateManager
                 switch (CurrentState)
                 {
                     case CommunicationState.WAIT_CRA:
-                        await Task.WhenAny(S1F14Waiter, 
-                            Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout)));
-
-
-                        if (S1F14Waiter.IsCompleted)
+                        await Task.WhenAll(S1F14Waiter,Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout)));
+                        
+                        // S1F14的DeviceId不正確, Secs4net會自動發S9F1 , 這邊會等不到
+                        if (S1F14Waiter.IsCompletedSuccessfully)
                         {
                             var S1F14 = S1F14Waiter.Result;
                             //格式檢查
@@ -124,11 +123,12 @@ internal class CommStateManager
                                 break;
                             }
                             var COMMACK = FirstLevel.Take(1).FirstOrDefault();
-                            if (COMMACK == Item.B(1)) //被拒絕
+                            var b = COMMACK.FirstValue<byte>();
+                            if (b != 0) //被拒絕
                             {
                                 GotoWaitDelay();
                             }
-                            else if (COMMACK == Item.B(0))//成功
+                            else 
                             {
                                 CurrentState = CommunicationState.COMMUNICATING;
 
@@ -164,14 +164,15 @@ internal class CommStateManager
                     S1F14Waiter = _secsGem.SendAsync(S1F13); //在while外部
                 CurrentState = CommunicationState.WAIT_CRA;
             }
-            void GotoWaitDelay()
-            {
-                CommDelayTimerTaskCts?.Cancel();
-                CommDelayTimerTaskCts = new CancellationTokenSource();
-                CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout), CommDelayTimerTaskCts.Token);// Tooxx?
-                CurrentState = CommunicationState.WAIT_DELAY;
-            }
+            
         });
+    }
+    public void GotoWaitDelay()
+    {
+        CommDelayTimerTaskCts?.Cancel();
+        CommDelayTimerTaskCts = new CancellationTokenSource();
+        CommDelayTimerTask = Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout), CommDelayTimerTaskCts.Token);// Tooxx?
+        CurrentState = CommunicationState.WAIT_DELAY;
     }
     public void LeaveCommunicationState()
     {

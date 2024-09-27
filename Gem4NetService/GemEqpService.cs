@@ -25,7 +25,7 @@ public partial class GemEqpService
     public SecsGemOptions GemOptions { get; private set; }
     public GemEqpAppOptions EqpAppOptions { get; private set; }
     //之後要加GemServiceOptions
-    
+
     private readonly ISecsGemLogger _logger;
     private readonly Channel<PrimaryMessageWrapper> RecvBuffer = Channel.CreateUnbounded<PrimaryMessageWrapper>(
         new UnboundedChannelOptions()
@@ -54,7 +54,7 @@ public partial class GemEqpService
 
         // ef core 第一次使用會花費很長時間
         //_ = Enable();
-         
+
         RecieveMessageHandlerTask = Task.Run(async () =>
         {
             var token = SecsMsgHandlerTaskCTS.Token;
@@ -94,8 +94,8 @@ public partial class GemEqpService
         _secsGem = new SecsGem(options, _connector, _logger);
 
         //狀態管理
-        _commStateManager = new CommStateManager(_secsGem,_logger, EqpAppOptions, _GemRepo);
-        _ctrlStateManager = new CtrlStateManager(_secsGem,_logger, EqpAppOptions);
+        _commStateManager = new CommStateManager(_secsGem, _logger, EqpAppOptions, _GemRepo);
+        _ctrlStateManager = new CtrlStateManager(_secsGem, _logger, EqpAppOptions);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
             if (transition.currentState == CommunicationState.COMMUNICATING)
@@ -119,7 +119,7 @@ public partial class GemEqpService
             {
                 _commStateManager.EnterCommunicationState();
             }
-            else
+            else if (_commStateManager.CurrentState != CommunicationState.DISABLED)
             {
                 _commStateManager.LeaveCommunicationState();
             }
@@ -148,7 +148,7 @@ public partial class GemEqpService
         {
             _logger.Error("GetPrimaryMessageAsync", ex);
         }
-    }   
+    }
     public async Task Disable() // 各種cancel, dispose
     {
         if (!_hsmsCancellationTokenSource.IsCancellationRequested)
@@ -229,7 +229,7 @@ public partial class GemEqpService
             //Format Validation, S9F7
             if (SecsItemSchemaValidator.IsValid(ReceiveSecsMsg.PrimaryMessage) == false)
             {
-                
+
                 _ = ReceiveSecsMsg.TryReplyAsync();//不帶Item, 會給S9F7
                                                    //await Task.Delay(10);
                                                    //continue;
@@ -259,6 +259,7 @@ public partial class GemEqpService
                     await ReceiveSecsMsg.TryReplyAsync(rtnMsg);
                 return;
             }
+            
             //Handle PrimaryMessage
             handlePrimaryMessage(ReceiveSecsMsg);  //就在這裡一大包
 
@@ -279,7 +280,7 @@ public partial class GemEqpService
         switch (primaryMsgWrapper.PrimaryMessage)
         {
             case SecsMessage msg when (msg.S == 1):
-                
+
                 await HandleStream1(primaryMsgWrapper);
                 break;
             case SecsMessage msg when (msg.S == 2):
@@ -298,7 +299,7 @@ public partial class GemEqpService
                 await HandleStream10(primaryMsgWrapper);
                 break;
             default:
-                if( OnUnhandledPrimaryMessage is null)
+                if (OnUnhandledPrimaryMessage is null)
                 {
                     OnUnhandledPrimaryMessage!.Invoke(primaryMsgWrapper);
 
@@ -332,7 +333,7 @@ public partial class GemEqpService
                 Item? svList;
                 if (vids is null || vids.Count() == 0)
                 {
-                    svList =await _GemRepo.GetSvAll();
+                    svList = await _GemRepo.GetSvAll();
                 }
                 else
                 {
@@ -430,7 +431,7 @@ public partial class GemEqpService
             //S2F17 Date and Time Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 17):
                 Item Clock =await  GetSecsClock();
-                
+
                 using (var rtnS2F18 = new SecsMessage(2, 18)
                 {
                     SecsItem = Clock
@@ -483,7 +484,7 @@ public partial class GemEqpService
                 break;
             //S2F29 Equipment Constant Namelist Request
             case SecsMessage msg when (msg.S == 2 && msg.F == 29):
-                var vidLst = msg.SecsItem.Items.Select( i=> i.FirstValue<int>()).ToList();  
+                var vidLst = msg.SecsItem.Items.Select( i=> i.FirstValue<int>()).ToList();
 
                 var s2F30 = await _GemRepo.GetEcDetailList(vidLst);
                 using (var rtnS2F29 = new SecsMessage(2, 30)
@@ -555,7 +556,7 @@ public partial class GemEqpService
                         new CommandParameter { CPACK = -1, Name = par[0].ToString(), Value = par[1] });
                 }
 
-                var cmdResult = OnRemoteCommandReceived?.Invoke(RemoteCmd)  
+                var cmdResult = OnRemoteCommandReceived?.Invoke(RemoteCmd)
                     ?? new RemoteCommand{ HCACK=1};//交給應用程式惹
                 var rtnSecsItem = msg.SecsItem;
                 rtnSecsItem.Items[0] = B((byte)cmdResult.HCACK);
@@ -580,15 +581,15 @@ public partial class GemEqpService
     public async Task<Item> GetSecsTimeFormat()
     {
         var timeFormat =await _GemRepo.GetEC(EqpAppOptions.TimeFormatVID);
-       
+
         return timeFormat == A() ? U4((uint)EqpAppOptions.ClockFormatCode) : timeFormat;
     }
     public async Task<Item> GetSecsClock()
     {
-        
+
         Item Clock;
         var timeFormat = await GetSecsTimeFormat();
-        if (!(timeFormat.Format is  SecsFormat.U1 or  SecsFormat.U2
+        if (!(timeFormat.Format is SecsFormat.U1 or SecsFormat.U2
             or SecsFormat.U4 or SecsFormat.U8))
         {
             timeFormat = U4((uint)EqpAppOptions.ClockFormatCode);
@@ -628,7 +629,7 @@ public partial class GemEqpService
                 IEnumerable<GemAlarm> alrmLst;
                 if (alarmIdVector.Count == 0)
                 {
-                    alrmLst =  await _GemRepo.GetAlarmAll();
+                    alrmLst = await _GemRepo.GetAlarmAll();
                 }
                 else
                 {
@@ -746,14 +747,14 @@ public partial class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS7F6);
                 break;
-                
+
             //S7F17 Delete Process Program Send, (這裡也要能處理unFormatted
             case SecsMessage msg when (msg.S == 7 && msg.F == 17):
                 int ackc7 = -1;
 
                 var ppids = msg.SecsItem.Items.Select(i => i.GetString()).ToList();
                 ackc7 = OnProcessProgramDeleteReq?.Invoke(ppids) ?? 8;
-                
+
 
                 using (var rtnS7F18 = new SecsMessage(7, 18)
                 {
@@ -787,9 +788,9 @@ public partial class GemEqpService
                 var fpp = await _GemRepo.GetFormattedProcessProgram(msg.SecsItem.GetString());
                 Item pp = L();
                 if (fpp.Any())
-                     pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First(), EqpAppOptions.CommandCodeFormat);
-                
-                
+                    pp = _GemRepo.FormattedProcessProgramToSecsItem(fpp.First(), EqpAppOptions.CommandCodeFormat);
+
+
                 using (var rtnS7F26 = new SecsMessage(7, 26)
                 {
                     SecsItem = pp
@@ -813,7 +814,7 @@ public partial class GemEqpService
 
                 using (var rtnS10F4 = new SecsMessage(10, 4)
                 {
-                    SecsItem = B(Convert.ToByte(ackc10?? 0))
+                    SecsItem = B(Convert.ToByte(ackc10 ?? 0))
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS10F4);
                 break;
@@ -822,20 +823,21 @@ public partial class GemEqpService
         }
     }
 
-    ~GemEqpService() {
+    ~GemEqpService()
+    {
         _hsmsCancellationTokenSource?.Cancel();
         SecsMsgHandlerTaskCTS?.Cancel();
 
-        
+
         if (_connector is not null)
         {
             _connector.Reconnect();
             _connector?.DisposeAsync()
                 .ConfigureAwait(false).GetAwaiter().GetResult();
         }
-        
+
         _secsGem?.Dispose();
-        
+
 
     }
 }

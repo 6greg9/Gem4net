@@ -27,6 +27,8 @@ public static class SecsItemSchemaValidator
                 return IsS1F12(Msg.SecsItem);
             case (1, 13):
                 return IsS1F13(Msg.SecsItem);
+            case (1, 14):
+                return IsS1F14(Msg.SecsItem);
             case (1, 15):
                 return IsS1F15(Msg.SecsItem);
             case (1, 17):
