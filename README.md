@@ -11,8 +11,13 @@
 - PP 要有使用中,編輯中..等等狀態, 並考慮實際的設定
 - ProcessProgram 格式還是二維比較好?
 - PP是應該可以獨立抽出
-- Spooling
-
+- PCB理論是不用Spool和Limit Monitor
+## 使用者需要開發啥
+- 把資料監控的值依據格式更新到資料庫, 函式庫沒有任何包裝, 請直連資料庫
+- HSMS, Communication, Control 的介面
+- ProcessProgram管理系統
+- 接收 Remote Command 與回應
+- Alarm 上報
 ## 已完成SECS語句
 - [x] S1F1  Are You There
 - [x] S1F3  Selected Equipment Status Request
