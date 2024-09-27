@@ -192,7 +192,23 @@ public static class SecsItemSchemaValidator
 
         return true;
     };
+    public static Func<Item?, bool> IsS1F14 = (item) =>
+    {
+        if ( item.Items.Count() != 2)
+            return false;
+        if (item.Items[0].Format!=SecsFormat.Binary || item.Items[1].Format != SecsFormat.List)
+            return false;
+        if (item.Items[1].Items.Count() is not 0 or 2)
+            return false;
+        if(item.Items[1].Items.Count() is 2)
+        {
+            if( item.Items[1].Items[0].Format != SecsFormat.ASCII
+                                    || item.Items[1].Items[1].Format != SecsFormat.ASCII)
+                return false;
+        }
 
+        return true;
+    };
     public static Func<Item?, bool> IsS1F15 = (item) =>
     {
         if (item == null)
@@ -277,7 +293,7 @@ public static class SecsItemSchemaValidator
         if (itemRoot.Items.Count() != 5)
             return false;
         if((itemRoot.Items[0].Format != SecsFormat.ASCII && itemRoot.Items[0].Format != SecsFormat.U4 && itemRoot.Items[0].Format != SecsFormat.U2)
-        ||itemRoot.Items[1].Format != SecsFormat.ASCII 
+        ||itemRoot.Items[1].Format != SecsFormat.ASCII
         ||itemRoot.Items[2].Format != SecsFormat.U4
         ||itemRoot.Items[3].Format != SecsFormat.U4
         ||itemRoot.Items[4].Format != SecsFormat.List)
@@ -303,7 +319,7 @@ public static class SecsItemSchemaValidator
             return false;
         foreach( var it in itemRoot.Items )
         {
-            if(it.Format != SecsFormat.U4 ) 
+            if(it.Format != SecsFormat.U4 )
                 return false;
         }
         return true;
@@ -329,13 +345,15 @@ public static class SecsItemSchemaValidator
                                                CultureInfo.InvariantCulture,
                                                DateTimeStyles.None,
                                                out dateTime);
-        }else if(timeStr.Length == 14)
+        }
+        else if(timeStr.Length == 14)
         {
             isParsed = DateTime.TryParseExact(timeStr, "yyyyMMddHHmmss",
                                                CultureInfo.InvariantCulture,
                                                DateTimeStyles.None,
                                                out dateTime);
-        }else if(timeStr.Length >= 15)//YYYY-MM-DDTHH:MM:SS.s[s]*{Z|+hh:mm|-hh:mm}
+        }
+        else if(timeStr.Length >= 15)//YYYY-MM-DDTHH:MM:SS.s[s]*{Z|+hh:mm|-hh:mm}
         {
             DateTimeOffset dateTimeOffset;
             isParsed = DateTimeOffset.TryParseExact(timeStr,
@@ -344,7 +362,7 @@ public static class SecsItemSchemaValidator
                                                      DateTimeStyles.AssumeUniversal,
                                                      out dateTimeOffset);
         }
-        
+
         return isParsed;
 
     };
@@ -449,7 +467,8 @@ public static class SecsItemSchemaValidator
     #region Stream 5
     public static Func<Item?, bool> IsS5F3 = (item) =>
     {
-        if (item is null) return false;
+        if (item is null)
+            return false;
         if (item.Format != SecsFormat.List || item.Items.Length !=2)
             return false;
         if (item.Items[0].Format != SecsFormat.Binary || item.Items[1].Format != SecsFormat.U4)
@@ -458,7 +477,8 @@ public static class SecsItemSchemaValidator
     };
     public static Func<Item?, bool> IsS5F5 = (item) =>
     {
-        if (item is null) return false;
+        if (item is null)
+            return false;
         if (item.Format is not SecsFormat.U4 )
             return false;
         //foreach( var alid in item.Items)
@@ -471,7 +491,8 @@ public static class SecsItemSchemaValidator
     };
     public static Func<Item?, bool> IsS5F7 = (item) =>
     {
-        if (item is not null) return false;
+        if (item is not null)
+            return false;
         return true;
     };
     #endregion
@@ -508,7 +529,7 @@ public static class SecsItemSchemaValidator
     {
         if (item.Format != SecsFormat.List)
             return false;
-        if(item.Items.Length != 2) 
+        if(item.Items.Length != 2)
             return false;
         if(item[0].Format != SecsFormat.ASCII )
             return false;
@@ -527,7 +548,8 @@ public static class SecsItemSchemaValidator
             return false;
         foreach (var i in item.Items)
         {
-            if (i.Format != SecsFormat.ASCII) return false;
+            if (i.Format != SecsFormat.ASCII)
+                return false;
         }
         return true;
     };

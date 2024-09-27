@@ -111,8 +111,11 @@ internal class CommStateManager
                             //格式檢查
                             //Root
                             var Root = S1F14.SecsItem;
-                            if (!(Root.Format == SecsFormat.List) || Root.Count != 2)
+                            var result = SecsItemSchemaValidator.IsValid.Invoke(S1F14);
+                            if(!result)
                                 break;
+
+                            
                             //First
                             //要看IsHostInit而有不同判斷
                             var FirstLevel = Root.Items;

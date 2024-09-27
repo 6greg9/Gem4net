@@ -23,10 +23,10 @@ public partial class GemEqpService
     /// <summary> Connecting,Connected, Selected, Retry,</summary>
     public event Action<string>? OnConnectStatusChanged;
 
-    /// <summary> DISABLED, WAIT_CR_FROM_HOST, WAIT_DELAY, WAIT_CRA, COMMUNICATING</summary>
+    /// <summary>(current,previous) DISABLED, WAIT_CR_FROM_HOST, WAIT_DELAY, WAIT_CRA, COMMUNICATING</summary>
     public event Action<string, string>? OnCommStateChanged;
 
-    /// <summary>EQUIPMENT_OFF_LINE,HOST_OFF_LINE,ATTEMPT_ON_LINE, LOCAL,REMOTE</summary>
+    /// <summary>(current,previous) EQUIPMENT_OFF_LINE,HOST_OFF_LINE,ATTEMPT_ON_LINE, LOCAL,REMOTE</summary>
     public event Action<string, string>? OnControlStateChanged;
     #endregion
 
