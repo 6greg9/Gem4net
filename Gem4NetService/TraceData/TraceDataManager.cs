@@ -68,7 +68,11 @@ public class TraceDataManager
             return 0;
         }
         //已有TRID不存在
-        return 0;
+        return 1;
+    }
+    public int TraceTerminateAll()
+    {
+        return _tracerList.RemoveAll(tr => true);
     }
     /// <summary>
     /// 

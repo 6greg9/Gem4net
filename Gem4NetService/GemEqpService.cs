@@ -459,7 +459,11 @@ public partial class GemEqpService
                 var repgsz = msg.SecsItem.Items[3].FirstValue<int>();
                 var lstSv = msg.SecsItem.Items[4].Items.ToArray().Select(item => item.FirstValue<int>()).ToList();
                 int tiaack = 0;
-                if (lstSv.Count() == 0)
+                if(trid == "")
+                {
+                    _traceDataManager.TraceTerminateAll();
+                    tiaack = 0;
+                }else if (lstSv.Count() == 0)
                 {
                     tiaack = _traceDataManager.TraceTerminate(trid);
                 }
@@ -838,6 +842,13 @@ public partial class GemEqpService
 
         _secsGem?.Dispose();
 
+
+    }
+    /// <summary>
+    /// Off-Line時候記得把背後在
+    /// </summary>
+    void HandleOffLine()
+    {
 
     }
 }
