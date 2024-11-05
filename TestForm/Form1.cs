@@ -35,7 +35,7 @@ public partial class Form1 : Form
         .Build();
         _gemRepo = new GemRepository(configuration); //帶入的參數是ConnectionStr的Key
 
-
+        
 
         UpdateVariables();
 
@@ -44,7 +44,7 @@ public partial class Form1 : Form
     public void UpdateVariables()
     {
         //var cnStr = " Data Source= C:\\Users\\User\\Documents\\GemVariablesDb.sqlite";
-        var cnStr = $"Host=127.0.0.1:5432; Database=GemEqpDb; Username=postgres; Password=greg3058;";
+        var cnStr = $"Host=localhost; Database=GemEqpDb; Username=postgres; Password=greg3058;";
         Task.Run(async () =>
         {
             while (true)
@@ -58,9 +58,9 @@ public partial class Form1 : Form
                     using (IDbConnection cn = new NpgsqlConnection(cnStr))
                     {
                         //var tran = cn.BeginTransaction();
-                        //string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
+                        string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
 
-                        ////刪除多筆參數
+                        //刪除多筆參數
                         //var datas = new[]{
                         //  new { vid = "1001", value = Item.F4((float)(cnt * 0.1)).ToJson() }  //};
                         //, new { vid = "1002", value = Item.F4((float)(cnt * 0.2)).ToJson() }
@@ -74,28 +74,28 @@ public partial class Form1 : Form
                         //, new { vid = "1010", value = Item.F4((float)(cnt * 1.0)).ToJson() }}; //似乎沒有顯著隨著row數目增加花費時間
 
                         //刪除多筆參數
-                        //var datas = new[]{
-                        //  new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
-                        //, new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
-                        //, new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
-                        //, new { vid = "1004", value = (cnt * 0.4).ToString("0.##") }
-                        //, new { vid = "1005", value = (cnt * 0.5).ToString("0.##") }
-                        //, new { vid = "1006", value = (cnt * 0.6).ToString("0.##") }
-                        //, new { vid = "1007", value = (cnt * 0.7).ToString("0.##") }
-                        //, new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
-                        //, new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
-                        //, new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
-                        //var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
-                        //var inStr = "";
-                        //foreach (var data in datas)
-                        //{
-                        //    var caseStr = " WHEN " + data.vid.ToString() + " THEN '" + data.value.ToString() + "'";
-                        //    sql += caseStr;
-                        //    inStr += " ," + data.vid.ToString();
-                        //}
-                        //sql += "ELSE \"Value\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
+                        var datas = new[]{
+                          new { vid = "1001", value = (cnt * 0.1).ToString("0.##") }  //};
+                        , new { vid = "1002", value = (cnt * 0.2).ToString("0.##") }
+                        , new { vid = "1003", value = (cnt * 0.3).ToString("0.##") }//};
+                        , new { vid = "1004", value = (cnt * 0.4).ToString("0.##") }
+                        , new { vid = "1005", value = (cnt * 0.5).ToString("0.##") }
+                        , new { vid = "1006", value = (cnt * 0.6).ToString("0.##") }
+                        , new { vid = "1007", value = (cnt * 0.7).ToString("0.##") }
+                        , new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
+                        , new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
+                        , new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
+                        var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
+                        var inStr = "";
+                        foreach (var data in datas)
+                        {
+                            var caseStr = " WHEN " + data.vid.ToString() + " THEN '" + data.value.ToString() + "'";
+                            sql += caseStr;
+                            inStr += " ," + data.vid.ToString();
+                        }
+                        sql += "ELSE \"Value\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
 
-                        //cn.Execute(sql);
+                        cn.Execute(sql);
                         //tran.Commit();
                     }
 
@@ -108,7 +108,7 @@ public partial class Form1 : Form
                 //await Task.Delay(20);
                 //Thread.Sleep(20);
 
-                SpinWait.SpinUntil(() => false, 20);
+                SpinWait.SpinUntil(() => false, 10);
                 sw.Stop();
                 //Debug.WriteLine(sw.ElapsedMilliseconds + " ms");
                 Debug.WriteLine($" {sw.ElapsedTicks * 1000F / Stopwatch.Frequency:n3}ms");
@@ -446,8 +446,11 @@ public partial class Form1 : Form
             DefaultLocalRemote = (int)ControlState.LOCAL,
             EstablishCommunicationsTimeout = 17
         });
-        ;
-        GemEquipment = new GemEqpService(logger, _gemRepo, secsGemOptions, gemEqpAppOptions); // 建構式就啟動惹..
+        var a = configuration.GetSection("secs4net").Get<SecsGemOptions>();
+        var b = configuration.GetSection("GemEqpAppOptions").Get<GemEqpAppOptions>();
+        GemEquipment = new GemEqpService(logger, _gemRepo,
+            Options.Create(a),
+            Options.Create(b)); 
 
         GemEquipment.OnConnectStatusChanged += (status) =>
         {

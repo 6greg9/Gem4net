@@ -90,6 +90,7 @@ public partial class GemEqpService
         var options = Options.Create(GemOptions);
         //var options = secsGemOptions;
         _connector = new HsmsConnection(options, _logger);
+        
         //_connector.LinkTestEnabled = false; 
         _secsGem = new SecsGem(options, _connector, _logger);
 
@@ -98,16 +99,26 @@ public partial class GemEqpService
         _ctrlStateManager = new CtrlStateManager(_secsGem, _logger, EqpAppOptions);
         _commStateManager.NotifyCommStateChanged += (transition) =>
         {
+
             if (transition.currentState == CommunicationState.COMMUNICATING)
             {
                 _ctrlStateManager.EnterControlState(); //成功進入Communicating後, CtrlState開始
             }
+            else
+            {
+                _traceDataManager.TraceTerminateAll();
+            }
+            
 
             OnCommStateChanged?.Invoke(transition.currentState.ToString(),
                 transition.previousState.ToString());
         };
         _ctrlStateManager.NotifyCommStateChanged += (transition) =>
         {
+            // 可能邏輯為需停止trace
+            //if (transition.currentState is not ControlState.REMOTE or ControlState.LOCAL)
+            //    _traceDataManager?.TraceTerminateAll();
+
             OnControlStateChanged?.Invoke(transition.currentState.ToString(),
                 transition.previousState.ToString());
             //SendEventReport(1);
@@ -123,7 +134,10 @@ public partial class GemEqpService
             {
                 _commStateManager.LeaveCommunicationState();
             }
-
+            if(connectState != ConnectionState.Selected)
+            {
+                _traceDataManager.TraceTerminateAll();
+            }
             OnConnectStatusChanged?.Invoke(connectState.ToString());
         };
         //Trace

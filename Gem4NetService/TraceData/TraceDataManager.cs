@@ -72,7 +72,9 @@ public class TraceDataManager
     }
     public int TraceTerminateAll()
     {
-        return _tracerList.RemoveAll(tr => true);
+        if(_tracerList.Any())
+            _tracerList.RemoveAll(tr => true);
+        return 0;
     }
     /// <summary>
     /// 
@@ -114,7 +116,15 @@ public class TraceDataManager
         {
             SecsItem = s6f1Item,
         };
-        _secsGem.SendAsync(secsMsg);
+
+        try
+        {
+            _secsGem.SendAsync(secsMsg);
+        }
+        catch (Exception ex) { 
+            
+        }
+        
         if( sender.TotalSampleAmount== sender.TotalSampleCounter) // 清理廢棄物
         {
             _= Task.Run(async () => { 
