@@ -477,13 +477,12 @@ public partial class GemEqpService
                 {
                     _traceDataManager.TraceTerminateAll();
                     tiaack = 0;
-                }else if (lstSv.Count() == 0)
-                {
-                    tiaack = _traceDataManager.TraceTerminate(trid);
                 }
                 else
                 {
+
                     tiaack = await _traceDataManager.TraceInitialize((dsperStr, dsper, totsmp, repgsz, lstSv));
+                    // 這個方法裡面也包含了停止與刪除
                 }
                 using (var rtnS2F24 = new SecsMessage(2, 24)
                 {

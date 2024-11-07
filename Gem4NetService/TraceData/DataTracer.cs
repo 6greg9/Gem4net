@@ -32,6 +32,7 @@ public class DataTracer
 
     public List<int> SampledVIDs { get; private set; }
     public Func<List<int>,Task<List<Item>>> OnSample;
+    public event Action? OnFinished;
     public List<Item> SVsBag { get; private set; } = new List<Item>();
     public event Action<DataTracer> OnTraceEventSend;
 
@@ -61,6 +62,7 @@ public class DataTracer
             if(TotalSampleAmount == TotalSampleCounter)
             {
                 SampleTimer?.Change(Timeout.Infinite, Timeout.Infinite); //Stop
+                OnFinished?.Invoke();
             }
             else
             {
@@ -68,12 +70,21 @@ public class DataTracer
             }
             
         },
-            null, 0, 0 ); // do once once imediately
+            null, -1, -1 ); // donnot do once once imediately
 
+    }
+    public void StartTrace()
+    {
+        SampleTimer.Change(0, 0); // do once once imediately
+    }
+    public void StopTrace()
+    {
+        SampleTimer.Dispose(); // do once once imediately
     }
     void TraceDataSend()
     {
         OnTraceEventSend?.Invoke(this);
         SVsBag.Clear();
     }
+    
 }

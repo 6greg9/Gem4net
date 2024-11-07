@@ -24,6 +24,7 @@ public class TraceDataManager
         _gemEqpService = gemService;
     }
     /// <summary>
+    /// semi 文件基本沒講清楚S2F23
     /// TIAACK Format: B:1 :  0 - ok, 1 - too many SVIDs, 2 - no more traces allowed, 3 - invalid period, 
     /// 4 - unknown SVID, 5 - bad REPGSZ
     /// </summary>
@@ -31,11 +32,28 @@ public class TraceDataManager
     public async Task<int> TraceInitialize((string trid, TimeSpan dataSamplePeriod, int totalSampleAmount,
         int reportGroupSize, List<int> sampleVIDs) traceInit)
     {
+        if (traceInit.trid == "")//Set zero-length TRID to delete all traces
+        {
+            TraceTerminateAll();
+            return 0;
+        }
+        
         if (_tracerList.Where(tr => tr.TRID == traceInit.trid).Any() == true)
         {
-            //已有重複TRID
-            return 2;
+             var removeTrace = _tracerList.Where(t=>t.TRID == traceInit.trid).ToList();
+            foreach (var item in removeTrace)
+            {
+                item.StopTrace();
+                _tracerList.Remove(item);
+            }
+            
+            ////已有重複TRID
+            //return 2;
+            // 覆蓋
         }
+        //Set TOTSMP=0 to terminate a trace
+        if(traceInit.totalSampleAmount == 0)
+            return 0;
         if (traceInit.dataSamplePeriod < MinSamplePeriod) // SamplePeriod限制
         {
             return 3;
@@ -56,7 +74,9 @@ public class TraceDataManager
         newTrace.TimeFormat = format.FirstValue<int>();
         newTrace.OnSample += HandleSampleForTracer;
         newTrace.OnTraceEventSend += HandleTraceEventSend;
+        newTrace.OnFinished += () => _tracerList.Remove(newTrace);
         _tracerList.Add(newTrace);
+        newTrace.StartTrace();
         return 0;
     }
 
