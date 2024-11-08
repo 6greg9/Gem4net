@@ -101,7 +101,8 @@ internal class CommStateManager
                 switch (CurrentState)
                 {
                     case CommunicationState.WAIT_CRA:
-                        await Task.WhenAll(S1F14Waiter,Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout)));
+                        
+                         await Task.WhenAny(S1F14Waiter,Task.Delay(TimeSpan.FromSeconds(EstablishCommunicationsTimeout)));
                         
                         // S1F14的DeviceId不正確, Secs4net會自動發S9F1 , 這邊會等不到
                         if (S1F14Waiter.IsCompletedSuccessfully)
@@ -137,6 +138,7 @@ internal class CommStateManager
                         }
                         else
                         {
+                            S1F14Waiter.Dispose();
                             GotoWaitDelay();
                         }
 
@@ -152,7 +154,7 @@ internal class CommStateManager
                         break; //WAIT_CRA_FROM_HOST 之類的
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(30);
             }
             void GotoWaitCRA()
             {
