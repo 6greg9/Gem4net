@@ -35,7 +35,7 @@ public partial class Form1 : Form
         .Build();
         _gemRepo = new GemRepository(configuration); //帶入的參數是ConnectionStr的Key
 
-        
+
 
         UpdateVariables();
 
@@ -58,7 +58,7 @@ public partial class Form1 : Form
                     using (IDbConnection cn = new NpgsqlConnection(cnStr))
                     {
                         //var tran = cn.BeginTransaction();
-                        string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;" ;//這樣會生成N筆SQL
+                        string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;";//這樣會生成N筆SQL
 
                         //刪除多筆參數
                         //var datas = new[]{
@@ -450,7 +450,7 @@ public partial class Form1 : Form
         var b = configuration.GetSection("GemEqpAppOptions").Get<GemEqpAppOptions>();
         GemEquipment = new GemEqpService(logger, _gemRepo,
             Options.Create(a),
-            Options.Create(b)); 
+            Options.Create(b));
 
         GemEquipment.OnConnectStatusChanged += (status) =>
         {
@@ -492,22 +492,22 @@ public partial class Form1 : Form
         {
             //return 0; // 要自行依照process program 結構來處理
             //var pp = new FormattedProcessProgram();
-            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs,out var pp);
+            var result = _gemRepo.PharseSecsItemToFormattedPP(fppSecs, out var pp);
             var ppCmds = JsonSerializer.Deserialize<List<ProcessCommand>>(pp.PPBody);
             var paraA = ppCmds.FirstOrDefault().ProcessParameters.FirstOrDefault();
             var rtn = _gemRepo.CreateFormattedProcessProgram(pp);
             return rtn.Result;
         };
-        GemEquipment.OnProcessProgramDeleteReq +=  (ppLst) =>
+        GemEquipment.OnProcessProgramDeleteReq += (ppLst) =>
         {
 
             if (ppLst.Count == 0)
             {
-                 _gemRepo.DeleteFormattedPPAll().Wait();
+                _gemRepo.DeleteFormattedPPAll().Wait();
             }
             else
             {
-                 _gemRepo.DeleteFormattedProcessProgram(ppLst).Wait();
+                _gemRepo.DeleteFormattedProcessProgram(ppLst).Wait();
             }
             return 0;
         };
@@ -516,5 +516,17 @@ public partial class Form1 : Form
     private void button4_Click(object sender, EventArgs e)
     {
         var ttt = Item.A("yooooooo").ToString();
+    }
+
+    private void button5_Click(object sender, EventArgs e)
+    {
+        var f8 = Item.F8(-12.3);
+        var a = Item.A("123");
+        var u4 = Item.U4(123);
+        var l = Item.L(f8, a, u4);
+        MessageBox.Show(l.ToJson());
+        var varStr = l.ToJson();
+        var LIST = JsonDocument.Parse(varStr).RootElement;
+        var item = LIST.ToItem();
     }
 }

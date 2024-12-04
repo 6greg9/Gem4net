@@ -44,6 +44,7 @@ partial class Form1
         Btn_GoLocal = new Button();
         Btn_GoRemote = new Button();
         panel1 = new Panel();
+        richTextBox3 = new RichTextBox();
         button4 = new Button();
         Tab_Events = new TabControl();
         Tab_GemState = new TabPage();
@@ -75,7 +76,7 @@ partial class Form1
         Tbx_AlarmText = new TextBox();
         Btn_SendAlarm = new Button();
         timer1 = new System.Windows.Forms.Timer(components);
-        richTextBox3 = new RichTextBox();
+        button5 = new Button();
         panel1.SuspendLayout();
         Tab_Events.SuspendLayout();
         Tab_GemState.SuspendLayout();
@@ -128,7 +129,7 @@ partial class Form1
         button3.TabIndex = 5;
         button3.Text = "S1F1";
         button3.UseVisualStyleBackColor = true;
-        button3.Click +=  button3_Click;
+        button3.Click += button3_Click;
         // 
         // rtbx_HSMS
         // 
@@ -253,6 +254,14 @@ partial class Form1
         panel1.Name = "panel1";
         panel1.Size = new Size(1793, 501);
         panel1.TabIndex = 16;
+        // 
+        // richTextBox3
+        // 
+        richTextBox3.Location = new Point(1299, 388);
+        richTextBox3.Name = "richTextBox3";
+        richTextBox3.Size = new Size(425, 88);
+        richTextBox3.TabIndex = 17;
+        richTextBox3.Text = "";
         // 
         // button4
         // 
@@ -528,14 +537,15 @@ partial class Form1
         // 
         // Page_Alarm
         // 
+        Page_Alarm.Controls.Add(button5);
         Page_Alarm.Controls.Add(Num_AlarmId);
         Page_Alarm.Controls.Add(Cbx_SetAlarm);
         Page_Alarm.Controls.Add(Tbx_AlarmText);
         Page_Alarm.Controls.Add(Btn_SendAlarm);
-        Page_Alarm.Location = new Point(4, 32);
+        Page_Alarm.Location = new Point(4, 45);
         Page_Alarm.Margin = new Padding(5);
         Page_Alarm.Name = "Page_Alarm";
-        Page_Alarm.Size = new Size(2083, 643);
+        Page_Alarm.Size = new Size(2083, 630);
         Page_Alarm.TabIndex = 6;
         Page_Alarm.Text = "Alarm";
         Page_Alarm.UseVisualStyleBackColor = true;
@@ -582,13 +592,15 @@ partial class Form1
         // 
         timer1.Tick += timer1_Tick;
         // 
-        // richTextBox3
+        // button5
         // 
-        richTextBox3.Location = new Point(1299, 388);
-        richTextBox3.Name = "richTextBox3";
-        richTextBox3.Size = new Size(425, 88);
-        richTextBox3.TabIndex = 17;
-        richTextBox3.Text = "";
+        button5.Location = new Point(767, 156);
+        button5.Name = "button5";
+        button5.Size = new Size(160, 97);
+        button5.TabIndex = 4;
+        button5.Text = "button5";
+        button5.UseVisualStyleBackColor = true;
+        button5.Click += button5_Click;
         // 
         // Form1
         // 
@@ -667,4 +679,5 @@ partial class Form1
     private Button Btn_DeletePP;
     private Button button4;
     private RichTextBox richTextBox3;
+    private Button button5;
 }

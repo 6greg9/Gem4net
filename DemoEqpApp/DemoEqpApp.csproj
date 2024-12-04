@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gem4NetRepository\Gem4NetRepository.csproj" />
+    <ProjectReference Include="..\Gem4NetService\Gem4NetService.csproj" />
+  </ItemGroup>
+
+</Project>

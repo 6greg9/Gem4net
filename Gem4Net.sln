@@ -9,12 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gem4NetService", "Gem4NetSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestForm", "TestForm\TestForm.csproj", "{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolForm", "ToolForm\ToolForm.csproj", "{C812ABAA-432A-478C-9596-0C4F4D357DF6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "方案項目", "方案項目", "{06BD8A3B-868F-4C93-B9DB-D18A5862E2D3}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\..\Videos\aaaa.sql = ..\..\..\..\Videos\aaaa.sql
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoEqpApp", "DemoEqpApp\DemoEqpApp.csproj", "{CD53C456-C174-4932-B003-B7B309C95984}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +34,10 @@ Global
 		{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2FC67FA-7CE8-4E02-BC1D-CCBCD7D4DF71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C812ABAA-432A-478C-9596-0C4F4D357DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD53C456-C174-4932-B003-B7B309C95984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD53C456-C174-4932-B003-B7B309C95984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD53C456-C174-4932-B003-B7B309C95984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD53C456-C174-4932-B003-B7B309C95984}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
