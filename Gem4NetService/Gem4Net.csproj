@@ -34,10 +34,6 @@
     <ProjectReference Include="..\Gem4NetRepository\Gem4NetRepository.csproj" />
     
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Spooling\" />
-  </ItemGroup>
   <PropertyGroup>
     <PackageId>Gem4net</PackageId>
     <Version>1.0.19</Version>
