@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Version>1.0.2</Version>
@@ -11,16 +11,6 @@
     <Compile Remove="Alarm\**" />
     <EmbeddedResource Remove="Alarm\**" />
     <None Remove="Alarm\**" />
-  </ItemGroup>
-
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-
-      <PackageReference Include="Secs4Net" Version="2.4.3" />
-      <PackageReference Include="Secs4Net.Json" Version="2.4.2" />
-      <PackageReference Include="Secs4Net.Sml" Version="2.4.3" />
-
-
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">

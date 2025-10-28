@@ -5,6 +5,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
@@ -25,7 +26,7 @@ public class GemDbContext : DbContext
     public string DbPath { get; private set; }
     IConfiguration? configuration { get; set; }
 
-    public GemDbContext(IConfiguration configuration = null)
+    public GemDbContext(DbContextOptions<GemDbContext> options, IConfiguration config) : base(options)
     {
         this.configuration = configuration;
     }
@@ -34,18 +35,6 @@ public class GemDbContext : DbContext
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        //options.UseSqlite($"Data Source = C:\\Users\\User\\Documents\\GemVariablesDb.sqlite");
-
-        var cnStr = $"Host = localhost; Database=GemEqpDb;Username=postgres;Password=greg4253058;Trust Server Certificate=true";
-        cnStr = configuration.GetConnectionString("Npgsql");
-        options.UseNpgsql(cnStr);
-        return;
-
-        //var connectStr = configuration?.GetConnectionString("Npgsql") ?? string.Empty;  
-        //options.UseNpgsql(connectStr );
-        //return;
-
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

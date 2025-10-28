@@ -17,7 +17,7 @@ namespace Gem4NetRepository.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -72,8 +72,46 @@ namespace Gem4NetRepository.Migrations
                     b.HasKey("LogId");
 
                     b.ToTable("FormattedProcessPrograms");
+                });
 
-                    b.UseTpcMappingStrategy();
+            modelBuilder.Entity("Gem4NetRepository.Model.FormattedProcessProgramLog", b =>
+                {
+                    b.Property<Guid>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApprovalLevel")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Editor")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EquipmentModelType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PPBody")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PPChangeStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PPID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SoftwareRevision")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("LogId");
+
+                    b.ToTable("FormattedProcessProgramLogs");
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.GemAlarm", b =>
@@ -244,8 +282,46 @@ namespace Gem4NetRepository.Migrations
                     b.HasKey("LogId");
 
                     b.ToTable("ProcessPrograms");
+                });
 
-                    b.UseTpcMappingStrategy();
+            modelBuilder.Entity("Gem4NetRepository.Model.ProcessProgramLog", b =>
+                {
+                    b.Property<Guid>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApprovalLevel")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Editor")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EquipmentModelType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PPBody")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PPChangeStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PPID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SoftwareRevision")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("LogId");
+
+                    b.ToTable("ProcessProgramLogs");
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.ReportVariableLink", b =>
@@ -261,26 +337,6 @@ namespace Gem4NetRepository.Migrations
                     b.HasIndex("RPTID");
 
                     b.ToTable("ReportVariableLinks");
-                });
-
-            modelBuilder.Entity("Gem4NetRepository.Model.FormattedProcessProgramLog", b =>
-                {
-                    b.HasBaseType("Gem4NetRepository.Model.FormattedProcessProgram");
-
-                    b.Property<int>("PPChangeStatus")
-                        .HasColumnType("integer");
-
-                    b.ToTable("FormattedProcessProgramLogs");
-                });
-
-            modelBuilder.Entity("Gem4NetRepository.Model.ProcessProgramLog", b =>
-                {
-                    b.HasBaseType("Gem4NetRepository.Model.ProcessProgram");
-
-                    b.Property<int>("PPChangeStatus")
-                        .HasColumnType("integer");
-
-                    b.ToTable("ProcessProgramLogs");
                 });
 
             modelBuilder.Entity("Gem4NetRepository.Model.EventReportLink", b =>

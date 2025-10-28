@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gem4NetRepository.Migrations
 {
     /// <inheritdoc />
-    public partial class NoListSv : Migration
+    public partial class Review : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,6 +52,7 @@ namespace Gem4NetRepository.Migrations
                 columns: table => new
                 {
                     LogId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PPChangeStatus = table.Column<int>(type: "integer", nullable: false),
                     PPID = table.Column<string>(type: "text", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PPBody = table.Column<string>(type: "text", nullable: false),
@@ -59,8 +60,7 @@ namespace Gem4NetRepository.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     ApprovalLevel = table.Column<string>(type: "text", nullable: true),
                     SoftwareRevision = table.Column<string>(type: "text", nullable: true),
-                    EquipmentModelType = table.Column<string>(type: "text", nullable: true),
-                    PPChangeStatus = table.Column<int>(type: "integer", nullable: false)
+                    EquipmentModelType = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -91,6 +91,7 @@ namespace Gem4NetRepository.Migrations
                 columns: table => new
                 {
                     LogId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PPChangeStatus = table.Column<int>(type: "integer", nullable: false),
                     PPID = table.Column<string>(type: "text", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PPBody = table.Column<string>(type: "text", nullable: false),
@@ -98,8 +99,7 @@ namespace Gem4NetRepository.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     ApprovalLevel = table.Column<string>(type: "text", nullable: true),
                     SoftwareRevision = table.Column<string>(type: "text", nullable: true),
-                    EquipmentModelType = table.Column<string>(type: "text", nullable: true),
-                    PPChangeStatus = table.Column<int>(type: "integer", nullable: false)
+                    EquipmentModelType = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

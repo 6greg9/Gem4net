@@ -10,7 +10,7 @@ using Secs4Net;
 using static Secs4Net.Item;
 using System.Text.Json;
 using Secs4Net.Json;
-using Npgsql.Internal.TypeHandling;
+
 using static System.Net.WebRequestMethods;
 
 namespace Gem4NetRepository;
