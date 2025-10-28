@@ -15,7 +15,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 return _context.Alarms.Where(alrm => alrm.ALID == alarmId).FirstOrDefault();
             }
@@ -28,7 +28,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 var tempAlarm = new List<GemAlarm?>();
                 foreach (var alid in alarmIds)
@@ -46,7 +46,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 return _context.Alarms.ToList();
             }
@@ -65,7 +65,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 var targetAlarm = _context.Alarms
                     .Where(alrm => alrm.ALID == alid).Take(1);
@@ -88,7 +88,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 var targetAlarm = _context.Alarms
                     .Where(alrm => alrm.ALID == alid).Take(1);

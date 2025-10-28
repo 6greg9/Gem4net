@@ -7,7 +7,7 @@ public class Program
 {
     public Program()
     {
-        using var db = new GemDbContext();
+        //using var db = new GemDbContext();
         
 
     }

@@ -35,14 +35,16 @@ public partial class GemRepository
 
     IMapper Mapper;
     IConfiguration _config;
+    DbContextOptions<GemDbContext> _dbOptions;
     private int TimeFormat;
 
-    public GemRepository(IConfiguration configaration)
+    public GemRepository(DbContextOptions<GemDbContext> dbOptions ,IConfiguration configaration)
     {
 
         _config = configaration;
+        _dbOptions = dbOptions;
         UseJsonSecsItem = Convert.ToInt32(_config["GemEqpRepoOptions:UseJsonSecsItem"]);
-        using (_context = new GemDbContext(_config))
+        using (_context = new GemDbContext(_dbOptions, _config))
         {
             _ = _context.Variables.ToList();
             _ = _context.Events.ToList();
@@ -72,7 +74,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 return subFunc();
             }
@@ -84,7 +86,7 @@ public partial class GemRepository
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 subAction();
             }

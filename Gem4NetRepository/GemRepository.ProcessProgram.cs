@@ -140,7 +140,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
 
                 var pps = _context.FormattedProcessPrograms
@@ -158,7 +158,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 var PPs = _context.FormattedProcessPrograms.ToList();
                 //var tableName = "FormattedProcessPrograms";
@@ -179,7 +179,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
 
                 fpp.UpdateTime = DateTime.UtcNow;
@@ -238,7 +238,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 ///var rows = cn.Execute($"DELETE FROM FormattedProcessPrograms where PPID IN @ppids", new { ppids = ppids });
                 var fpps = _context.FormattedProcessPrograms.Where(sc => sc.GetType() != typeof(FormattedProcessProgramLog))
@@ -269,7 +269,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_config))
+            using (_context = new GemDbContext(_dbOptions,_config))
             {
                 foreach (var fpp in _context.FormattedProcessPrograms)
                 {
