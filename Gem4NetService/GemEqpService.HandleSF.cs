@@ -79,7 +79,7 @@ public partial class GemEqpService
                 }
                 else
                 {
-                    svList = await _GemRepo.GetSvList(vids);
+                    svList = await _GemRepo.GetSvListByVidList(vids);
                 }
 
                 using (var rtnS2F4 = new SecsMessage(1, 4)

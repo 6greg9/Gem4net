@@ -102,7 +102,7 @@ public class TraceDataManager
     /// <param name="sender"></param>
     async Task< List<Item?> > HandleSampleForTracer(List<int> lstVid)
     {
-        var svListItem = await _repo.GetSvList(lstVid);
+        var svListItem = await _repo.GetSvListByVidList(lstVid);
         return svListItem.Items.ToList();
     }
     /// <summary>

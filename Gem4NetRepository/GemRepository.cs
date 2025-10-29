@@ -100,58 +100,11 @@ public partial class GemRepository
             TimeFormat = TimeFormatEC.FirstValue<int>();
     }
 
-    /// <summary>for s1f3,s1f4</summary>
-    /// <param name="vidList"></param>
-    /// <returns></returns>
-    public async Task<Item?> GetSvList(IEnumerable<int> vidList)
-    {
-        await UpdateTimeFormat();
-
-        return await LockGemRepo<Item?>(
-            () => SubGetSvListByVidList(vidList)
-        );
-
-    }
     /// <summary>
-    /// 多次執行SubGetSvByVID
+    /// 先把特殊項目處理掉, 再呼叫GemVariableToSecsItem做資料轉換
     /// </summary>
-    /// <param name="vidList"></param>
+    /// <param name="gemVariable"></param>
     /// <returns></returns>
-    Item? SubGetSvListByVidList(IEnumerable<int> vidList)
-    {
-        var existVariables = _context.Variables.Where(v => v.VarType == "SV").GetVariableByVidList(vidList).ToList(); // 無法保證順序
-        var existVids = existVariables.Select(v => v.VID);
-        var list = vidList.Select(vid =>
-        {
-            if (existVids.Contains(vid))
-                return existVariables.Where( v=> v.VID==vid).First();
-            return null;
-        }).Select(gemVar=> SubGemVariableToSecsItem(gemVar));
-
-        return Item.L(list.ToArray());
-        
-    }
-    public async Task<Item?> GetSv(int vid)
-    {
-        await UpdateTimeFormat();
-        return await LockGemRepo<Item?>(
-            () => SubGetSvByVID(vid)
-        );
-    }
-    Item? SubGetSvByVID(int vid)
-    {
-        // Clock, 是要用Name還是Vid找
-        if (vid == Convert.ToInt32(_config["ClockVID"]))
-            return SubGetClock(TimeFormat);
-
-        var Variable = _context.Variables
-            .Where(v => v.VarType == "SV")
-            .Where(v => v.VID == vid).FirstOrDefault();
-        if (Variable == null)//找不到
-            return A(); // ?
-
-        return GemVariableToSecsItem(Variable);
-    }
     Item SubGemVariableToSecsItem(GemVariable? gemVariable)
     {
         if (gemVariable == null)//找不到
@@ -163,39 +116,7 @@ public partial class GemRepository
 
         return GemVariableToSecsItem(gemVariable);
     }
-    public async Task<Item?> GetEcList(IEnumerable<int> vidList)
-    {
-        return await LockGemRepo<Item?>(
-            () => SubGetEcListByVidList(vidList)
-        );
 
-    }
-    Item? SubGetEcListByVidList(IEnumerable<int> vidList)
-    {
-        return Item.L(vidList.Select(vid => SubGetEcByVID(vid)).ToArray());
-    }
-    public async Task<Item?> GetEC(int vid)
-    {
-        return await LockGemRepo<Item?>(() => SubGetEcByVID(vid));
-    }
-    Item? SubGetEcByVID(int vid)
-    {
-        var Variable = _context.Variables
-            .Where(v => v.VarType == "EC")
-            .Where(v => v.VID == vid).FirstOrDefault();
-        if (Variable == null)//找不到
-            return A(); // ?
-
-        return GemVariableToSecsItem(Variable);
-    }
-    public async Task<Item?> GetVariable(string name)
-    {
-        return await LockGemRepo<Item?>(() => SubGetVarByName(name));
-    }
-    public async Task<Item?> GetVariable(int vid)
-    {
-        return await LockGemRepo<Item?>(() => SubGetVarByVid(vid));
-    }
     Item? SubGetVarByName(string name)
     {
         var Variable = _context.Variables
@@ -228,7 +149,7 @@ public partial class GemRepository
     {
         try
         {
-            if( variable is null)
+            if (variable is null)
                 return A();
 
             // 判斷特殊系統VID
@@ -238,17 +159,6 @@ public partial class GemRepository
                 return JsonDocument.Parse(variable.Value).RootElement.ToItem();
             }
             return VarStringToItem(variable.DataType, variable.Value);
-            //if (variable.DataType != "LIST")
-            //{
-            //}
-            //else
-            //{
-            //    var subItem = _context.Variables.Where(v => v.VarType == "SV").Where(v => v.ListSVID == variable.VID).ToList();
-            //    return Item.L(subItem.Select(v =>
-            //    {
-            //        return v.DataType == "LIST" ? GetSv(v.VID) : GemVariableToSecsItem(v);
-            //    }).ToArray());
-            //}
         }
         catch (Exception ex)
         {
@@ -256,6 +166,12 @@ public partial class GemRepository
             return null;
         }
     }
+    /// <summary>
+    /// 還沒所有都以Json存的方式舊方式
+    /// </summary>
+    /// <param name="dataType"></param>
+    /// <param name="varStr"></param>
+    /// <returns></returns>
     public Item VarStringToItem(string dataType, string varStr)
     {
         try
@@ -365,6 +281,92 @@ public partial class GemRepository
         }
 
     }
+
+    /// <summary>for s1f3,s1f4</summary>
+    /// <param name="vidList"></param>
+    /// <returns></returns>
+    public async Task<Item?> GetSvListByVidList(IEnumerable<int> vidList)
+    {
+        await UpdateTimeFormat();
+
+        return await LockGemRepo<Item?>(
+            () => SubGetSvListByVidList(vidList)
+        );
+
+    }
+    /// <summary>
+    /// SubGetSvByVID
+    /// </summary>
+    /// <param name="vidList"></param>
+    /// <returns></returns>
+    Item? SubGetSvListByVidList(IEnumerable<int> vidList)
+    {
+        var existVariables = _context.Variables.Where(v => v.VarType == "SV").GetVariableByVidList(vidList).ToList(); // 無法保證順序
+        var existVids = existVariables.Select(v => v.VID);
+        var list = vidList.Select(vid =>
+        {
+            if (existVids.Contains(vid))
+                return existVariables.Where( v=> v.VID==vid).First();
+            return null;
+        }).Select(gemVar=> SubGemVariableToSecsItem(gemVar));
+
+        return Item.L(list.ToArray());
+        
+    }
+    public async Task<Item?> GetSv(int vid)
+    {
+        await UpdateTimeFormat();
+        return await LockGemRepo<Item?>(
+            () => SubGetSvByVID(vid)
+        );
+    }
+    Item? SubGetSvByVID(int vid)
+    {
+        // Clock, 是要用Name還是Vid找
+        if (vid == Convert.ToInt32(_config["ClockVID"]))
+            return SubGetClock(TimeFormat);
+
+        var Variable = _context.Variables
+            .Where(v => v.VarType == "SV")
+            .Where(v => v.VID == vid).FirstOrDefault();
+
+        return SubGemVariableToSecsItem(Variable);
+    }
+
+    public async Task<Item?> GetEcList(IEnumerable<int> vidList)
+    {
+        return await LockGemRepo<Item?>(
+            () => SubGetEcListByVidList(vidList)
+        );
+
+    }
+    Item? SubGetEcListByVidList(IEnumerable<int> vidList)
+    {
+        return Item.L(vidList.Select(vid => SubGetEcByVID(vid)).ToArray());
+    }
+    public async Task<Item?> GetEC(int vid)
+    {
+        return await LockGemRepo<Item?>(() => SubGetEcByVID(vid));
+    }
+    Item? SubGetEcByVID(int vid)
+    {
+        var Variable = _context.Variables
+            .Where(v => v.VarType == "EC")
+            .Where(v => v.VID == vid).FirstOrDefault();
+        if (Variable == null)//找不到
+            return A(); // ?
+
+        return GemVariableToSecsItem(Variable);
+    }
+    public async Task<Item?> GetVariable(string name)
+    {
+        return await LockGemRepo<Item?>(() => SubGetVarByName(name));
+    }
+    public async Task<Item?> GetVariable(int vid)
+    {
+        return await LockGemRepo<Item?>(() => SubGetVarByVid(vid));
+    }
+
     /// <summary>
     /// SVID, SVNAMES, UNITS
     /// </summary>
@@ -425,16 +427,12 @@ public partial class GemRepository
     /// <returns></returns>
     public async Task<Item?> GetSvAll()
     {
-        return await LockGemRepo<Item?>(
-            () =>
-            {
-
+        return await LockGemRepo<Item?>( () =>{
                 var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID).ToList()
-                .Select(v => GemVariableToSecsItem(v)).ToArray();
+                .Select(v => SubGemVariableToSecsItem(v)).ToArray();
                 return Item.L(itemList);
             }
         );
-
     }
 
     /// <summary>

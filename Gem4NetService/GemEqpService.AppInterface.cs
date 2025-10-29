@@ -79,10 +79,6 @@ public partial class GemEqpService
         => (_ctrlStateManager.CurrentState is ControlState.LOCAL or ControlState.REMOTE)
                                         ? _secsGem : null;
 
-    public async Task<Item?> GetVariableById(int VID)
-    {
-        return await _GemRepo.GetSv(VID); //這樣還有要?
-    }
     public void GetVariableByName(string name)
     {
         // 
