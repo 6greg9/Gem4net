@@ -54,8 +54,7 @@ public partial class GemRepository
 
         //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
         SqlMapper.AddTypeHandler(new PPBodyHandler());
-        SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
-
+        
     }
 
     /// <summary>
@@ -100,22 +99,7 @@ public partial class GemRepository
             && (TimeFormatEC.Format == SecsFormat.U1 || TimeFormatEC.Format == SecsFormat.U2 || TimeFormatEC.Format == SecsFormat.U4 || TimeFormatEC.Format == SecsFormat.U8))
             TimeFormat = TimeFormatEC.FirstValue<int>();
     }
-    public class SqliteGuidTypeHandler : SqlMapper.TypeHandler<Guid>
-    {
-        public override void SetValue(IDbDataParameter parameter, Guid guid)
-        {
-            parameter.Value = guid.ToString();
-        }
 
-        public override Guid Parse(object value)
-        {
-            // Dapper may pass a Guid instead of a string
-            if (value is Guid)
-                return (Guid)value;
-
-            return new Guid((string)value);
-        }
-    }
     /// <summary>for s1f3,s1f4</summary>
     /// <param name="vidList"></param>
     /// <returns></returns>
@@ -128,9 +112,24 @@ public partial class GemRepository
         );
 
     }
+    /// <summary>
+    /// 多次執行SubGetSvByVID
+    /// </summary>
+    /// <param name="vidList"></param>
+    /// <returns></returns>
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)
     {
-        return Item.L(vidList.OrderBy(vid => vid).Select(vid => SubGetSvByVID(vid)).ToArray());
+        var existVariables = _context.Variables.Where(v => v.VarType == "SV").GetVariableByVidList(vidList).ToList(); // 無法保證順序
+        var existVids = existVariables.Select(v => v.VID);
+        var list = vidList.Select(vid =>
+        {
+            if (existVids.Contains(vid))
+                return existVariables.Where( v=> v.VID==vid).First();
+            return null;
+        }).Select(gemVar=> SubGemVariableToSecsItem(gemVar));
+
+        return Item.L(list.ToArray());
+        
     }
     public async Task<Item?> GetSv(int vid)
     {
@@ -152,6 +151,17 @@ public partial class GemRepository
             return A(); // ?
 
         return GemVariableToSecsItem(Variable);
+    }
+    Item SubGemVariableToSecsItem(GemVariable? gemVariable)
+    {
+        if (gemVariable == null)//找不到
+            return A(); // ?
+
+        // Clock, 是要用Name還是Vid找
+        if (gemVariable.VID == Convert.ToInt32(_config["ClockVID"]))
+            return SubGetClock(TimeFormat);
+
+        return GemVariableToSecsItem(gemVariable);
     }
     public async Task<Item?> GetEcList(IEnumerable<int> vidList)
     {
@@ -203,7 +213,7 @@ public partial class GemRepository
             return A(); // ?
         return GemVariableToSecsItem(Variable);
     }
-    Item? SubGetClock(int timeFormatcode)
+    Item SubGetClock(int timeFormatcode)
     {
         if (timeFormatcode == 0)
             return A(DateTime.UtcNow.ToString("yyMMddHHmmss"));
@@ -214,10 +224,15 @@ public partial class GemRepository
                 DateTime.UtcNow.ToString("HH:mm:ss.fff") + "Z");
         return A(DateTime.UtcNow.ToString("yyyyMMddHHmmssff"));
     }
-    Item? GemVariableToSecsItem(GemVariable variable)
+    Item? GemVariableToSecsItem(GemVariable? variable)
     {
         try
         {
+            if( variable is null)
+                return A();
+
+            // 判斷特殊系統VID
+
             if (UseJsonSecsItem == 1)
             {
                 return JsonDocument.Parse(variable.Value).RootElement.ToItem();

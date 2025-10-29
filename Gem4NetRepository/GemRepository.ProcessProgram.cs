@@ -74,6 +74,7 @@ public partial class GemRepository // 這部分應該是可以獨立
 
                 ppLog.PPChangeStatus = ppChangeStatus;
 
+
                 _context.ProcessProgramLogs.Add(ppLog);
             }
 
