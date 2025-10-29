@@ -30,7 +30,7 @@ namespace Gem4NetRepository.Model
             // 1) 先找 ConnectionStrings:Default
             // 2) 再找 環境變數 ConnectionStrings__Default
             var connectionString =
-                config.GetConnectionString("Default") ??
+                config.GetConnectionString("Npgsql") ??
                 Environment.GetEnvironmentVariable("ConnectionStrings__Default") ??
                 throw new InvalidOperationException("找不到連線字串 ConnectionStrings:Default。");
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gem4NetService.SystemVar;
+namespace Gem4NetRepository.SystemVar;
 public enum SYSTEM_EC
 {
     //EnableSpooling,

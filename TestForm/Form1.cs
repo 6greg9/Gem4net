@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Gem4Net.Control;
 using System.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace TestForm;
 
@@ -33,7 +34,16 @@ public partial class Form1 : Form
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appSettings.json", false)
         .Build();
-        _gemRepo = new GemRepository(configuration); //盿把计琌ConnectionStrKey
+
+        var connectionString =
+                configuration.GetConnectionString("Npgsql") ??
+                Environment.GetEnvironmentVariable("ConnectionStrings__Default") ??
+                throw new InvalidOperationException("тぃ硈絬﹃ ConnectionStrings:Default");
+
+        var optionsBuilder = new DbContextOptionsBuilder<GemDbContext>();
+        optionsBuilder.UseNpgsql(connectionString); // ■ эΘ UseNpgsql / UseMySql 
+
+        _gemRepo = new GemRepository(optionsBuilder.Options, configuration); //盿把计琌ConnectionStrKey
 
 
 

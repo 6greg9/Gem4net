@@ -3,10 +3,13 @@ using DemoEqpApp.Services;
 using Gem4Net;
 using Gem4NetRepository;
 using Gem4NetRepository.Model;
+using Microsoft.EntityFrameworkCore;
 using Secs4Net;
 using Secs4Net.Sml;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -19,7 +22,14 @@ builder.Services.Configure<GemEqpAppOptions>(
 builder.Services.Configure<SecsGemOptions>(
      builder.Configuration.GetSection("secs4net"));
 
+
+var dbCtxtOptionBuilder = new DbContextOptionsBuilder<GemDbContext>();
+dbCtxtOptionBuilder.UseNpgsql(config.GetConnectionString("Npgsql"));
+
+builder.Services.AddSingleton(dbCtxtOptionBuilder.Options); // µù¥Uoptions !?
+
 builder.Services.AddDbContext<GemDbContext>();
+
 builder.Services.AddSingleton<GemRepository>();
 builder.Services.AddSingleton<GemEqpService>();
 builder.Services.AddSingleton<ISecsGemLogger, SecsLogger>();
