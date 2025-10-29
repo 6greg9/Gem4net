@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Dapper;
+﻿using Dapper;
 using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +32,6 @@ public partial class GemRepository
     static SemaphoreSlim semSlim = new SemaphoreSlim(1, 1);
     public int UseJsonSecsItem { get; private set; }
 
-    IMapper Mapper;
     IConfiguration _config;
     DbContextOptions<GemDbContext> _dbOptions;
     private int TimeFormat;
@@ -58,17 +56,14 @@ public partial class GemRepository
         SqlMapper.AddTypeHandler(new PPBodyHandler());
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
 
-        //AutoMapper
-        var mapperConfig = new MapperConfiguration(cfg =>
-        {
-
-            cfg.CreateMap<FormattedProcessProgram, FormattedProcessProgramLog>();
-
-            cfg.CreateMap<ProcessProgram, ProcessProgramLog>();
-        }
-        ); // 註冊Model間的對映
-        Mapper = mapperConfig.CreateMapper();
     }
+
+    /// <summary>
+    /// dbContext 週期在這裡, toList, saveChange在委派那邊處理
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="subFunc"></param>
+    /// <returns></returns>
     async Task<T> LockGemRepo<T>(Func<T> subFunc)
     {
         await semSlim.WaitAsync();
@@ -93,7 +88,10 @@ public partial class GemRepository
         }
         finally { semSlim.Release(); }
     }
-
+    /// <summary>
+    /// 更新TimeFormat這個全域狀態
+    /// </summary>
+    /// <returns></returns>
     async Task UpdateTimeFormat()
     {
         var TimeFormatVID = Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]);
@@ -128,9 +126,6 @@ public partial class GemRepository
         return await LockGemRepo<Item?>(
             () => SubGetSvListByVidList(vidList)
         );
-
-
-
 
     }
     Item? SubGetSvListByVidList(IEnumerable<int> vidList)

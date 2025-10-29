@@ -76,6 +76,11 @@ public class GemDbContext : DbContext
             .WithMany(s => s.ReportVariables)
             .HasForeignKey(sc => sc.VID);
 
+        modelBuilder.Entity<MiscState>()
+            .HasKey(sc => sc.ID);
+
+        modelBuilder.Entity<MiscState>()
+            .Property(o => o.Info).HasColumnType("jsonb");//依賴postgres的資料格式
 
         //modelBuilder.Entity<ProcessParameter>()
         //    .HasKey(sc => new { sc.ProcessProgramId, sc.ProcessCommandCode, sc.Name });

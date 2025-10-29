@@ -70,10 +70,9 @@ public partial class GemRepository // 這部分應該是可以獨立
             /// </summary>
             void LogPPChanged(int ppChangeStatus)
             {
-                var ppLog = Mapper.Map<ProcessProgramLog>(pp);
+                var ppLog = Mappers.ProcessProgramToProcessProgramLog(pp);
 
                 ppLog.PPChangeStatus = ppChangeStatus;
-
 
                 _context.ProcessProgramLogs.Add(ppLog);
             }
@@ -213,7 +212,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 /// </summary>
                 void LogFPPChanged(int ppChangeStatus)
                 {
-                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
+                    var fppLog =  Mappers.FormattedProcessProgramToFormattedProcessProgramLog(fpp);
 
                     fppLog.PPChangeStatus = ppChangeStatus;
 
@@ -249,7 +248,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                     _context.FormattedProcessPrograms.Remove(fpp);
 
                     //Delete Log
-                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
+                    var fppLog = Mappers.FormattedProcessProgramToFormattedProcessProgramLog(fpp);
                     fppLog.LogId = Guid.NewGuid();
                     fppLog.UpdateTime = DateTime.UtcNow;
 
@@ -276,7 +275,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                     _context.FormattedProcessPrograms.Remove(fpp);
 
                     //Delete Log
-                    var fppLog = Mapper.Map<FormattedProcessProgramLog>(fpp);
+                    var fppLog = Mappers.FormattedProcessProgramToFormattedProcessProgramLog(fpp);
                     fppLog.UpdateTime = DateTime.UtcNow;
                     fppLog.LogId = Guid.NewGuid();
                     fppLog.PPChangeStatus = 3;
