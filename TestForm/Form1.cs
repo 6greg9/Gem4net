@@ -68,7 +68,7 @@ public partial class Form1 : Form
                     using (IDbConnection cn = new NpgsqlConnection(cnStr))
                     {
                         //var tran = cn.BeginTransaction();
-                        string strSql = "UPDATE Variables SET Value=@value WHERE VID =@vid ;";//這樣會生成N筆SQL
+                        string strSql = "UPDATE Variables SET SecsValue=@value WHERE VID =@vid ;";//這樣會生成N筆SQL
 
                         //刪除多筆參數
                         //var datas = new[]{
@@ -103,7 +103,7 @@ public partial class Form1 : Form
                             sql += caseStr;
                             inStr += " ," + data.vid.ToString();
                         }
-                        sql += "ELSE \"Value\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
+                        sql += "ELSE \"SecsValue\" END  WHERE \"VID\" IN ( " + inStr.Substring(2) + ")";//土炮
 
                         cn.Execute(sql);
                         //tran.Commit();
