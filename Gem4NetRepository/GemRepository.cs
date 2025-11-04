@@ -156,7 +156,7 @@ public partial class GemRepository
 
             if (UseJsonSecsItem == 1)
             {
-                return JsonDocument.Parse(variable.Value).RootElement.ToItem();
+                return JsonDocument.Parse(variable.SecsValue).RootElement.ToItem();
             }
             return VarStringToItem(variable.DataType, variable.Value);
         }

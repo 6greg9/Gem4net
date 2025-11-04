@@ -492,7 +492,6 @@ public partial class GemEqpService
                 })
                     await primaryMsgWrapper.TryReplyAsync(rtnS7F6);
                 break;
-
             //S7F17 Delete Process Program Send, (這裡也要能處理unFormatted
             case SecsMessage msg when (msg.S == 7 && msg.F == 17):
                 int ackc7 = -1;

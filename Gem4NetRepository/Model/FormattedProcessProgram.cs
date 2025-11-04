@@ -56,6 +56,9 @@ public class ProcessParameter
     public string? Definition { get; set; }
     public string? Remark { get; set; }
 
+    //序列化SecsValue, 和用DataType,Length,Value的方式互相替代
+    public string? SecsValue { get; set; } 
+
 }
 
 public class PPBodyHandler : SqlMapper.TypeHandler<List<ProcessCommand>>

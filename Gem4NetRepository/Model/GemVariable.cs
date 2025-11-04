@@ -18,6 +18,7 @@ public class GemVariable
     public int?     Length { get; set; }
     public string?  Unit { get; set; }
     public string  Value { get; set; }
+    public string SecsValue { get; set; }
     public string  Name { get; set; }
     public string? Definition { get; set; }
     public string? Remark { get; set; }

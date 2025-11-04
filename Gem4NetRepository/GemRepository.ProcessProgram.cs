@@ -142,14 +142,12 @@ public partial class GemRepository // 這部分應該是可以獨立
         {
             using (_context = new GemDbContext(_dbOptions, _config))
             {
-
                 var pps = _context.FormattedProcessPrograms
                     .Where(pp => pp.PPID == PPID).ToList();
                 return pps;
             }
 
         }
-
         finally { semSlim.Release(); }
 
     }
@@ -188,12 +186,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 if (doesExist)
                 {
                     var target = _context.FormattedProcessPrograms.Where(p => p.PPID == fpp.PPID).Take(1).Single();//.Take(1);
-                                                                                                                   //await target.ForEachAsync(p => //行不通
-                                                                                                                   //{
-                                                                                                                   //    var guid = p.LogId;
-                                                                                                                   //    p = fpp;
-                                                                                                                   //    p.LogId = guid;
-                                                                                                                   //});
+                                                                                          //});
                     _context.FormattedProcessPrograms.Remove(target);
                     _context.FormattedProcessPrograms.Add(fpp);
                     //_context.FormattedProcessPrograms.Update(target);

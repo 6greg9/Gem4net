@@ -95,7 +95,7 @@ public partial class Form1 : Form
                         , new { vid = "1008", value = (cnt * 0.8).ToString("0.##") }
                         , new { vid = "1009", value = (cnt * 0.9).ToString("0.##") }
                         , new { vid = "1010", value = (cnt * 1.0).ToString("0.##") }}; //似乎沒有顯著隨著row數目增加花費時間
-                        var sql = "UPDATE \"Variables\" SET \"Value\" =  CASE \"VID\"";
+                        var sql = "UPDATE \"Variables\" SET \"SecsValue\" =  CASE \"VID\"";
                         var inStr = "";
                         foreach (var data in datas)
                         {
