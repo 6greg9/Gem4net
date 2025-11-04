@@ -301,9 +301,19 @@ public partial class GemRepository // 這部分應該是可以獨立
             var secsParaLst = new List<Item>();
             foreach (var para in processCmd.ProcessParameters)
             {
-
-                var secsPara = VarStringToItem(para.DataType, para.Value);
-                secsParaLst.Add(secsPara);
+                if(UseJsonSecsItem == 1 && para.SecsValue != null)
+                {
+                    var secsParaFromJson = JsonDocument.Parse(para.SecsValue).RootElement.ToItem(); 
+                    secsParaLst.Add(secsParaFromJson);
+                    continue;
+                }
+                else
+                {
+                    var secsPara = VarStringToItem(para.DataType, para.Value);
+                    secsParaLst.Add(secsPara);
+                    continue;
+                }
+                
 
             }
             Item  secsPPcmd;
@@ -382,8 +392,15 @@ public partial class GemRepository // 這部分應該是可以獨立
                 foreach (var para in paras.Items) // 這個要很注意客製
                 {
                     var p = new ProcessParameter();
-                    p.DataType = para.Format.ToString();
-                    p.Value = ItemToVarString(para);
+                    if(UseJsonSecsItem == 1)
+                    {
+                        p.SecsValue = para.ToJson();
+                    }
+                    else {
+                        p.DataType = para.Format.ToString();
+                        p.Value = ItemToVarString(para);
+                    }
+
                     pCmd.ProcessParameters.Add(p);
                 }
                 PPCommands.Add(pCmd);
