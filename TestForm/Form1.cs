@@ -35,19 +35,24 @@ public partial class Form1 : Form
         .AddJsonFile("appSettings.json", false)
         .Build();
 
-        var connectionString =
+        try
+        {
+            var connectionString =
                 configuration.GetConnectionString("Npgsql") ??
                 Environment.GetEnvironmentVariable("ConnectionStrings__Default") ??
                 throw new InvalidOperationException("тぃ硈絬﹃ ConnectionStrings:Default");
 
-        var optionsBuilder = new DbContextOptionsBuilder<GemDbContext>();
-        optionsBuilder.UseNpgsql(connectionString); // ■ эΘ UseNpgsql / UseMySql 
+            var optionsBuilder = new DbContextOptionsBuilder<GemDbContext>();
+            optionsBuilder.UseNpgsql(connectionString); // ■ эΘ UseNpgsql / UseMySql 
 
-        _gemRepo = new GemRepository(optionsBuilder.Options, configuration); //盿把计琌ConnectionStrKey
+            _gemRepo = new GemRepository(optionsBuilder.Options, configuration); //盿把计琌ConnectionStrKey
 
+            UpdateVariables();
+        }
+        catch(Exception ex)
+        {
 
-
-        UpdateVariables();
+        }
 
     }
     int cnt = 0;
@@ -377,6 +382,11 @@ public partial class Form1 : Form
             new ProcessParameter
             {
                 Name = "TempA",
+                SecsValue= """
+                {
+                    "F4": [87.9 ]
+                }
+                """,
                 Value = "87.9",
                 DataType = "FLOAT_4",
                 Unit = "C",
