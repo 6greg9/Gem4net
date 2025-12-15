@@ -96,7 +96,7 @@ public partial class GemRepository // 這部分應該是可以獨立
             }
             return 1;
         });
-        
+
     }
     public async Task<int> DeletedProcessProgramAll()
     {
@@ -186,7 +186,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 if (doesExist)
                 {
                     var target = _context.FormattedProcessPrograms.Where(p => p.PPID == fpp.PPID).Take(1).Single();//.Take(1);
-                                                                                          //});
+                                                                                                                   //});
                     _context.FormattedProcessPrograms.Remove(target);
                     _context.FormattedProcessPrograms.Add(fpp);
                     //_context.FormattedProcessPrograms.Update(target);
@@ -206,7 +206,7 @@ public partial class GemRepository // 這部分應該是可以獨立
                 /// </summary>
                 void LogFPPChanged(int ppChangeStatus)
                 {
-                    var fppLog =  Mappers.FormattedProcessProgramToFormattedProcessProgramLog(fpp);
+                    var fppLog = Mappers.FormattedProcessProgramToFormattedProcessProgramLog(fpp);
 
                     fppLog.PPChangeStatus = ppChangeStatus;
 
@@ -262,7 +262,7 @@ public partial class GemRepository // 這部分應該是可以獨立
         await semSlim.WaitAsync();
         try
         {
-            using (_context = new GemDbContext(_dbOptions,_config))
+            using (_context = new GemDbContext(_dbOptions, _config))
             {
                 foreach (var fpp in _context.FormattedProcessPrograms)
                 {
@@ -289,7 +289,7 @@ public partial class GemRepository // 這部分應該是可以獨立
     /// <param name="fpp"></param>
     /// <param name="CcodeFormat"></param>
     /// <returns></returns>
-    public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp,int CcodeFormat)
+    public Item FormattedProcessProgramToSecsItem(FormattedProcessProgram fpp, int CcodeFormat)
     {
 
         var secsPPbody = Item.L();
@@ -301,9 +301,9 @@ public partial class GemRepository // 這部分應該是可以獨立
             var secsParaLst = new List<Item>();
             foreach (var para in processCmd.ProcessParameters)
             {
-                if(UseJsonSecsItem == 1 && para.SecsValue != null)
+                if (UseJsonSecsItem == 1 && para.SecsValue != null)
                 {
-                    var secsParaFromJson = JsonDocument.Parse(para.SecsValue).RootElement.ToItem(); 
+                    var secsParaFromJson = JsonDocument.Parse(para.SecsValue).RootElement.ToItem();
                     secsParaLst.Add(secsParaFromJson);
                     continue;
                 }
@@ -313,21 +313,21 @@ public partial class GemRepository // 這部分應該是可以獨立
                     secsParaLst.Add(secsPara);
                     continue;
                 }
-                
+
 
             }
-            Item  secsPPcmd;
-            Item  ccodeItem = A();
+            Item secsPPcmd;
+            Item ccodeItem = A();
             switch (CcodeFormat)
             {
                 case 0:
                     ccodeItem = A(processCmd.CommandCode);
                     break;
                 case 1:
-                    ccodeItem = U2(Convert.ToUInt16(processCmd.CommandCode) );
+                    ccodeItem = U2(Convert.ToUInt16(processCmd.CommandCode));
                     break;
                 case 2:
-                    ccodeItem = U4(Convert.ToUInt32(processCmd.CommandCode) );
+                    ccodeItem = U4(Convert.ToUInt32(processCmd.CommandCode));
                     break;
                 case 3:
                     ccodeItem = I2(Convert.ToInt16(processCmd.CommandCode));
@@ -392,14 +392,14 @@ public partial class GemRepository // 這部分應該是可以獨立
                 foreach (var para in paras.Items) // 這個要很注意客製
                 {
                     var p = new ProcessParameter();
-                    if(UseJsonSecsItem == 1)
-                    {
-                        p.SecsValue = para.ToJson();
-                    }
-                    else {
-                        p.DataType = para.Format.ToString();
-                        p.Value = ItemToVarString(para);
-                    }
+                    //if(UseJsonSecsItem == 1)
+                    //{
+                    p.SecsValue = para.ToJson();
+                    //}
+                    //else {
+                    p.DataType = para.Format.ToString();
+                    p.Value = ItemToVarString(para);
+                    //}
 
                     pCmd.ProcessParameters.Add(p);
                 }
