@@ -75,7 +75,7 @@ public partial class GemEqpService
                 Item? svList;
                 if (vids is null || vids.Count() == 0)
                 {
-                    svList = await _GemRepo.GetSvAll();
+                    svList = await _GemRepo?.GetSvAll();
                 }
                 else
                 {

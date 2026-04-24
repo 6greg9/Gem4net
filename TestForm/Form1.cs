@@ -47,7 +47,7 @@ public partial class Form1 : Form
 
             _gemRepo = new GemRepository(optionsBuilder.Options, configuration); //帶入的參數是ConnectionStr的Key
 
-            UpdateVariables();
+            //UpdateVariables();
         }
         catch(Exception ex)
         {

@@ -4,6 +4,7 @@ using System.Text.Json;
 using Gem4NetRepository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Gem4NetRepository.Migrations
 {
     [DbContext(typeof(GemDbContext))]
-    partial class GemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260225034156_SourceDataTypee")]
+    partial class SourceDataTypee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,9 +236,8 @@ namespace Gem4NetRepository.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("SourceDataType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("System")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Unit")
                         .HasColumnType("text");

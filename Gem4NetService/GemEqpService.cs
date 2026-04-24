@@ -17,6 +17,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 
 namespace Gem4Net;
+
 public partial class GemEqpService
 {
     private SecsGem? _secsGem;
@@ -63,7 +64,7 @@ public partial class GemEqpService
                 try
                 {
                     await HandleRecievedSecsMessage(this.RecvBuffer,
-                        new Action<PrimaryMessageWrapper>(async (msg) =>await HandlePrimaryMessage(msg)
+                        new Action<PrimaryMessageWrapper>(async (msg) => await HandlePrimaryMessage(msg)
                      ));
                 }
                 catch (Exception ex)

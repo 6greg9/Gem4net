@@ -22,7 +22,8 @@ using Secs4Net.Json;
 using static Secs4Net.Item;
 using Microsoft.Extensions.Options;
 namespace Gem4NetRepository;
-public partial class GemRepository
+
+public partial class GemRepository : IGemRepository
 {
     /// <summary>
     /// The database
@@ -36,7 +37,7 @@ public partial class GemRepository
     DbContextOptions<GemDbContext> _dbOptions;
     private int TimeFormat;
 
-    public GemRepository(DbContextOptions<GemDbContext> dbOptions ,IConfiguration configaration)
+    public GemRepository(DbContextOptions<GemDbContext> dbOptions, IConfiguration configaration)
     {
 
         _config = configaration;
@@ -54,7 +55,7 @@ public partial class GemRepository
 
         //EFcore加Dapper做成撒尿牛肉丸, 後來可以說是沒用到...
         SqlMapper.AddTypeHandler(new PPBodyHandler());
-        
+
     }
 
     /// <summary>
@@ -94,9 +95,8 @@ public partial class GemRepository
     async Task UpdateTimeFormat()
     {
         var TimeFormatVID = Convert.ToInt32(_config["GemEqpAppOptions:TimeFormatVID"]);
-        var TimeFormatEC = await GetEC(TimeFormatVID) ;
-        if ((TimeFormatEC is not null || TimeFormatEC != A(""))
-            && (TimeFormatEC.Format == SecsFormat.U1 || TimeFormatEC.Format == SecsFormat.U2 || TimeFormatEC.Format == SecsFormat.U4 || TimeFormatEC.Format == SecsFormat.U8))
+        var TimeFormatEC = await GetEC(TimeFormatVID);
+        if ((TimeFormatEC is not null || TimeFormatEC != A("")) && (TimeFormatEC.Format == SecsFormat.U1 || TimeFormatEC.Format == SecsFormat.U2 || TimeFormatEC.Format == SecsFormat.U4 || TimeFormatEC.Format == SecsFormat.U8))
             TimeFormat = TimeFormatEC.FirstValue<int>();
     }
 
@@ -119,9 +119,7 @@ public partial class GemRepository
 
     Item? SubGetVarByName(string name)
     {
-        var Variable = _context.Variables
-            //.Where(v=>v.VarType=="SV")
-            .Where(v => v.Name == name).FirstOrDefault();
+        var Variable = _context.Variables.Where(v => v.Name == name).FirstOrDefault();
         if (Variable == null)//找不到
             return A(); // ?
 
@@ -306,12 +304,12 @@ public partial class GemRepository
         var list = vidList.Select(vid =>
         {
             if (existVids.Contains(vid))
-                return existVariables.Where( v=> v.VID==vid).First();
+                return existVariables.Where(v => v.VID == vid).First();
             return null;
-        }).Select(gemVar=> SubGemVariableToSecsItem(gemVar));
+        }).Select(gemVar => SubGemVariableToSecsItem(gemVar));
 
         return Item.L(list.ToArray());
-        
+
     }
     public async Task<Item?> GetSv(int vid)
     {
@@ -327,8 +325,9 @@ public partial class GemRepository
             return SubGetClock(TimeFormat);
 
         var Variable = _context.Variables
-            .Where(v => v.VarType == "SV")
-            .Where(v => v.VID == vid).FirstOrDefault();
+            .Where(v => v.VarType == "SV" && v.VID == vid).FirstOrDefault();
+        if (Variable is null)
+            return null;
 
         return SubGemVariableToSecsItem(Variable);
     }
@@ -351,8 +350,7 @@ public partial class GemRepository
     Item? SubGetEcByVID(int vid)
     {
         var Variable = _context.Variables
-            .Where(v => v.VarType == "EC")
-            .Where(v => v.VID == vid).FirstOrDefault();
+            .Where(v => v.VarType == "EC" && v.VID == vid).FirstOrDefault();
         if (Variable == null)//找不到
             return A(); // ?
 
@@ -398,7 +396,7 @@ public partial class GemRepository
                 {
                     if (v is null)
                         return A();// ?
-                    
+
                     return Item.L(U4((uint)v.VID), A(v.Name), A(v.Unit));
                 });
                 return Item.L(svNameList.ToArray());
@@ -427,11 +425,12 @@ public partial class GemRepository
     /// <returns></returns>
     public async Task<Item?> GetSvAll()
     {
-        return await LockGemRepo<Item?>( () =>{
-                var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v=>v.VID).ToList()
-                .Select(v => SubGemVariableToSecsItem(v)).ToArray();
-                return Item.L(itemList);
-            }
+        return await LockGemRepo<Item?>(() =>
+        {
+            var itemList = _context.Variables.Where(v => v.VarType == "SV").OrderBy(v => v.VID).ToList()
+            .Select(v => SubGemVariableToSecsItem(v)).ToArray();
+            return Item.L(itemList);
+        }
         );
     }
 
@@ -504,7 +503,7 @@ public partial class GemRepository
         return await LockGemRepo<Item?>(
             () =>
             {
-                var ecDetailLst = _context.Variables.Where(v=> vidList.Contains(v.VID) )
+                var ecDetailLst = _context.Variables.Where(v => vidList.Contains(v.VID))
                     //.Where(v => v.VarType == "EC") //我決定不管都給,頂多是空的
                     .ToList().Select(v => GemEcDetailToSecsItem(v));
                 return L(ecDetailLst.ToArray());
@@ -533,13 +532,13 @@ public partial class GemRepository
     {
         try
         {
-            var ecid = U4( Convert.ToUInt32(variable.VID) );
-            var ecname = A(variable.Name );
-            var ecmin = A(variable.MinValue );
-            var ecmax = A(variable.MaxValue );
+            var ecid = U4(Convert.ToUInt32(variable.VID));
+            var ecname = A(variable.Name);
+            var ecmin = A(variable.MinValue);
+            var ecmax = A(variable.MaxValue);
             var ecdef = A(variable.Definition);
             var ecunit = A(variable.Unit);
-            var ecDetail = L(ecid,ecname,ecmin,ecmax,ecdef,ecunit);
+            var ecDetail = L(ecid, ecname, ecmin, ecmax, ecdef, ecunit);
             return ecDetail;
 
         }

@@ -23,7 +23,6 @@ public class GemDbContext : DbContext
     public DbSet<FormattedProcessProgram> FormattedProcessPrograms { get; set; }
     public DbSet<FormattedProcessProgramLog> FormattedProcessProgramLogs { get; set; }
     public DbSet<GemAlarm> Alarms { get; set; }
-    public string DbPath { get; private set; }
     IConfiguration? configuration { get; set; }
 
     public GemDbContext(DbContextOptions<GemDbContext> options, IConfiguration config) : base(options)

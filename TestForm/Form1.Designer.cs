@@ -91,10 +91,10 @@ partial class Form1
         // 
         // button1
         // 
-        button1.Location = new Point(1575, 53);
-        button1.Margin = new Padding(5);
+        button1.Location = new Point(1204, 41);
+        button1.Margin = new Padding(4, 4, 4, 4);
         button1.Name = "button1";
-        button1.Size = new Size(196, 91);
+        button1.Size = new Size(150, 71);
         button1.TabIndex = 0;
         button1.Text = "VarRepo";
         button1.UseVisualStyleBackColor = true;
@@ -102,10 +102,10 @@ partial class Form1
         // 
         // button2
         // 
-        button2.Location = new Point(1575, 153);
-        button2.Margin = new Padding(5);
+        button2.Location = new Point(1204, 119);
+        button2.Margin = new Padding(4, 4, 4, 4);
         button2.Name = "button2";
-        button2.Size = new Size(185, 61);
+        button2.Size = new Size(141, 47);
         button2.TabIndex = 1;
         button2.Text = "EnableGem";
         button2.UseVisualStyleBackColor = true;
@@ -113,19 +113,19 @@ partial class Form1
         // 
         // richTextBox1
         // 
-        richTextBox1.Location = new Point(74, 171);
-        richTextBox1.Margin = new Padding(5);
+        richTextBox1.Location = new Point(57, 133);
+        richTextBox1.Margin = new Padding(4, 4, 4, 4);
         richTextBox1.Name = "richTextBox1";
-        richTextBox1.Size = new Size(1673, 416);
+        richTextBox1.Size = new Size(1280, 324);
         richTextBox1.TabIndex = 3;
         richTextBox1.Text = "";
         // 
         // button3
         // 
-        button3.Location = new Point(1583, 243);
-        button3.Margin = new Padding(5);
+        button3.Location = new Point(1211, 189);
+        button3.Margin = new Padding(4, 4, 4, 4);
         button3.Name = "button3";
-        button3.Size = new Size(173, 53);
+        button3.Size = new Size(132, 41);
         button3.TabIndex = 5;
         button3.Text = "S1F1";
         button3.UseVisualStyleBackColor = true;
@@ -133,67 +133,67 @@ partial class Form1
         // 
         // rtbx_HSMS
         // 
-        rtbx_HSMS.Location = new Point(31, 77);
-        rtbx_HSMS.Margin = new Padding(5);
+        rtbx_HSMS.Location = new Point(24, 60);
+        rtbx_HSMS.Margin = new Padding(4, 4, 4, 4);
         rtbx_HSMS.Name = "rtbx_HSMS";
-        rtbx_HSMS.Size = new Size(220, 229);
+        rtbx_HSMS.Size = new Size(169, 179);
         rtbx_HSMS.TabIndex = 4;
         rtbx_HSMS.Text = "";
         // 
         // lbl_HSMS
         // 
         lbl_HSMS.AutoSize = true;
-        lbl_HSMS.Location = new Point(31, 22);
-        lbl_HSMS.Margin = new Padding(5, 0, 5, 0);
+        lbl_HSMS.Location = new Point(24, 17);
+        lbl_HSMS.Margin = new Padding(4, 0, 4, 0);
         lbl_HSMS.Name = "lbl_HSMS";
-        lbl_HSMS.Size = new Size(64, 24);
+        lbl_HSMS.Size = new Size(76, 28);
         lbl_HSMS.TabIndex = 6;
         lbl_HSMS.Text = "HSMS";
         // 
         // lbl_Communication
         // 
         lbl_Communication.AutoSize = true;
-        lbl_Communication.Location = new Point(257, 22);
-        lbl_Communication.Margin = new Padding(5, 0, 5, 0);
+        lbl_Communication.Location = new Point(197, 17);
+        lbl_Communication.Margin = new Padding(4, 0, 4, 0);
         lbl_Communication.Name = "lbl_Communication";
-        lbl_Communication.Size = new Size(71, 24);
+        lbl_Communication.Size = new Size(81, 28);
         lbl_Communication.TabIndex = 8;
         lbl_Communication.Text = "Comm";
         // 
         // rtbx_Comm
         // 
-        rtbx_Comm.Location = new Point(261, 77);
-        rtbx_Comm.Margin = new Padding(5);
+        rtbx_Comm.Location = new Point(200, 60);
+        rtbx_Comm.Margin = new Padding(4, 4, 4, 4);
         rtbx_Comm.Name = "rtbx_Comm";
-        rtbx_Comm.Size = new Size(509, 229);
+        rtbx_Comm.Size = new Size(390, 179);
         rtbx_Comm.TabIndex = 9;
         rtbx_Comm.Text = "";
         // 
         // rtbx_Ctrl
         // 
-        rtbx_Ctrl.Location = new Point(782, 77);
-        rtbx_Ctrl.Margin = new Padding(5);
+        rtbx_Ctrl.Location = new Point(598, 60);
+        rtbx_Ctrl.Margin = new Padding(4, 4, 4, 4);
         rtbx_Ctrl.Name = "rtbx_Ctrl";
-        rtbx_Ctrl.Size = new Size(781, 229);
+        rtbx_Ctrl.Size = new Size(598, 179);
         rtbx_Ctrl.TabIndex = 10;
         rtbx_Ctrl.Text = "";
         // 
         // lbl_Control
         // 
         lbl_Control.AutoSize = true;
-        lbl_Control.Location = new Point(782, 22);
-        lbl_Control.Margin = new Padding(5, 0, 5, 0);
+        lbl_Control.Location = new Point(598, 17);
+        lbl_Control.Margin = new Padding(4, 0, 4, 0);
         lbl_Control.Name = "lbl_Control";
-        lbl_Control.Size = new Size(78, 24);
+        lbl_Control.Size = new Size(90, 28);
         lbl_Control.TabIndex = 11;
         lbl_Control.Text = "Control";
         // 
         // Btn_GoOffLine
         // 
-        Btn_GoOffLine.Location = new Point(782, 388);
-        Btn_GoOffLine.Margin = new Padding(5);
+        Btn_GoOffLine.Location = new Point(598, 302);
+        Btn_GoOffLine.Margin = new Padding(4, 4, 4, 4);
         Btn_GoOffLine.Name = "Btn_GoOffLine";
-        Btn_GoOffLine.Size = new Size(185, 61);
+        Btn_GoOffLine.Size = new Size(141, 47);
         Btn_GoOffLine.TabIndex = 12;
         Btn_GoOffLine.Text = "Off-Line";
         Btn_GoOffLine.UseVisualStyleBackColor = true;
@@ -201,10 +201,10 @@ partial class Form1
         // 
         // Btn_GoOnLine
         // 
-        Btn_GoOnLine.Location = new Point(782, 318);
-        Btn_GoOnLine.Margin = new Padding(5);
+        Btn_GoOnLine.Location = new Point(598, 247);
+        Btn_GoOnLine.Margin = new Padding(4, 4, 4, 4);
         Btn_GoOnLine.Name = "Btn_GoOnLine";
-        Btn_GoOnLine.Size = new Size(185, 61);
+        Btn_GoOnLine.Size = new Size(141, 47);
         Btn_GoOnLine.TabIndex = 13;
         Btn_GoOnLine.Text = "On-Line";
         Btn_GoOnLine.UseVisualStyleBackColor = true;
@@ -212,10 +212,10 @@ partial class Form1
         // 
         // Btn_GoLocal
         // 
-        Btn_GoLocal.Location = new Point(977, 388);
-        Btn_GoLocal.Margin = new Padding(5);
+        Btn_GoLocal.Location = new Point(747, 302);
+        Btn_GoLocal.Margin = new Padding(4, 4, 4, 4);
         Btn_GoLocal.Name = "Btn_GoLocal";
-        Btn_GoLocal.Size = new Size(185, 61);
+        Btn_GoLocal.Size = new Size(141, 47);
         Btn_GoLocal.TabIndex = 14;
         Btn_GoLocal.Text = "Local";
         Btn_GoLocal.UseVisualStyleBackColor = true;
@@ -223,10 +223,10 @@ partial class Form1
         // 
         // Btn_GoRemote
         // 
-        Btn_GoRemote.Location = new Point(977, 318);
-        Btn_GoRemote.Margin = new Padding(5);
+        Btn_GoRemote.Location = new Point(747, 247);
+        Btn_GoRemote.Margin = new Padding(4, 4, 4, 4);
         Btn_GoRemote.Name = "Btn_GoRemote";
-        Btn_GoRemote.Size = new Size(185, 61);
+        Btn_GoRemote.Size = new Size(141, 47);
         Btn_GoRemote.TabIndex = 15;
         Btn_GoRemote.Text = "Remote";
         Btn_GoRemote.UseVisualStyleBackColor = true;
@@ -249,26 +249,27 @@ partial class Form1
         panel1.Controls.Add(rtbx_Ctrl);
         panel1.Controls.Add(button1);
         panel1.Controls.Add(button2);
-        panel1.Location = new Point(85, 88);
-        panel1.Margin = new Padding(5);
+        panel1.Location = new Point(65, 68);
+        panel1.Margin = new Padding(4, 4, 4, 4);
         panel1.Name = "panel1";
-        panel1.Size = new Size(1793, 501);
+        panel1.Size = new Size(1371, 390);
         panel1.TabIndex = 16;
         // 
         // richTextBox3
         // 
-        richTextBox3.Location = new Point(1299, 388);
+        richTextBox3.Location = new Point(993, 302);
+        richTextBox3.Margin = new Padding(2, 2, 2, 2);
         richTextBox3.Name = "richTextBox3";
-        richTextBox3.Size = new Size(425, 88);
+        richTextBox3.Size = new Size(326, 69);
         richTextBox3.TabIndex = 17;
         richTextBox3.Text = "";
         // 
         // button4
         // 
-        button4.Location = new Point(1442, 326);
-        button4.Margin = new Padding(5);
+        button4.Location = new Point(1103, 254);
+        button4.Margin = new Padding(4, 4, 4, 4);
         button4.Name = "button4";
-        button4.Size = new Size(173, 53);
+        button4.Size = new Size(132, 41);
         button4.TabIndex = 16;
         button4.Text = "S1F1";
         button4.UseVisualStyleBackColor = true;
@@ -283,22 +284,22 @@ partial class Form1
         Tab_Events.Controls.Add(Page_Terminal);
         Tab_Events.Controls.Add(Page_ProcessProgram);
         Tab_Events.Controls.Add(Page_Alarm);
-        Tab_Events.Location = new Point(19, 357);
-        Tab_Events.Margin = new Padding(5);
+        Tab_Events.Location = new Point(15, 278);
+        Tab_Events.Margin = new Padding(4, 4, 4, 4);
         Tab_Events.Name = "Tab_Events";
         Tab_Events.SelectedIndex = 0;
-        Tab_Events.Size = new Size(2091, 679);
+        Tab_Events.Size = new Size(1599, 528);
         Tab_Events.TabIndex = 17;
         // 
         // Tab_GemState
         // 
         Tab_GemState.BackColor = Color.Gainsboro;
         Tab_GemState.Controls.Add(panel1);
-        Tab_GemState.Location = new Point(4, 33);
-        Tab_GemState.Margin = new Padding(5);
+        Tab_GemState.Location = new Point(4, 37);
+        Tab_GemState.Margin = new Padding(4, 4, 4, 4);
         Tab_GemState.Name = "Tab_GemState";
-        Tab_GemState.Padding = new Padding(5);
-        Tab_GemState.Size = new Size(2083, 642);
+        Tab_GemState.Padding = new Padding(4, 4, 4, 4);
+        Tab_GemState.Size = new Size(1591, 487);
         Tab_GemState.TabIndex = 0;
         Tab_GemState.Text = "State";
         // 
@@ -306,11 +307,11 @@ partial class Form1
         // 
         tabPage2.BackColor = Color.LightGray;
         tabPage2.Controls.Add(richTextBox1);
-        tabPage2.Location = new Point(4, 24);
-        tabPage2.Margin = new Padding(5);
+        tabPage2.Location = new Point(4, 37);
+        tabPage2.Margin = new Padding(4, 4, 4, 4);
         tabPage2.Name = "tabPage2";
-        tabPage2.Padding = new Padding(5);
-        tabPage2.Size = new Size(2083, 651);
+        tabPage2.Padding = new Padding(4, 4, 4, 4);
+        tabPage2.Size = new Size(1591, 487);
         tabPage2.TabIndex = 1;
         tabPage2.Text = "Log";
         // 
@@ -322,20 +323,20 @@ partial class Form1
         Tab_Variables.Controls.Add(Tbx_InputVid);
         Tab_Variables.Controls.Add(Lbl_VID);
         Tab_Variables.Controls.Add(Btn_UpdateEC);
-        Tab_Variables.Location = new Point(4, 33);
-        Tab_Variables.Margin = new Padding(5);
+        Tab_Variables.Location = new Point(4, 37);
+        Tab_Variables.Margin = new Padding(4, 4, 4, 4);
         Tab_Variables.Name = "Tab_Variables";
-        Tab_Variables.Size = new Size(2083, 642);
+        Tab_Variables.Size = new Size(1591, 487);
         Tab_Variables.TabIndex = 2;
         Tab_Variables.Text = "Variables";
         Tab_Variables.UseVisualStyleBackColor = true;
         // 
         // Btn_GetSvById
         // 
-        Btn_GetSvById.Location = new Point(399, 119);
-        Btn_GetSvById.Margin = new Padding(5);
+        Btn_GetSvById.Location = new Point(305, 93);
+        Btn_GetSvById.Margin = new Padding(4, 4, 4, 4);
         Btn_GetSvById.Name = "Btn_GetSvById";
-        Btn_GetSvById.Size = new Size(275, 72);
+        Btn_GetSvById.Size = new Size(210, 56);
         Btn_GetSvById.TabIndex = 5;
         Btn_GetSvById.Text = "TestGetSV";
         Btn_GetSvById.UseVisualStyleBackColor = true;
@@ -343,44 +344,44 @@ partial class Form1
         // 
         // Tbx_InputVarValue
         // 
-        Tbx_InputVarValue.Location = new Point(116, 255);
-        Tbx_InputVarValue.Margin = new Padding(5);
+        Tbx_InputVarValue.Location = new Point(89, 198);
+        Tbx_InputVarValue.Margin = new Padding(4, 4, 4, 4);
         Tbx_InputVarValue.Name = "Tbx_InputVarValue";
-        Tbx_InputVarValue.Size = new Size(222, 31);
+        Tbx_InputVarValue.Size = new Size(171, 35);
         Tbx_InputVarValue.TabIndex = 4;
         // 
         // label1
         // 
-        label1.Location = new Point(116, 211);
-        label1.Margin = new Padding(5, 0, 5, 0);
+        label1.Location = new Point(89, 164);
+        label1.Margin = new Padding(4, 0, 4, 0);
         label1.Name = "label1";
-        label1.Size = new Size(224, 39);
+        label1.Size = new Size(171, 30);
         label1.TabIndex = 3;
         label1.Text = "UpdateValue";
         // 
         // Tbx_InputVid
         // 
-        Tbx_InputVid.Location = new Point(116, 133);
-        Tbx_InputVid.Margin = new Padding(5);
+        Tbx_InputVid.Location = new Point(89, 103);
+        Tbx_InputVid.Margin = new Padding(4, 4, 4, 4);
         Tbx_InputVid.Name = "Tbx_InputVid";
-        Tbx_InputVid.Size = new Size(222, 31);
+        Tbx_InputVid.Size = new Size(171, 35);
         Tbx_InputVid.TabIndex = 2;
         // 
         // Lbl_VID
         // 
-        Lbl_VID.Location = new Point(116, 89);
-        Lbl_VID.Margin = new Padding(5, 0, 5, 0);
+        Lbl_VID.Location = new Point(89, 69);
+        Lbl_VID.Margin = new Padding(4, 0, 4, 0);
         Lbl_VID.Name = "Lbl_VID";
-        Lbl_VID.Size = new Size(224, 39);
+        Lbl_VID.Size = new Size(171, 30);
         Lbl_VID.TabIndex = 1;
         Lbl_VID.Text = "VID";
         // 
         // Btn_UpdateEC
         // 
-        Btn_UpdateEC.Location = new Point(399, 241);
-        Btn_UpdateEC.Margin = new Padding(5);
+        Btn_UpdateEC.Location = new Point(305, 187);
+        Btn_UpdateEC.Margin = new Padding(4, 4, 4, 4);
         Btn_UpdateEC.Name = "Btn_UpdateEC";
-        Btn_UpdateEC.Size = new Size(275, 72);
+        Btn_UpdateEC.Size = new Size(210, 56);
         Btn_UpdateEC.TabIndex = 0;
         Btn_UpdateEC.Text = "TestUpdateSV";
         Btn_UpdateEC.UseVisualStyleBackColor = true;
@@ -392,20 +393,20 @@ partial class Form1
         Page_Events.Controls.Add(label2);
         Page_Events.Controls.Add(Btn_TestGetEvents);
         Page_Events.Controls.Add(Tbx_InputECID);
-        Page_Events.Location = new Point(4, 24);
-        Page_Events.Margin = new Padding(5);
+        Page_Events.Location = new Point(4, 37);
+        Page_Events.Margin = new Padding(4, 4, 4, 4);
         Page_Events.Name = "Page_Events";
-        Page_Events.Size = new Size(2083, 651);
+        Page_Events.Size = new Size(1591, 487);
         Page_Events.TabIndex = 3;
         Page_Events.Text = "Events";
         Page_Events.UseVisualStyleBackColor = true;
         // 
         // Btn_TestSendS6F11
         // 
-        Btn_TestSendS6F11.Location = new Point(451, 194);
-        Btn_TestSendS6F11.Margin = new Padding(5);
+        Btn_TestSendS6F11.Location = new Point(345, 151);
+        Btn_TestSendS6F11.Margin = new Padding(4, 4, 4, 4);
         Btn_TestSendS6F11.Name = "Btn_TestSendS6F11";
-        Btn_TestSendS6F11.Size = new Size(258, 77);
+        Btn_TestSendS6F11.Size = new Size(197, 60);
         Btn_TestSendS6F11.TabIndex = 3;
         Btn_TestSendS6F11.Text = "SendS6F11";
         Btn_TestSendS6F11.UseVisualStyleBackColor = true;
@@ -413,19 +414,19 @@ partial class Form1
         // 
         // label2
         // 
-        label2.Location = new Point(189, 80);
-        label2.Margin = new Padding(5, 0, 5, 0);
+        label2.Location = new Point(145, 62);
+        label2.Margin = new Padding(4, 0, 4, 0);
         label2.Name = "label2";
-        label2.Size = new Size(224, 39);
+        label2.Size = new Size(171, 30);
         label2.TabIndex = 2;
         label2.Text = "CEID";
         // 
         // Btn_TestGetEvents
         // 
-        Btn_TestGetEvents.Location = new Point(451, 108);
-        Btn_TestGetEvents.Margin = new Padding(5);
+        Btn_TestGetEvents.Location = new Point(345, 84);
+        Btn_TestGetEvents.Margin = new Padding(4, 4, 4, 4);
         Btn_TestGetEvents.Name = "Btn_TestGetEvents";
-        Btn_TestGetEvents.Size = new Size(258, 77);
+        Btn_TestGetEvents.Size = new Size(197, 60);
         Btn_TestGetEvents.TabIndex = 1;
         Btn_TestGetEvents.Text = "TestGetEvents";
         Btn_TestGetEvents.UseVisualStyleBackColor = true;
@@ -433,10 +434,10 @@ partial class Form1
         // 
         // Tbx_InputECID
         // 
-        Tbx_InputECID.Location = new Point(189, 124);
-        Tbx_InputECID.Margin = new Padding(5);
+        Tbx_InputECID.Location = new Point(145, 96);
+        Tbx_InputECID.Margin = new Padding(4, 4, 4, 4);
         Tbx_InputECID.Name = "Tbx_InputECID";
-        Tbx_InputECID.Size = new Size(230, 31);
+        Tbx_InputECID.Size = new Size(177, 35);
         Tbx_InputECID.TabIndex = 0;
         // 
         // Page_Terminal
@@ -444,20 +445,20 @@ partial class Form1
         Page_Terminal.Controls.Add(Btn_S10F1TerminalRequest);
         Page_Terminal.Controls.Add(Tbx_TerminalInput);
         Page_Terminal.Controls.Add(Tbx_Terminal);
-        Page_Terminal.Location = new Point(4, 24);
-        Page_Terminal.Margin = new Padding(5);
+        Page_Terminal.Location = new Point(4, 37);
+        Page_Terminal.Margin = new Padding(4, 4, 4, 4);
         Page_Terminal.Name = "Page_Terminal";
-        Page_Terminal.Size = new Size(2083, 651);
+        Page_Terminal.Size = new Size(1591, 487);
         Page_Terminal.TabIndex = 4;
         Page_Terminal.Text = "Terminal";
         Page_Terminal.UseVisualStyleBackColor = true;
         // 
         // Btn_S10F1TerminalRequest
         // 
-        Btn_S10F1TerminalRequest.Location = new Point(967, 366);
-        Btn_S10F1TerminalRequest.Margin = new Padding(5);
+        Btn_S10F1TerminalRequest.Location = new Point(739, 285);
+        Btn_S10F1TerminalRequest.Margin = new Padding(4, 4, 4, 4);
         Btn_S10F1TerminalRequest.Name = "Btn_S10F1TerminalRequest";
-        Btn_S10F1TerminalRequest.Size = new Size(294, 99);
+        Btn_S10F1TerminalRequest.Size = new Size(225, 77);
         Btn_S10F1TerminalRequest.TabIndex = 13;
         Btn_S10F1TerminalRequest.Text = "S10F1TermialReq";
         Btn_S10F1TerminalRequest.UseVisualStyleBackColor = true;
@@ -465,19 +466,19 @@ partial class Form1
         // 
         // Tbx_TerminalInput
         // 
-        Tbx_TerminalInput.Location = new Point(155, 357);
-        Tbx_TerminalInput.Margin = new Padding(5);
+        Tbx_TerminalInput.Location = new Point(119, 278);
+        Tbx_TerminalInput.Margin = new Padding(4, 4, 4, 4);
         Tbx_TerminalInput.Name = "Tbx_TerminalInput";
-        Tbx_TerminalInput.Size = new Size(781, 106);
+        Tbx_TerminalInput.Size = new Size(598, 83);
         Tbx_TerminalInput.TabIndex = 12;
         Tbx_TerminalInput.Text = "";
         // 
         // Tbx_Terminal
         // 
-        Tbx_Terminal.Location = new Point(155, 130);
-        Tbx_Terminal.Margin = new Padding(5);
+        Tbx_Terminal.Location = new Point(119, 101);
+        Tbx_Terminal.Margin = new Padding(4, 4, 4, 4);
         Tbx_Terminal.Name = "Tbx_Terminal";
-        Tbx_Terminal.Size = new Size(781, 229);
+        Tbx_Terminal.Size = new Size(598, 179);
         Tbx_Terminal.TabIndex = 11;
         Tbx_Terminal.Text = "";
         // 
@@ -487,27 +488,29 @@ partial class Form1
         Page_ProcessProgram.Controls.Add(Btn_DeletePP);
         Page_ProcessProgram.Controls.Add(Btn_InsertPP);
         Page_ProcessProgram.Controls.Add(Btn_SelectAllPP);
-        Page_ProcessProgram.Location = new Point(4, 24);
-        Page_ProcessProgram.Margin = new Padding(5);
+        Page_ProcessProgram.Location = new Point(4, 37);
+        Page_ProcessProgram.Margin = new Padding(4, 4, 4, 4);
         Page_ProcessProgram.Name = "Page_ProcessProgram";
-        Page_ProcessProgram.Size = new Size(2083, 651);
+        Page_ProcessProgram.Size = new Size(1591, 487);
         Page_ProcessProgram.TabIndex = 5;
         Page_ProcessProgram.Text = "ProcessProgram";
         Page_ProcessProgram.UseVisualStyleBackColor = true;
         // 
         // richTextBox2
         // 
-        richTextBox2.Location = new Point(224, 345);
+        richTextBox2.Location = new Point(171, 268);
+        richTextBox2.Margin = new Padding(2, 2, 2, 2);
         richTextBox2.Name = "richTextBox2";
-        richTextBox2.Size = new Size(348, 144);
+        richTextBox2.Size = new Size(267, 113);
         richTextBox2.TabIndex = 3;
         richTextBox2.Text = "";
         // 
         // Btn_DeletePP
         // 
-        Btn_DeletePP.Location = new Point(876, 419);
+        Btn_DeletePP.Location = new Point(670, 326);
+        Btn_DeletePP.Margin = new Padding(2, 2, 2, 2);
         Btn_DeletePP.Name = "Btn_DeletePP";
-        Btn_DeletePP.Size = new Size(252, 65);
+        Btn_DeletePP.Size = new Size(193, 51);
         Btn_DeletePP.TabIndex = 2;
         Btn_DeletePP.Text = "DeletePP";
         Btn_DeletePP.UseVisualStyleBackColor = true;
@@ -515,10 +518,10 @@ partial class Form1
         // 
         // Btn_InsertPP
         // 
-        Btn_InsertPP.Location = new Point(888, 308);
-        Btn_InsertPP.Margin = new Padding(5);
+        Btn_InsertPP.Location = new Point(679, 240);
+        Btn_InsertPP.Margin = new Padding(4, 4, 4, 4);
         Btn_InsertPP.Name = "Btn_InsertPP";
-        Btn_InsertPP.Size = new Size(227, 72);
+        Btn_InsertPP.Size = new Size(174, 56);
         Btn_InsertPP.TabIndex = 1;
         Btn_InsertPP.Text = "InsertPP";
         Btn_InsertPP.UseVisualStyleBackColor = true;
@@ -526,10 +529,10 @@ partial class Form1
         // 
         // Btn_SelectAllPP
         // 
-        Btn_SelectAllPP.Location = new Point(876, 167);
-        Btn_SelectAllPP.Margin = new Padding(5);
+        Btn_SelectAllPP.Location = new Point(670, 130);
+        Btn_SelectAllPP.Margin = new Padding(4, 4, 4, 4);
         Btn_SelectAllPP.Name = "Btn_SelectAllPP";
-        Btn_SelectAllPP.Size = new Size(227, 72);
+        Btn_SelectAllPP.Size = new Size(174, 56);
         Btn_SelectAllPP.TabIndex = 0;
         Btn_SelectAllPP.Text = "SelectAllPP";
         Btn_SelectAllPP.UseVisualStyleBackColor = true;
@@ -542,19 +545,20 @@ partial class Form1
         Page_Alarm.Controls.Add(Cbx_SetAlarm);
         Page_Alarm.Controls.Add(Tbx_AlarmText);
         Page_Alarm.Controls.Add(Btn_SendAlarm);
-        Page_Alarm.Location = new Point(4, 33);
-        Page_Alarm.Margin = new Padding(5);
+        Page_Alarm.Location = new Point(4, 37);
+        Page_Alarm.Margin = new Padding(4, 4, 4, 4);
         Page_Alarm.Name = "Page_Alarm";
-        Page_Alarm.Size = new Size(2083, 642);
+        Page_Alarm.Size = new Size(1591, 487);
         Page_Alarm.TabIndex = 6;
         Page_Alarm.Text = "Alarm";
         Page_Alarm.UseVisualStyleBackColor = true;
         // 
         // button5
         // 
-        button5.Location = new Point(767, 156);
+        button5.Location = new Point(587, 121);
+        button5.Margin = new Padding(2, 2, 2, 2);
         button5.Name = "button5";
-        button5.Size = new Size(160, 97);
+        button5.Size = new Size(122, 75);
         button5.TabIndex = 4;
         button5.Text = "button5";
         button5.UseVisualStyleBackColor = true;
@@ -562,37 +566,37 @@ partial class Form1
         // 
         // Num_AlarmId
         // 
-        Num_AlarmId.Location = new Point(156, 136);
-        Num_AlarmId.Margin = new Padding(5);
+        Num_AlarmId.Location = new Point(119, 106);
+        Num_AlarmId.Margin = new Padding(4, 4, 4, 4);
         Num_AlarmId.Name = "Num_AlarmId";
-        Num_AlarmId.Size = new Size(172, 31);
+        Num_AlarmId.Size = new Size(132, 35);
         Num_AlarmId.TabIndex = 3;
         // 
         // Cbx_SetAlarm
         // 
         Cbx_SetAlarm.AutoSize = true;
-        Cbx_SetAlarm.Location = new Point(151, 86);
-        Cbx_SetAlarm.Margin = new Padding(5);
+        Cbx_SetAlarm.Location = new Point(115, 67);
+        Cbx_SetAlarm.Margin = new Padding(4, 4, 4, 4);
         Cbx_SetAlarm.Name = "Cbx_SetAlarm";
-        Cbx_SetAlarm.Size = new Size(111, 28);
+        Cbx_SetAlarm.Size = new Size(132, 32);
         Cbx_SetAlarm.TabIndex = 2;
         Cbx_SetAlarm.Text = "SetAlarm";
         Cbx_SetAlarm.UseVisualStyleBackColor = true;
         // 
         // Tbx_AlarmText
         // 
-        Tbx_AlarmText.Location = new Point(151, 193);
-        Tbx_AlarmText.Margin = new Padding(5);
+        Tbx_AlarmText.Location = new Point(115, 150);
+        Tbx_AlarmText.Margin = new Padding(4, 4, 4, 4);
         Tbx_AlarmText.Name = "Tbx_AlarmText";
-        Tbx_AlarmText.Size = new Size(296, 31);
+        Tbx_AlarmText.Size = new Size(227, 35);
         Tbx_AlarmText.TabIndex = 1;
         // 
         // Btn_SendAlarm
         // 
-        Btn_SendAlarm.Location = new Point(496, 163);
-        Btn_SendAlarm.Margin = new Padding(5);
+        Btn_SendAlarm.Location = new Point(379, 127);
+        Btn_SendAlarm.Margin = new Padding(4, 4, 4, 4);
         Btn_SendAlarm.Name = "Btn_SendAlarm";
-        Btn_SendAlarm.Size = new Size(209, 77);
+        Btn_SendAlarm.Size = new Size(160, 60);
         Btn_SendAlarm.TabIndex = 0;
         Btn_SendAlarm.Text = "SendAlarm";
         Btn_SendAlarm.UseVisualStyleBackColor = true;
@@ -604,12 +608,12 @@ partial class Form1
         // 
         // Form1
         // 
-        AutoScaleDimensions = new SizeF(11F, 24F);
+        AutoScaleDimensions = new SizeF(13F, 28F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(1924, 1014);
+        ClientSize = new Size(1471, 789);
         Controls.Add(Tab_Events);
-        Font = new Font("Microsoft JhengHei UI", 14F);
-        Margin = new Padding(5);
+        Font = new Font("Microsoft JhengHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 136);
+        Margin = new Padding(4, 4, 4, 4);
         Name = "Form1";
         Text = "Form1";
         Load += Form1_Load;
